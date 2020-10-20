@@ -1,0 +1,73 @@
+﻿@page "/"
+
+<h1>Посад печи</h1>
+
+
+<div class="text-nowrap" style="padding-bottom: 12px;">
+    <EditForm Model="_landingData" id="loadingData">
+        <table class="form">
+            <caption>Загрузка заготовок на посаде печи</caption>
+            <tr>
+                <td style="text-align: center; vertical-align: middle;" colspan="2">
+                    <label>
+                        Плавка №
+                        <InputNumber class="form-control" placeholder="номер плавки" id="number" @bind-Value="@_landingData.Number"/>
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center; vertical-align: middle;">
+                    <label>
+                        Профиль
+                        <InputText class="form-control" placeholder="профиль заготовки" id="profile" @bind-Value="@_landingData.IngotProfile"/>
+                    </label>
+                </td>
+                <td style="text-align: center; vertical-align: middle;">
+                    <label>
+                        Марка стали
+                        <InputText class="form-control" placeholder="марка стали" id="steel" @bind-Value="@_landingData.SteelMark"/>
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center; vertical-align: middle;">
+                    <label>
+                        Кол-во заготовок
+                        <InputNumber class="form-control" placeholder="всего заготовок" id="count" @bind-Value="@_landingData.LegalCount" />
+                    </label>
+                </td>
+                <td style="text-align: center; vertical-align: middle;">
+                    <label>
+                        Вес заготовок
+                        <InputNumber class="form-control" placeholder="вес заготовок" id="weights" @bind-Value="@_landingData.LegalWeight"/>
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center; vertical-align: middle;">
+                    <label>
+                        Длина заготовки
+                        <InputNumber class="form-control" placeholder="длина" id="length" @bind-Value="@_landingData.Lenght"/>
+                    </label>
+                </td>
+                <td style="text-align: center; vertical-align: middle;">
+                    <label>
+                        Вес заготовки
+                        <InputNumber class="form-control" placeholder="вес" id="weight" @bind-Value="@_landingData.Weight"/>
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center; vertical-align: middle;" colspan="2">
+                    <button class="btn btn-primary" @onclick="@(() => AddLanding())">Добавить</button>
+                </td>
+            </tr>
+        </table>
+    </EditForm>
+</div>
+
+<div id="state" class="@_state" role="alert" style="display: @_show;">
+    @_message
+</div>
+
+
