@@ -200,7 +200,7 @@ app {
 }
 
 #profile {
-    width: 200px;
+    width: 150px;
 }
 
 #steel {
@@ -225,5 +225,5 @@ app {
 
 #state {
     margin-top: 16px;
-    width: 400px;
+    width: 600px;
 }

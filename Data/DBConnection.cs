@@ -29,7 +29,8 @@ namespace OvenLanding.Data
             //     "UserName": "mts",
             //     "Password": "dfaf@we jkjcld!",
             //     "sslmode": "Prefer",
-            //     "Trust Server Certificate": "true"
+            //     "Trust Server Certificate": "true",
+            //     "Reconnect": "20000"
             // }
 
             // Параметры подключения к БД для локального компьютера
@@ -40,7 +41,8 @@ namespace OvenLanding.Data
             //     "UserName": "mts",
             //     "Password": "test$ope$_1",
             //     "sslmode": "Prefer",
-            //     "Trust Server Certificate": "true"
+            //     "Trust Server Certificate": "true",
+            //     "Reconnect": "20000"
             // }
 
             
@@ -70,26 +72,30 @@ namespace OvenLanding.Data
             }
         }
 
-        public void DbInit()
+        public bool DbInit()
         {
-            string query = "create table if not exists public.oven_landing " +
-                           "(id serial constraint oven_landing_pk primary key, " +
-                           "plav_number int not null, " +
+            string query = "create table if not exists public.oven_landing (" +
+                           "id  serial not null, " +
+                           "plav_number integer not null, " +
                            "steel_mark varchar(15) not null, " +
                            "profile varchar(15) not null, " +
-                           "legal_count int not null, " +
-                           "legal_weight float not null, " +
-                           "real_count int, " +
-                           "real_weight float, " +
-                           "length float not null, " +
-                           "weight float not null); " +
-                           "alter table public.oven_landing owner to mts; ";
+                           "legal_count integer not null, " +
+                           "legal_weight double precision not null, " +
+                           "real_count integer, " +
+                           "real_weight double precision, " +
+                           "length double precision not null, " +
+                           "weight double precision not null, " +
+                           "date_ts timestamptz default CURRENT_TIMESTAMP not null, " +
+                           "constraint oven_landing_pk primary key (id) ); " +
+                           "alter table public.oven_landing owner to mts;";
         
             bool res = WriteData(query);
             if (!res)
             {
                 logger.Error("Ошибка при создании таблицы [OvenLanding]");
             }
+
+            return res;
         }
 
         /// <summary>
