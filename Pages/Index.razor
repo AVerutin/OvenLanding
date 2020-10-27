@@ -4,14 +4,20 @@
 
 
 <div class="text-nowrap" style="padding-bottom: 12px;">
-    <EditForm Model="_landingData" id="loadingData">
-        <table class="form">
+    <EditForm Model="_landingData" id="landingData">
+        <table class="form" style="width: 400px;">
             <caption>Загрузка заготовок на посаде печи</caption>
             <tr>
-                <td style="text-align: center; vertical-align: middle;" colspan="2">
+                <td style="text-align: center; vertical-align: middle;">
                     <label>
                         Плавка №
-                        <InputNumber class="form-control" placeholder="номер плавки" id="number" @bind-Value="@_landingData.Number"/>
+                        <InputNumber class="form-control" placeholder="номер плавки" id="number" @bind-Value="@_landingData.Number" />
+                    </label>
+                </td>
+                <td style="text-align: center; vertical-align: middle">
+                    <label>
+                        № в очереди
+                        <InputNumber class="form-control" placeholder="№ в очереди" id="order_num" @bind-Value="@_landingData.OrderNum" />
                     </label>
                 </td>
             </tr>
@@ -19,14 +25,30 @@
                 <td style="text-align: center; vertical-align: middle;">
                     <label>
                         Профиль
-                        <InputText class="form-control" placeholder="профиль заготовки" id="profile" @bind-Value="@_landingData.IngotProfile"/>
+                    <InputSelect class="form-control" id="profile" @bind-Value="@_landingData.IngotProfile">
+                        @foreach (KeyValuePair<int,string> item in _profiles)
+                        {
+                            <option value="@item.Key">@item.Value</option>
+                        }
+                    </InputSelect>
                     </label>
+                    <button type="button" class="btn btn-primary" @onclick="@(() => ShowProfile())">
+                        +
+                    </button>
                 </td>
                 <td style="text-align: center; vertical-align: middle;">
                     <label>
                         Марка стали
-                        <InputText class="form-control" placeholder="марка стали" id="steel" @bind-Value="@_landingData.SteelMark"/>
+                        <InputSelect class="form-control" id="steel" @bind-Value="@_landingData.SteelMark">
+                            @foreach (KeyValuePair<int,string> item in _steels)
+                            {
+                                <option value="@item.Key">@item.Value</option>
+                            }
+                        </InputSelect>
                     </label>
+                    <button type="button" class="btn btn-primary" @onclick="@(() => ShowSteel())">
+                      +
+                    </button>
                 </td>
             </tr>
             <tr>
@@ -39,7 +61,7 @@
                 <td style="text-align: center; vertical-align: middle;">
                     <label>
                         Вес заготовок
-                        <InputNumber class="form-control" placeholder="вес заготовок" id="weights" @bind-Value="@_landingData.LegalWeight"/>
+                        <InputNumber class="form-control" placeholder="вес заготовок" id="weights" @bind-Value="@_landingData.LegalWeight" />
                     </label>
                 </td>
             </tr>
@@ -47,13 +69,13 @@
                 <td style="text-align: center; vertical-align: middle;">
                     <label>
                         Длина заготовки
-                        <InputNumber class="form-control" placeholder="длина" id="length" @bind-Value="@_landingData.Lenght"/>
+                        <InputNumber class="form-control" placeholder="длина" id="length" @bind-Value="@_landingData.Lenght" />
                     </label>
                 </td>
                 <td style="text-align: center; vertical-align: middle;">
                     <label>
                         Вес заготовки
-                        <InputNumber class="form-control" placeholder="вес" id="weight" @bind-Value="@_landingData.Weight"/>
+                        <InputNumber class="form-control" placeholder="вес" id="weight" @bind-Value="@_landingData.Weight" />
                     </label>
                 </td>
             </tr>
@@ -66,8 +88,70 @@
     </EditForm>
 </div>
 
+<div>
+    <table class="orders" style="width: 400px;">
+        <caption>Очередь заготовок на посаде печи</caption>
+        <tr>
+            <th style="text-align: center; vertical-align: middle">№<br />очереди</th>
+            <th style="text-align: center; vertical-align: middle">№<br />плавки</th>
+            <th style="text-align: center; vertical-align: middle">Марка<br />стали</th>
+            <th style="text-align: center; vertical-align: middle">Профиль<br />заготовки</th>
+            <th style="text-align: center; vertical-align: middle">Остаток<br />на посаде</th>
+        </tr>
+        @foreach (var item in _landed)
+        {
+            <tr>
+                <td style="text-align: center; vertical-align: middle">@item.OrderNum</td>
+                <td style="text-align: center; vertical-align: middle">@item.PlavNum</td>
+                <td style="text-align: center; vertical-align: middle">@item.Steel</td>
+                <td style="text-align: center; vertical-align: middle">@item.Profile</td>
+                <td style="text-align: center; vertical-align: middle">@item.Total</td>
+            </tr>
+        }
+    </table>
+</div>
+
 <div id="state" class="@_state" role="alert" style="display: @_show;">
     @_message
 </div>
 
 
+<div class="text-nowrap" id="addProfile" style="display: @_showWindowAddProfile;">
+    <EditForm Model="_profileData">
+        <table style="border: 1px solid black; padding: 15px;">
+            <tr>
+                <td style="text-align: center;vertical-align: middle;">
+                    <label>
+                        Профиль заготовки
+                        <InputText class="form-control" placeholder="профиль заготовки" @bind-Value="@_profileData.ProfileName" />
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center; vertical-align: middle;">
+                    <button class="btn btn-primary" @onclick="@(() => AddProfile())">Добавить</button>
+                </td>
+            </tr>
+        </table>
+    </EditForm>
+</div>
+
+<div class="text-nowrap" id="addSteel" style="display: @_showWindowAddSteel;">
+    <EditForm Model="_profileData">
+        <table style="border: 1px solid black; padding: 15px;">
+            <tr>
+                <td style="text-align: center;vertical-align: middle;">
+                    <label>
+                        Марка стали
+                        <InputText class="form-control" placeholder="марка стали" @bind-Value="@_steelData.SteelName" />
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center; vertical-align: middle;">
+                    <button class="btn btn-primary" @onclick="@(() => AddSteel())">Добавить</button>
+                </td>
+            </tr>
+        </table>
+    </EditForm>
+</div>

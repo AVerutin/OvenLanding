@@ -18,7 +18,6 @@ namespace OvenLanding.Data
         /// <summary>
         /// Конструктор создания подключения к базе данных
         /// </summary>
-        /// <param name="options">Параметры подключения к базе данных</param>
         public DBConnection()
         {
             // Параметры подключения к БД для удаленного компьютера
@@ -74,22 +73,50 @@ namespace OvenLanding.Data
 
         public bool DbInit()
         {
-            string query = "create table if not exists public.oven_landing (" +
-                           "id  serial not null, " +
-                           "plav_number integer not null, " +
-                           "steel_mark varchar(15) not null, " +
-                           "profile varchar(15) not null, " +
-                           "legal_count integer not null, " +
-                           "legal_weight double precision not null, " +
-                           "real_count integer, " +
-                           "real_weight double precision, " +
-                           "length double precision not null, " +
-                           "weight double precision not null, " +
-                           "date_ts timestamptz default CURRENT_TIMESTAMP not null, " +
-                           "constraint oven_landing_pk primary key (id) ); " +
-                           "alter table public.oven_landing owner to mts;";
-        
+            // Создание справочника профилей арматуры
+            string query = "create table if not exists public.profiles (" +
+                           "id serial not null constraint profiles_pk primary key, " +
+                           "profile varchar not null); " +
+                           "comment on table public.profiles is 'Справочник видов профилей заготовки'; " +
+                           "alter table public.profiles owner to mts;";
             bool res = WriteData(query);
+            if (!res)
+            {
+                logger.Error("Ошибка при создании справочника профилей арматуры");
+            }
+            
+            // Создание справочника марок стали
+            query = "create table if not exists public.steels (" +
+                    "id serial not null constraint steels_pk primary key, " +
+                    "steel varchar not null); " +
+                    "comment on table public.steels is 'Справочник марок стали'; " +
+                    "alter table public.steels owner to mts;";
+            
+            res = WriteData(query);
+            if (!res)
+            {
+                logger.Error("Ошибка при создании справочника профилей арматуры");
+            }
+            
+            // Создание таблицы заготовок на посаде печи
+            query = "create table if not exists public.oven_landing (" +
+                    "id serial not null, " +
+                    "plav_number integer not null, " +
+                    "order_num integer not null, " +
+                    "steel_mark integer not null, " +
+                    "profile integer not null, " +
+                    "legal_count integer not null, " +
+                    "legal_weight double precision not null, " +
+                    "real_count integer not null default 0, " +
+                    "real_weight double precision not null default 0, " +
+                    "length double precision not null, " +
+                    "weight double precision not null, " +
+                    "date_ts timestamp with time zone default CURRENT_TIMESTAMP not null, " +
+                    "constraint oven_landing_pk primary key (id)); " +
+                    "comment on table public.oven_landing is 'Таблица заготовок на посаде печи'; " +
+                    "alter table public.oven_landing owner to mts;";
+        
+            res = WriteData(query);
             if (!res)
             {
                 logger.Error("Ошибка при создании таблицы [OvenLanding]");
@@ -126,5 +153,159 @@ namespace OvenLanding.Data
 
             return Result;
         }
+
+        /// <summary>
+        /// Получить список профилей заготовок
+        /// </summary>
+        /// <returns>Список профилей заготовок</returns>
+        public Dictionary<int, string> GetProfiles()
+        {
+            Dictionary<int, string> result = new Dictionary<int, string>();
+            int key;
+            string value;
+            
+            string query = "select id, profile from public.profiles order by profile";
+            Connection.Open();
+            NpgsqlCommand comm = new NpgsqlCommand(query, Connection);
+            NpgsqlDataReader reader = comm.ExecuteReader();
+            while (reader.Read())
+            {
+                try
+                {
+                    key = reader.GetInt32(0);
+                    value = reader.GetString(1);
+                }
+                catch (Exception ex)
+                {
+                    key = 0;
+                    value = "";
+                    logger.Error($"Ошибка при получении списка профилей [{ex.Message}]");
+                }
+
+                result.Add(key, value);
+            }
+
+            reader.Close();
+            Connection.Close();
+
+            return result;
+        }
+
+        /// <summary>
+        /// Получить список марок стали
+        /// </summary>
+        /// <returns>Список марок стали</returns>
+        public Dictionary<int, string> GetSteels()
+        {
+            Dictionary<int, string> result = new Dictionary<int, string>();
+            int key;
+            string value;
+            
+            string query = "select id, steel from public.steels order by steel";
+            Connection.Open();
+            NpgsqlCommand comm = new NpgsqlCommand(query, Connection);
+            NpgsqlDataReader reader = comm.ExecuteReader();
+            while (reader.Read())
+            {
+                try
+                {
+                    key = reader.GetInt32(0);
+                    value = reader.GetString(1);
+                }
+                catch (Exception ex)
+                {
+                    key = 0;
+                    value = "";
+                    logger.Error($"Ошибка при получении списка марок стали [{ex.Message}]");
+                }
+
+                result.Add(key, value);
+            }
+
+            reader.Close();
+            Connection.Close();
+
+            return result;
+        }
+
+        /// <summary>
+        /// Получить список партий заготовок на посаде печи
+        /// </summary>
+        /// <returns></returns>
+        public List<LandingTable> GetLandingOrder()
+        {
+            List<LandingTable> result = new List<LandingTable>();
+
+            string query =
+                "select l.order_num as order_num, l.plav_number as plav_num, s.steel as steel, p.profile as profile, l.legal_count-l.real_count as total " +
+                "from public.oven_landing l join profiles p on l.profile = p.id join steels s on l.steel_mark = s.id " +
+                "where l.legal_count-l.real_count>0 order by l.order_num;";
+            Connection.Open();
+            NpgsqlCommand comm = new NpgsqlCommand(query, Connection);
+            NpgsqlDataReader reader = comm.ExecuteReader();
+            while (reader.Read())
+            {
+                LandingTable item = new LandingTable();
+                try
+                {
+                    item.OrderNum = reader.GetInt32(0);
+                    item.PlavNum = reader.GetInt32(1);
+                    item.Steel = reader.GetString(2);
+                    item.Profile = reader.GetString(3);
+                    item.Total = reader.GetInt32(4);
+                }
+                catch (Exception ex)
+                {
+                    item.OrderNum = 0;
+                    item.PlavNum = 0;
+                    item.Steel = "<No data>";
+                    item.Profile = "<No data>";
+                    item.Total = 0;
+                    logger.Error($"Ошибка при получении списка очереди заготовок на посаде печи [{ex.Message}]");
+                }
+
+                result.Add(item);
+            }
+
+            reader.Close();
+            Connection.Close();
+
+            return result;
+        }
+
+        /// <summary>
+        /// Добавить профиль заготовки
+        /// </summary>
+        /// <param name="profileName">Профиль заготовки</param>
+        /// <returns>Результат выполнения операции</returns>
+        public bool AddProfile(string profileName)
+        {
+            bool res = false;
+            if (!string.IsNullOrEmpty(profileName))
+            {
+                string query = string.Format("insert into public.profiles (profile) values ('{0}');", profileName);
+                res = WriteData(query);
+            }
+
+            return res;
+        }
+        
+        /// <summary>
+        /// Добавить марку стали
+        /// </summary>
+        /// <param name="steelName">Марка стали</param>
+        /// <returns>Результат выполнения операции</returns>
+        public bool AddSteel(string steelName)
+        {
+            bool res = false;
+            if (!string.IsNullOrEmpty(steelName))
+            {
+                string query = string.Format("insert into public.steels (steel) values ('{0}');", steelName);
+                res = WriteData(query);
+            }
+
+            return res;
+        }
     }
 }
+

@@ -13,10 +13,13 @@
       <e p="Data" t="Include">
         <e p="DBConnection.cs" t="Include" />
         <e p="LandingData.cs" t="Include" />
+        <e p="LandingTable.cs" t="Include" />
+        <e p="ProfileData.cs" t="Include" />
+        <e p="SteelData.cs" t="Include" />
       </e>
       <e p="NLog.config" t="Include" />
       <e p="obj" t="ExcludeRecursive">
-        <e p="Release" t="Include">
+        <e p="Debug" t="Include">
           <e p="netcoreapp3.1" t="Include">
             <e p="OvenLanding.AssemblyInfo.cs" t="Include" />
             <e p="OvenLanding.RazorAssemblyInfo.cs" t="Include" />

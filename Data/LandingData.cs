@@ -3,6 +3,7 @@
     public class LandingData
     {
         public long Number { get; set; }
+        public int OrderNum { get; set; }
         public string SteelMark { get; set; }
         public string IngotProfile { get; set; }
         public int LegalCount { get; set; }

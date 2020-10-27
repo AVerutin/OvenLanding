@@ -199,6 +199,10 @@ app {
     width: 150px;
 }
 
+#order_num {
+    width: 100px;
+}
+
 #profile {
     width: 150px;
 }
@@ -212,7 +216,7 @@ app {
 }
 
 #weights {
-    width: 200px;
+    width: 150px;
 }
 
 #length {
@@ -220,10 +224,50 @@ app {
 }
 
 #weight {
-    width: 200px;
+    width: 150px;
 }
 
 #state {
     margin-top: 16px;
     width: 600px;
+}
+
+.orders {
+    border: 1px solid black;
+    border-radius: 5px;
+    
+}
+.orders th {
+    border: 1px solid black;
+    padding: 3px;
+}
+
+.orders td {
+    border: 1px solid black;
+    padding: 3px;
+}
+
+.orders caption {
+    display: none;
+    font-family: Arial, sans-serif;
+    caption-side: top;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+}
+
+#addProfile {
+    border: 1px solid black;
+    width: 200px;
+    position: absolute;
+    left: 500px;
+    top: 80px;
+}
+
+#addSteel {
+    border: 1px solid black;
+    width: 200px;
+    position: absolute;
+    left: 700px;
+    top: 80px;
 }
