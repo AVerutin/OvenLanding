@@ -2,24 +2,35 @@
 {
     public class LandingData
     {
-        public long Number { get; set; }
-        public int OrderNum { get; set; }
+        public string MeltNumber { get; set; }
         public string SteelMark { get; set; }
         public string IngotProfile { get; set; }
-        public int LegalCount { get; set; }
-        public double LegalWeight { get; set; }
-        public int Lenght { get; set; }
-        public double Weight { get; set; }
+        public int IngotsCount { get; set; }
+        public double WeightAll { get; set; }
+        public double WeightOne { get; set; }
+        public int ProductCode { get; set; }
+        public int IngotLenght { get; set; }
+        public string Gost { get; set; }
+        public int Diameter { get; set; }
+        public string Customer { get; set; }
+        public string Shift { get; set; }
+        public string Class { get; set; }
 
         public LandingData()
         {
-            Number = 0;
+            MeltNumber = "";
             SteelMark = "";
             IngotProfile = "";
-            LegalCount = 0;
-            LegalWeight = 0;
-            Lenght = 0;
-            Weight = 0;
+            Gost = default;
+            IngotsCount = 0;
+            WeightAll = 0;
+            IngotLenght = 0;
+            WeightOne = 0;
+            ProductCode = 0;
+            Diameter = default;
+            Customer = default;
+            Shift = default;
+            Class = default;
         }
     }
 }

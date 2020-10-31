@@ -195,36 +195,24 @@ app {
     text-align: center;
 }
 
-#number {
-    width: 150px;
+#gost {
+    width: 300px;
 }
 
-#order_num {
-    width: 100px;
+#class {
+    width: 300px;
 }
 
 #profile {
-    width: 150px;
+    width: 300px;
 }
 
 #steel {
-    width: 150px
+    width: 300px;
 }
 
-#count {
-    width: 150px;
-}
-
-#weights {
-    width: 150px;
-}
-
-#length {
-    width: 150px;
-}
-
-#weight {
-    width: 150px;
+#newCustomer {
+    width: 500px;
 }
 
 #state {
@@ -237,17 +225,17 @@ app {
     border-radius: 5px;
     
 }
-.orders th {
-    border: 1px solid black;
-    padding: 3px;
+th {
+    text-align: center;
+    vertical-align: middle;
 }
 
-.orders td {
-    border: 1px solid black;
-    padding: 3px;
+td {
+    text-align: center;
+    vertical-align: middle;
 }
 
-.orders caption {
+caption {
     display: none;
     font-family: Arial, sans-serif;
     caption-side: top;
@@ -256,18 +244,42 @@ app {
     text-align: center;
 }
 
-#addProfile {
-    border: 1px solid black;
-    width: 200px;
-    position: absolute;
-    left: 500px;
-    top: 80px;
-}
-
 #addSteel {
     border: 1px solid black;
-    width: 200px;
+    width: 300px;
     position: absolute;
-    left: 700px;
-    top: 80px;
+    left: 400px;
+    top: 600px;
+}
+
+#addProfile {
+    border: 1px solid black;
+    width: 300px;
+    position: absolute;
+    left: 400px;
+    top: 600px;
+}
+
+#addGost {
+    border: 1px solid black;
+    width: 300px;
+    position: absolute;
+    left: 400px;
+    top: 600px;
+}
+
+#addCustomer {
+    border: 1px solid black;
+    width: 450px;
+    position: absolute;
+    left: 400px;
+    top: 600px;
+}
+
+#addClass {
+    border: 1px solid black;
+    width: 300px;
+    position: absolute;
+    left: 400px;
+    top: 600px;
 }

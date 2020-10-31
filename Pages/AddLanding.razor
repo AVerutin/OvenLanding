@@ -1,0 +1,220 @@
+﻿@page "/addlanding"
+
+<h1>Добавить плавку в очередь</h1>
+
+
+<EditForm Model="_landingData" id="landingData">
+    <div class="form-row">
+        <div class="form-group col-md-1">
+            <label for="meltNum">Плавка №</label>
+            <InputText id="meltNum" class="form-control" placeholder="номер плавки" @bind-Value="@_landingData.MeltNumber" />
+        </div>
+        <div class="form-group col-md-1">
+            <label for="steelMark">Марка стали</label>
+            <InputSelect class="form-control" id="steelMark" @bind-Value="@_landingData.SteelMark">
+                @foreach (string item in _steels)
+                {
+                    <option value="@item">@item</option>
+                }
+            </InputSelect>
+        </div>
+        <div class="form-group col-md-1">
+            <label for="profile">Сечение</label>
+            <InputSelect class="form-control" id="profile" @bind-Value="@_landingData.IngotProfile">
+                @foreach (string item in _profiles)
+                {
+                    <option value="@item">@item</option>
+                }
+            </InputSelect>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-1">
+            <label for="ingotsCount">Кол-во заготовок</label>
+            <InputNumber id="ingotsCount" class="form-control" placeholder="количество заготовок" @bind-Value="@_landingData.IngotsCount" />
+        </div>
+        <div class="form-group col-md-1">
+            <label for="ingotLength">Длина заготовки</label>
+            <InputNumber id="ingotLength"  class="form-control" placeholder="длина заготовки" @bind-Value="@_landingData.IngotLenght" />
+        </div>
+        <div class="form-group col-md-1">
+            <label for="weightOne">Вес заготовки</label>
+            <InputNumber id="weightOne" class="form-control" placeholder="вес заготовки" @bind-Value="@_landingData.WeightOne" />
+        </div>
+        <div class="form-group col-md-1">
+            <label for="productCode">Код продукта</label>
+            <InputNumber id="productCode" class="form-control" placeholder="код продукта" @bind-Value="@_landingData.ProductCode" />
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-2">
+            <label for="customer">Заказчик</label>
+                <InputSelect id="customer" class="form-control" @bind-Value="@_landingData.Customer">
+                    @foreach (string item in _customers)
+                    {
+                        <option value="@item">@item</option>
+                    }
+                </InputSelect>
+        </div>
+        <div class="form-group col-md-1">
+            <label for="gost">Гост</label>
+            <InputSelect id="gost" class="form-control" @bind-Value="@_landingData.Gost">
+                @foreach (string item in _gosts)
+                {
+                    <option value="@item">@item</option>
+                }
+            </InputSelect>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-1">
+            <label for="diameter">Диаметр</label>
+            <InputNumber id="diameter" class="form-control" placeholder="диаметр" @bind-Value="@_landingData.Diameter" />
+        </div>
+        <div class="form-group col-md-1">
+            <label for="shift">Смена</label>
+            <InputText id="shift" class="form-control" placeholder="смена" @bind-Value="@_landingData.Shift" />
+        </div>
+        <div class="form-group col-md-1">
+            <label for="class">Класс</label>
+            <InputSelect id="gost" class="form-control" @bind-Value="@_landingData.Class">
+                @foreach (string item in _classes)
+                {
+                    <option value="@item">@item</option>
+                }
+            </InputSelect>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-1">
+            <button type="button" class="btn btn-success" @onclick="@(() => AddNewLanding())">Добавить в очередь</button>
+        </div>
+        <div class="form-group col-md-1">
+            <button type="button" class="btn btn-outline-primary" @onclick="@(() => ShowSteel())">Добавить марку</button>
+        </div>
+        <div class="form-group col-md-1">
+            <button type="button" class="btn btn-outline-primary" disabled @onclick="@(() => ShowProfile())">Добавить сечение</button>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-1">
+            <button type="button" class="btn btn-outline-primary" @onclick="@(() => ShowGost())">Добавить ГОСТ</button>
+        </div>
+        <div class="form-group col-md-1">
+            <button type="button" class="btn btn-outline-primary" @onclick="@(() => ShowCustomer())">Добавить заказчика</button>
+        </div>
+        <div class="form-group col-md-1">
+            <button type="button" class="btn btn-outline-primary" @onclick="@(() => ShowClass())">Добавить класс</button>
+        </div>
+    </div>
+</EditForm>
+
+
+<div id="addProfile" style="display: @_showWindowAddProfile;">
+    <EditForm Model="_profileData">
+        <table style="padding: 20px;">
+            <tr>
+                <td id="profile" style="text-align: center;vertical-align: middle;">
+                    <label>
+                        Сечение заготовки
+                        <InputText class="form-control" placeholder="сечение заготовки" @bind-Value="@_profileData.ProfileName" />
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center; vertical-align: middle;">
+                    <button class="btn btn-primary" @onclick="@(() => AddProfile())">Добавить</button>
+                    <button class="btn btn-primary" @onclick="@(() => _showWindowAddProfile = "none")">Отмена</button>
+                </td>
+            </tr>
+        </table>
+    </EditForm>
+</div>
+
+<div id="addSteel" style="display: @_showWindowAddSteel;">
+    <EditForm Model="_steelData">
+        <table style="padding: 20px;">
+            <tr>
+                <td id="steel" style="text-align: center;vertical-align: middle;">
+                    <label>
+                        Марка стали
+                        <InputText class="form-control" placeholder="марка стали" @bind-Value="@_steelData.SteelName"/>
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center;vertical-align: middle;">
+                    <button class="btn btn-primary" @onclick="@(() => AddSteel())">Добавить</button>
+                    <button class="btn btn-primary" @onclick="@(() => _showWindowAddSteel = "none")">Отмена</button>
+                </td>
+            </tr>
+        </table>
+    </EditForm>
+</div>
+
+<div id="addGost" style="display: @_showWindowAddGost;">
+    <EditForm Model="_gostData">
+        <table style="padding: 20px;">
+            <tr>
+                <td id="gost" style="text-align: center;vertical-align: middle;">
+                    <label>
+                        ГОСТ
+                        <InputText class="form-control" placeholder="ГОСТ" @bind-Value="@_gostData.GostName" />
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center; vertical-align: middle;">
+                    <button class="btn btn-primary" @onclick="@(() => AddGost())">Добавить</button>
+                    <button class="btn btn-primary" @onclick="@(() => _showWindowAddGost = "none")">Отмена</button>
+                </td>
+            </tr>
+        </table>
+    </EditForm>
+</div>
+
+<div id="addCustomer" style="display: @_showWindowAddCustomer;">
+    <EditForm Model="_customerData">
+        <table style="padding: 20px;">
+            <tr>
+                <td id="newCustomer" style="text-align: center;vertical-align: middle;">
+                    <label>
+                        Заказчик
+                        <InputText class="form-control" placeholder="заказчик" @bind-Value="@_customerData.Customer" style="width: 400px;"/>
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center; vertical-align: middle;">
+                    <button class="btn btn-primary" @onclick="@(() => AddCustomer())">Добавить</button>
+                    <button class="btn btn-primary" @onclick="@(() => _showWindowAddCustomer = "none")">Отмена</button>
+                </td>
+            </tr>
+        </table>
+    </EditForm>
+</div>
+
+<div id="addClass" style="display: @_showWindowAddClass;">
+    <EditForm Model="_classData">
+        <table style="padding: 20px;">
+            <tr>
+                <td id="class" style="text-align: center;vertical-align: middle;">
+                    <label>
+                        Класс
+                        <InputText class="form-control" placeholder="класс" @bind-Value="@_classData.Class" />
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center; vertical-align: middle;">
+                    <button class="btn btn-primary" @onclick="@(() => AddClass())">Добавить</button>
+                    <button class="btn btn-primary" @onclick="@(() => _showWindowAddClass = "none")">Отмена</button>
+                </td>
+            </tr>
+        </table>
+    </EditForm>
+</div>
+
+<div id="state" class="@_state" role="alert" style="display: @_show;">
+    @_message
+</div>
