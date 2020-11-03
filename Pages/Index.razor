@@ -1,6 +1,11 @@
 ﻿@page "/"
+@inject LandingService _landingService
+@inject IJSRuntime JSRuntime;
 
-<h1>Посад печи</h1>
+<div class="row">
+    <h1>Посад печи</h1>
+    <div style="FONT-WEIGHT: 500; border: 1px solid @_semaphoreColor; border-radius: 50px; background-color: @_semaphoreColor; height: 50%; width: 10px; padding-left: 25px; margin-left: 15px; margin-top: 15px;">&nbsp;</div>
+</div>
 
 <div>
     <table class="table table-hover">
@@ -10,15 +15,18 @@
             @* <th scope="col">№<br />посада</th> *@
             <th scope="col" style="vertical-align: middle">№<br />плавки</th>
             <th scope="col" style="vertical-align: middle">Марка<br />стали</th>
+            <th scope="col" style="vertical-align: middle">Диаметр</th>
             <th scope="col" style="vertical-align: middle">Код продукции</th>
             <th scope="col" style="vertical-align: middle">Сечение<br />заготовки</th>
             <th scope="col" style="vertical-align: middle">Количество<br />заготовок</th>
+            <th scope="col" style="vertical-align: middle">Взвешено<br />бунтов</th>
             <th scope="col" style="vertical-align: middle">Общий вес<br />заготовок</th>
             <th scope="col" style="vertical-align: middle">Вес одной<br />заготовки</th>
-            <th scope="col" style="vertical-align: middle">Длина<br />заготовки</th>
-            @* <th scope="col" style="vertical-align: middle">Количество<br />в печи</th> *@
-            <th scope="col" style="vertical-align: middle">Увеличить</th>
-            <th scope="col" style="vertical-align: middle">Уменьшить</th>
+            <th scope="col" style="vertical-align: middle">Длина (мм)<br />заготовки</th>
+            <th scope="col" style="vertical-align: middle" colspan="2">Количество</th>
+            @* <th scope="col" style="vertical-align: middle" colspan="2">Порядок</th> *@
+            @* <th scope="col" style="vertical-align: middle" colspan="2">Редактор</th> *@
+            <th scope="col" style="vertical-align: middle">Редактор</th>
         </tr>
         </thead>
         <tbody>
@@ -28,15 +36,27 @@
                 @* <th scope="row">@item.LandingId</th> *@
                 <th scope="row">@item.PlavNum</th>
                 <td>@item.Steel</td>
+                <td>@item.Diameter</td>
                 <td>@item.ProductCode</td>
                 <td>@item.Profile</td>
                 <td>@item.IngotsCount</td>
+                <td>@item.Placed</td>
                 <td>@item.WeightAll</td>
                 <td>@item.WeightOne</td>
                 <td>@item.IngotLength</td>
-                @* <td>@item.Placed</td> *@
                 <td><button class="btn btn-primary" @onclick="@(() => IncLanding(item.LandingId))">+</button></td>
-                <td><button class="btn btn-primary" @onclick="@(() => DecLanding(item.LandingId))">-</button></td>
+                <td><button class="btn btn-primary" @onclick="@(() => DecLanding(item.LandingId))">&minus;</button></td>
+                @* <td><button class="btn btn-primary" @onclick="@(() => MoveUp(item.LandingId))">&uarr;</button></td> *@
+                @* <td><button class="btn btn-primary" @onclick="@(() => MoveDown(item.LandingId))">&darr;</button></td> *@
+                @* <td><button class="btn btn-primary" @onclick="@(() => EditLanding(item.LandingId))">&#128736;</button></td> *@
+                @if (item.Placed > 0)
+                {
+                    <td><button class="btn btn-primary" disabled @onclick="@(() => Remove(item.LandingId))">&times;</button></td>
+                }
+                else
+                {
+                    <td><button class="btn btn-primary" @onclick="@(() => Remove(item.LandingId))">&times;</button></td>
+                }
             </tr>
         }
         </tbody>
@@ -44,7 +64,7 @@
 </div>
 
 
-<div id="state" style="display: none;">
+<div id="state" class="@_messageClass" role="alert" style="display: @_messageVisible;">
     @_message
 </div>
 

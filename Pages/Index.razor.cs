@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
+using System.ComponentModel;
 using NLog;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -9,20 +9,57 @@ using System.Timers;
 
 namespace OvenLanding.Pages
 {
-    public partial class Index
+    public partial class Index : IDisposable
     {
         private Logger _logger;
         private IConfigurationRoot _config;
         private static DBConnection _db;
         private bool _connectedToDb;
         private static List<LandingTable> _landed = new List<LandingTable>();
-        private System.Timers.Timer _timer;
+        private Timer _timer;
+        
         private string _message = "";
+        private string _messageClass = "";
+        private string _messageVisible = "none";
+        private string _semaphoreColor = "darkcyan";
         
         protected override async void OnInitialized()
         {
             _logger = LogManager.GetCurrentClassLogger();
+            _landingService.PropertyChanged += UpdateMessage;
             await Initialize();
+        }
+
+        public void Dispose()
+        {
+            _landingService.PropertyChanged -= UpdateMessage;
+            _db.Close();
+        }
+
+        private void ShowMessage(MessageType type, string message)
+        {
+            _message = message ?? "";
+            switch (type)
+            {
+                case MessageType.Primary: _messageClass = "alert alert-primary"; break;
+                case MessageType.Secondary: _messageClass = "alert alert-secondary"; break;
+                case MessageType.Success: _messageClass = "alert alert-success"; break;
+                case MessageType.Danger: _messageClass = "alert alert-danger"; break;
+                case MessageType.Warning: _messageClass = "alert alert-warning"; break;
+                case MessageType.Info: _messageClass = "alert alert-info"; break;
+                case MessageType.Light: _messageClass = "alert alert-light"; break;
+                case MessageType.Dark: _messageClass = "alert alert-dark"; break;
+            }
+
+            _messageVisible = "block";
+            StateHasChanged();
+        }
+
+        private void HideMessage()
+        {
+            _message = "";
+            _messageVisible = "none";
+            StateHasChanged();
         }
 
         private async Task Initialize()
@@ -33,9 +70,17 @@ namespace OvenLanding.Pages
             int reconnect = Int32.Parse(_config.GetSection("DBConnection:Reconnect").Value);
             
             await ConnectToDb(reconnect);
-            _landed = _db.GetLandingOrder();
+            try
+            {
+                _landed = _db.GetLandingOrder();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"Не удалось получить очередь на посаде [{ex.Message}]");
+            }
+
             StateHasChanged();
-            SetTimer(5);
+            SetTimer(2);
         }
 
         private async Task ConnectToDb(int reconnect)
@@ -65,29 +110,92 @@ namespace OvenLanding.Pages
             }
             else
             {
-                DateTime now = DateTime.Now;
-                string msg = String.Format("[{0:G}] => {1}", now, "Подключение к БД установлено");
-                _logger.Info(msg);
+                // DateTime now = DateTime.Now;
+                // string msg = String.Format("[{0:G}] => {1}", now, "Подключение к БД установлено");
+                // _logger.Info(msg);
                 res = true;
             }
 
             return res;
         }
 
-        private int IncLanding(int uid)
+        private void IncLanding(int uid)
         {
-            int res = _db.IncLanding(uid);
-            _landed = _db.GetLandingOrder();
+            int res = -1;
+            try
+            {
+                res = _db.IncLanding(uid);
+                _landed = _db.GetLandingOrder();
+                _logger.Info($"Добавлена заготовка в плавку [{uid}]");
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"Не удалось добавить заготовку в плавку [{uid}] => {ex.Message}");
+            }
             StateHasChanged();
-            return res;
         }
 
-        private int DecLanding(int uid)
+        private void DecLanding(int uid)
         {
-            int res = _db.DecLanding(uid);
-            _landed = _db.GetLandingOrder();
+            int res = -1;
+            try
+            {
+                res = _db.DecLanding(uid);
+                _landed = _db.GetLandingOrder();
+                _logger.Info($"Удалена заготовка из плавки [{uid}]");
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"Не удалось добавить заготовку в плавку [{uid}] => {ex.Message}");
+            }
+
             StateHasChanged();
-            return res;
+        }
+
+        private void MoveUp(int uid)
+        {
+            int res = -1;
+
+        }
+
+        private void MoveDown(int uid)
+        {
+            int res = -1;
+
+        }
+
+        private async Task EditLanding(int uid)
+        {
+            // LandingTable edit = new LandingTable();
+            // foreach (LandingTable item in _landed)
+            // {
+            //     if (item.LandingId == uid)
+            //     {
+            //         edit = item;
+            //         break;
+            //     }
+            // }
+            //
+            // _landingService.EditableDate = edit;
+            object[] quoteArray = { };
+            await JSRuntime.InvokeAsync<string>("openEditor", quoteArray);
+        }
+
+        private void Remove(int uid)
+        {
+            int res = -1;
+            try
+            {
+                res = _db.Remove(uid);
+                _landed = _db.GetLandingOrder();
+                _logger.Info($"Удалена плавка [{uid}]");
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"Не удалось удалить плавку [{uid}] => {ex.Message}");
+            }
+
+            StateHasChanged();
         }
 
         private void SetTimer(int seconds)
@@ -100,9 +208,29 @@ namespace OvenLanding.Pages
 
         private void UpdateData(Object source, ElapsedEventArgs e)
         {
-            _landed = _db.GetLandingOrder();
-            _message = "updated";
-            StateHasChanged();
+            try
+            {
+                _landed = _db.GetLandingOrder();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"Не удалось получить очередь на посаде [{ex.Message}]");
+            }
+
+            _landingService.IngotsCount = DateTime.Now.Millisecond;
+            if (_semaphoreColor == "darkcyan")
+            {
+                _semaphoreColor = "darkgrey";
+            }
+            else
+            {
+                _semaphoreColor = "darkcyan";
+            }
+        }
+
+        private async void UpdateMessage(object sender, PropertyChangedEventArgs args)
+        {
+            await InvokeAsync(StateHasChanged);
         }
     }
 }

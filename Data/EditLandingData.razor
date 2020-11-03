@@ -1,0 +1,99 @@
+﻿@page "/editlanding"
+@inject LandingService _landingService
+@inject IJSRuntime JSRuntime;
+
+<h1>Изменить параметры плавки</h1>
+
+<EditForm Model="_editData" id="landingData">
+    <div class="form-row">
+        <div class="form-group col-md-1">
+            <label for="meltNum">Плавка №</label>
+            <InputText id="meltNum" class="form-control" placeholder="номер плавки" @bind-Value="@_editData.PlavNum" />
+        </div>
+        <div class="form-group col-md-1">
+            <label for="ingotsCount">Кол-во заготовок</label>
+            <InputNumber id="ingotsCount" class="form-control" placeholder="количество заготовок" @bind-Value="@_editData.IngotsCount" />
+        </div>
+        <div class="form-group col-md-auto">
+            <label for="ingotLength">Длина заготовки (мм)</label>
+            <InputNumber id="ingotLength"  class="form-control" placeholder="длина заготовки" @bind-Value="@_editData.IngotLength" />
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-1">
+            <label for="steelMark">Марка стали</label>
+            <InputSelect class="form-control" id="steelMark" @bind-Value="@_editData.Steel">
+                @foreach (string item in _steels)
+                {
+                    <option value="@item">@item</option>
+                }
+            </InputSelect>
+        </div>
+        <div class="form-group col-md-1">
+            <label for="profileData">Сечение</label>
+            <InputSelect class="form-control" id="profileData" @bind-Value="@_editData.Profile">
+                @foreach (string item in _profiles)
+                {
+                    <option value="@item">@item</option>
+                }
+            </InputSelect>
+        </div>
+        <div class="form-group col-md-1">
+            <label for="weightOne">Вес заготовки</label>
+            <InputNumber id="weightOne" class="form-control" placeholder="вес заготовки" @bind-Value="@_editData.WeightOne" />
+        </div>
+        <div class="form-group col-md-1">
+            <label for="productCode">Код продукта</label>
+            <InputNumber id="productCode" class="form-control" placeholder="код продукта" @bind-Value="@_editData.ProductCode" />
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-2">
+            <label for="customer">Заказчик</label>
+                <InputSelect id="customer" class="form-control" @bind-Value="@_editData.Customer">
+                    @foreach (string item in _customers)
+                    {
+                        <option value="@item">@item</option>
+                    }
+                </InputSelect>
+        </div>
+        <div class="form-group col-md-1">
+            <label for="gost">Стандарт</label>
+            <InputSelect id="gost" class="form-control" @bind-Value="@_editData.Gost">
+                @foreach (string item in _gosts)
+                {
+                    <option value="@item">@item</option>
+                }
+            </InputSelect>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-1">
+            <label for="diameter">Диаметр</label>
+            <InputNumber id="diameter" class="form-control" placeholder="диаметр" @bind-Value="@_editData.Diameter" />
+        </div>
+        <div class="form-group col-md-1">
+            <label for="shift">Бригада</label>
+            <InputText id="shift" class="form-control" placeholder="бригада" @bind-Value="@_editData.Shift" />
+        </div>
+        <div class="form-group col-md-1">
+            <label for="class">Класс</label>
+            <InputSelect id="gost" class="form-control" @bind-Value="@_editData.Class">
+                @foreach (string item in _classes)
+                {
+                    <option value="@item">@item</option>
+                }
+            </InputSelect>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-1">
+            <button type="button" class="btn btn-success" @onclick="@(() => EditLanding())">Добавить в очередь</button>
+        </div>
+    </div>
+</EditForm>
+
+
+<div id="state" class="@_messageClass" role="alert" style="display: @_messageVisible;">
+    @_message
+</div>

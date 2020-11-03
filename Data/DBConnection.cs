@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using NLog;
 using Npgsql;
@@ -183,14 +182,17 @@ namespace OvenLanding.Data
                 }
 
                 command.ExecuteNonQuery();
-                Connection.Close();
+                if(Connection.State == ConnectionState.Open)
+                {
+                    Connection.Close();
+                }
                 Result = true;
             }
             catch (Exception e)
             {
                 logger.Error($"Не удалось записать данные в базу данных: [{e.Message}]");
                 Debug.WriteLine(e.Message);
-                if (Connection.FullState == ConnectionState.Open)
+                if (Connection.State == ConnectionState.Open)
                 {
                     Connection.Close();
                 }
@@ -225,14 +227,21 @@ namespace OvenLanding.Data
                 catch (Exception ex)
                 {
                     value = "";
-                    logger.Error($"Ошибка при получении списка профилей [{ex.Message}]");
+                    logger.Error($"Ошибка при получении списка ГОСТов [{ex.Message}]");
+                    if (Connection.State==ConnectionState.Open)
+                    {
+                        Connection.Close();
+                    }
                 }
 
                 result.Add(value);
             }
 
             reader.Close();
-            Connection.Close();
+            if (Connection.State == ConnectionState.Open)
+            {
+                Connection.Close();
+            }
             return result;
         }
 
@@ -266,13 +275,20 @@ namespace OvenLanding.Data
                     // key = 0;
                     value = "";
                     logger.Error($"Ошибка при получении списка профилей [{ex.Message}]");
+                    if(Connection.State == ConnectionState.Open)
+                    {
+                        Connection.Close();
+                    }
                 }
 
                 result.Add(value);
             }
 
             reader.Close();
-            Connection.Close();
+            if(Connection.State == ConnectionState.Open)
+            {
+                Connection.Close();
+            }
             return result;
         }
         
@@ -303,13 +319,20 @@ namespace OvenLanding.Data
                 {
                     value = "";
                     logger.Error($"Ошибка при получении списка заказчиков [{ex.Message}]");
+                    if(Connection.State == ConnectionState.Open)
+                    {
+                        Connection.Close();
+                    }
                 }
 
                 result.Add(value);
             }
 
             reader.Close();
-            Connection.Close();
+            if(Connection.State == ConnectionState.Open)
+            {
+                Connection.Close();
+            }
             return result;
         }
         
@@ -340,13 +363,20 @@ namespace OvenLanding.Data
                 {
                     value = "";
                     logger.Error($"Ошибка при получении списка классов [{ex.Message}]");
+                    if(Connection.State == ConnectionState.Open)
+                    {
+                        Connection.Close();
+                    }
                 }
 
                 result.Add(value);
             }
 
             reader.Close();
-            Connection.Close();
+            if(Connection.State == ConnectionState.Open)
+            {
+                Connection.Close();
+            }
             return result;
         }
 
@@ -360,7 +390,7 @@ namespace OvenLanding.Data
         /// <param name="weightAll">Теоретический вес заготовок</param>
         /// <param name="weightOne">Теоретический вес одной заготовки</param>
         /// <param name="lenght">Длина заготовки</param>
-        /// <returns>UID вставленной записи</returns>
+        /// <returns>Идентификатор вставленной записи</returns>
         public int CreateOvenLanding(long meltNum, string profile, string steel, int count, double weightAll,
             double weightOne, double lenght)
         {
@@ -385,17 +415,29 @@ namespace OvenLanding.Data
                 {
                     result = -1;
                     logger.Error($"Ошибка при получении списка профилей [{ex.Message}]");
+                    if(Connection.State == ConnectionState.Open)
+                    {
+                        Connection.Close();
+                    }
                 }
             }
 
             reader.Close();
-            Connection.Close();
+            if(Connection.State == ConnectionState.Open)
+            {
+                Connection.Close();
+            }
             return result;
         }
 
+        /// <summary>
+        /// Увеличить количество заготовок в плавке по идентификатору плавки
+        /// </summary>
+        /// <param name="uid">Идентификатор плавки</param>
+        /// <returns>Идентификатор измененной плавки</returns>
         public int IncLanding(int uid)
         {
-            // Добавить единицу к наряду
+            // Увеличить количество заготовок в плавке
             int result = -1;
             string query = string.Format("select * from public.f_add_unit({0})", uid);
             if (Connection.State!=ConnectionState.Open)
@@ -414,18 +456,30 @@ namespace OvenLanding.Data
                 catch (Exception ex)
                 {
                     result = -1;
-                    logger.Error($"Ошибка при получении списка профилей [{ex.Message}]");
+                    logger.Error($"Ошибка при увеличении количества заготовок в плавке ({uid}) => [{ex.Message}]");
+                    if(Connection.State == ConnectionState.Open)
+                    {
+                        Connection.Close();
+                    }
                 }
             }
 
             reader.Close();
-            Connection.Close();
+            if(Connection.State == ConnectionState.Open)
+            {
+                Connection.Close();
+            }
             return result;
         }
 
-        public int DecLanding( int uid)
+        /// <summary>
+        /// Уменьшить количество заготовок в плавке по идентификатору плавки
+        /// </summary>
+        /// <param name="uid">Идентификатор плавки</param>
+        /// <returns>Идентификаторр измененной плавки</returns>
+        public int DecLanding(int uid)
         {
-            // Уменьшить количество единиц в наряде
+            // Уменьшить количество заготовок в плавке
             int result = -1;
             string query = string.Format("select * from public.f_delete_unit({0})", uid);
             if (Connection.State != ConnectionState.Open)
@@ -444,13 +498,70 @@ namespace OvenLanding.Data
                 catch (Exception ex)
                 {
                     result = -1;
-                    logger.Error($"Ошибка при получении списка профилей [{ex.Message}]");
+                    logger.Error($"Ошибка при уменьшении количества заготовок в плавке ({uid}) => [{ex.Message}]");
+                    if(Connection.State == ConnectionState.Open)
+                    {
+                        Connection.Close();
+                    }
                 }
             }
 
             reader.Close();
-            Connection.Close();
+            if(Connection.State == ConnectionState.Open)
+            {
+                Connection.Close();
+            }
             return result;
+        }
+
+        /// <summary>
+        /// Удалить плавку из очереди
+        /// </summary>
+        /// <param name="uid">Идентификатор плавки</param>
+        /// <returns>Идентификатор удаленной плавки</returns>
+        public int Remove(int uid)
+        {
+            // Удалить плавку из очереди
+            int result = -1;
+            string query = string.Format("select * from public.f_delete_from_queue({0})", uid);
+            if (Connection.State != ConnectionState.Open)
+            {
+                Connection.Open();
+            }
+
+            NpgsqlCommand comm = new NpgsqlCommand(query, Connection);
+            NpgsqlDataReader reader = comm.ExecuteReader();
+            while (reader.Read())
+            {
+                try
+                {
+                    result = reader.GetInt32(0);
+                }
+                catch (Exception ex)
+                {
+                    result = -1;
+                    logger.Error($"Ошибка при удалении плавки ({uid}) [{ex.Message}]");
+                    if(Connection.State == ConnectionState.Open)
+                    {
+                        Connection.Close();
+                    }
+                }
+            }
+
+            reader.Close();
+            if(Connection.State == ConnectionState.Open)
+            {
+                Connection.Close();
+            }
+            return result;
+        }
+
+        public void Close()
+        {
+            if(Connection.State == ConnectionState.Open)
+            {
+                Connection.Close();
+            }
         }
 
         /// <summary>
@@ -483,12 +594,19 @@ namespace OvenLanding.Data
                 catch (Exception ex)
                 {
                     result = -1;
-                    logger.Error($"Ошибка при получении списка профилей [{ex.Message}]");
+                    logger.Error($"Ошибка при добавлении плавки №({data.MeltNumber}) в очередь [{ex.Message}]");
+                    if(Connection.State == ConnectionState.Open)
+                    {
+                        Connection.Close();
+                    }
                 }
             }
 
             reader.Close();
-            Connection.Close();
+            if(Connection.State == ConnectionState.Open)
+            {
+                Connection.Close();
+            }
             return result;
         }
 
@@ -522,13 +640,20 @@ namespace OvenLanding.Data
                     // key = 0;
                     value = "";
                     logger.Error($"Ошибка при получении списка марок стали [{ex.Message}]");
+                    if(Connection.State == ConnectionState.Open)
+                    {
+                        Connection.Close();
+                    }
                 }
 
                 result.Add(value);
             }
 
             reader.Close();
-            Connection.Close();
+            if(Connection.State == ConnectionState.Open)
+            {
+                Connection.Close();
+            }
 
             return result;
         }
@@ -541,60 +666,71 @@ namespace OvenLanding.Data
         {
             List<LandingTable> result = new List<LandingTable>();
 
-            string query = "select * from public.f_get_queue();";
-            if (Connection.State != ConnectionState.Open)
+            if (Connection.State != ConnectionState.Executing || Connection.State != ConnectionState.Fetching ||
+                Connection.State != ConnectionState.Connecting)
             {
-                Connection.Open();
-            }
-
-            NpgsqlCommand comm = new NpgsqlCommand(query, Connection);
-            NpgsqlDataReader reader = comm.ExecuteReader();
-            while (reader.Read())
-            {
-                LandingTable item = new LandingTable();
-                try
+                string query = "select * from public.f_get_queue();";
+                if (Connection.State != ConnectionState.Open)
                 {
-                    item.LandingId = reader.GetInt32(0);
-                    item.PlavNum = reader.GetString(1);
-                    item.Steel = reader.GetString(2);
-                    item.Profile = reader.GetString(3);
-                    item.IngotsCount = reader.GetInt32(4);
-                    item.WeightAll = reader.GetDouble(5);
-                    item.WeightOne = reader.GetDouble(6);
-                    item.IngotLength = reader.GetDouble(7);
-                    item.Gost = reader.GetString(8);
-                    item.Diameter = reader.GetInt32(9);
-                    item.Customer = reader.GetString(10);
-                    item.Shift = reader.GetString(11);
-                    item.Class = reader.GetString(12);
-                    item.ProductCode = reader.GetInt32(13);
-                    item.Placed = reader.GetInt32(14);
-                }
-                catch (Exception ex)
-                {
-                    item.LandingId = 0;
-                    item.PlavNum = "";
-                    item.Steel = "";
-                    item.Profile = "";
-                    item.IngotsCount = 0;
-                    item.WeightAll = 0;
-                    item.WeightOne = 0;
-                    item.IngotLength = 0;
-                    item.Gost = "";
-                    item.Diameter = 0;
-                    item.Customer = "";
-                    item.Shift = "";
-                    item.Class = "";
-                    item.ProductCode = 0;
-                    item.Placed = 0;
-                    logger.Error($"Ошибка при получении списка очереди заготовок на посаде печи [{ex.Message}]");
+                    Connection.Open();
                 }
 
-                result.Add(item);
-            }
+                NpgsqlCommand comm = new NpgsqlCommand(query, Connection);
+                NpgsqlDataReader reader = comm.ExecuteReader();
+                while (reader.Read())
+                {
+                    LandingTable item = new LandingTable();
+                    try
+                    {
+                        item.LandingId = reader.GetInt32(0);
+                        item.PlavNum = reader.GetString(1);
+                        item.Steel = reader.GetString(2);
+                        item.Profile = reader.GetString(3);
+                        item.IngotsCount = reader.GetInt32(4);
+                        item.WeightAll = reader.GetDouble(5);
+                        item.WeightOne = reader.GetDouble(6);
+                        item.IngotLength = reader.GetDouble(7);
+                        item.Gost = reader.GetString(8);
+                        item.Diameter = reader.GetInt32(9);
+                        item.Customer = reader.GetString(10);
+                        item.Shift = reader.GetString(11);
+                        item.Class = reader.GetString(12);
+                        item.ProductCode = reader.GetInt32(13);
+                        item.Placed = reader.GetInt32(14);
+                    }
+                    catch (Exception ex)
+                    {
+                        item.LandingId = 0;
+                        item.PlavNum = "";
+                        item.Steel = "";
+                        item.Profile = "";
+                        item.IngotsCount = 0;
+                        item.WeightAll = 0;
+                        item.WeightOne = 0;
+                        item.IngotLength = 0;
+                        item.Gost = "";
+                        item.Diameter = 0;
+                        item.Customer = "";
+                        item.Shift = "";
+                        item.Class = "";
+                        item.ProductCode = 0;
+                        item.Placed = 0;
+                        logger.Error($"Ошибка при получении списка очереди заготовок на посаде печи [{ex.Message}]");
+                        if (Connection.State == ConnectionState.Open)
+                        {
+                            Connection.Close();
+                        }
+                    }
 
-            reader.Close();
-            Connection.Close();
+                    result.Add(item);
+                }
+
+                reader.Close();
+                if (Connection.State == ConnectionState.Open)
+                {
+                    Connection.Close();
+                }
+            }
 
             return result;
         }

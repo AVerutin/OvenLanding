@@ -14,9 +14,13 @@
         <e p="ClassData.cs" t="Include" />
         <e p="CustomerData.cs" t="Include" />
         <e p="DBConnection.cs" t="Include" />
+        <e p="EditLandingData.razor" t="Include" />
+        <e p="EditLandingData.razor.cs" t="Include" />
         <e p="GostData.cs" t="Include" />
         <e p="LandingData.cs" t="Include" />
+        <e p="LandingService.cs" t="Include" />
         <e p="LandingTable.cs" t="Include" />
+        <e p="MessageType.cs" t="Include" />
         <e p="ProfileData.cs" t="Include" />
         <e p="SteelData.cs" t="Include" />
       </e>
@@ -31,6 +35,7 @@
       </e>
       <e p="OvenLanding.csproj" t="IncludeRecursive" />
       <e p="OvenLanding.sln" t="IncludeFlat" />
+      <e p="OvenLanding.sln.DotSettings" t="Include" />
       <e p="packages" t="ExcludeRecursive" />
       <e p="Pages" t="Include">
         <e p="_Host.cshtml" t="Include" />
@@ -42,6 +47,7 @@
       </e>
       <e p="Program.cs" t="Include" />
       <e p="Properties" t="Include">
+        <e p="Annotations.cs" t="Include" />
         <e p="launchSettings.json" t="Include" />
       </e>
       <e p="Shared" t="Include">
@@ -75,6 +81,9 @@
           <e p="site.css" t="Include" />
         </e>
         <e p="favicon.ico" t="Include" />
+        <e p="js" t="Include">
+          <e p="js_utils.js" t="Include" />
+        </e>
       </e>
     </e>
   </component>

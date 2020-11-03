@@ -28,7 +28,7 @@ namespace OvenLanding
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            // services.AddSingleton<WeatherForecastService>();
+            services.AddSingleton<LandingService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

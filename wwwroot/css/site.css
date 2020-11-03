@@ -216,6 +216,9 @@ app {
 }
 
 #state {
+    position: absolute;
+    top: 600px;
+    left: 280px;
     margin-top: 16px;
     width: 600px;
 }
