@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -53,7 +53,7 @@ namespace OvenLanding.Pages
             
             try
             {
-                _landingData = _landingService.GetState();
+                _landingData = _db.GetState();
             }
             catch (Exception ex)
             {
@@ -65,7 +65,7 @@ namespace OvenLanding.Pages
         
         public void Dispose()
         {
-            _landingService.SaveState(_landingData);
+            _db.SaveState(_landingData);
             _db.Close();
         }
 
@@ -145,7 +145,9 @@ namespace OvenLanding.Pages
                     }
                     else
                     {
-                        _landingData.IngotProfile = "Не задано";
+                        ShowMessage(MessageType.Danger, "Не заполнено поле \"Сечение заготовки\"");
+                        goto finish;
+                        // _landingData.IngotProfile = "Не задано";
                     }
                 }
 
@@ -159,7 +161,9 @@ namespace OvenLanding.Pages
                     }
                     else
                     {
-                        _landingData.SteelMark = "Не задано";
+                        ShowMessage(MessageType.Danger, "Не заполнено поле \"Марка стали\"");
+                        goto finish;
+                        // _landingData.SteelMark = "Не задано";
                     }
                 }
 
@@ -173,44 +177,87 @@ namespace OvenLanding.Pages
                     }
                     else
                     {
-                        _landingData.Customer = "Не задано";
+                        ShowMessage(MessageType.Danger, "Не заполнено поле \"Заказчик\"");
+                        goto finish;
+                        // _landingData.Customer = "Не задано";
                     }
                 }
 
                 // Проверка на корректность заполнения ГОСТа
-                if (string.IsNullOrEmpty(_landingData.Gost))
+                if (string.IsNullOrEmpty(_landingData.Standart))
                 {
                     _gosts = _db.GetGosts();
                     if (_gosts.Count > 0)
                     {
-                        _landingData.Gost = _gosts[0];
+                        _landingData.Standart = _gosts[0];
                     }
                     else
                     {
-                        _landingData.Gost = "Не задано";
+                        ShowMessage(MessageType.Danger, "Не заполнено поле \"Стандарт\"");
+                        goto finish;
+                        // _landingData.Gost = "Не задано";
                     }
                 }
 
                 // Проверка на корректность заполнения класса
-                if (string.IsNullOrEmpty(_landingData.Class))
+                if (string.IsNullOrEmpty(_landingData.IngotClass))
                 {
                     _classes = _db.GetClasses();
                     if (_classes.Count > 0)
                     {
-                        _landingData.Class = _classes[0];
+                        _landingData.IngotClass = _classes[0];
                     }
                     else
                     {
-                        _landingData.Class = "Не задано";
+                        ShowMessage(MessageType.Danger, "Не заполнено поле \"Класс\"");
+                        goto finish;
+                        // _landingData.Class = "Не задано";
                     }
                 }
                 
-                // Проверка на корректность заполнения смены
+                // Проверка на корректность заполнения количества заготовок
+                if (_landingData.IngotsCount == 0)
+                {
+                    ShowMessage(MessageType.Danger, "Не заполнено поле \"Количество заготовок\"");
+                    goto finish;
+                }
+                
+                // Проверка на корректность заполнения длины заготовки
+                if (_landingData.IngotLength == 0)
+                {
+                    ShowMessage(MessageType.Danger, "Не заполнено поле \"Длина заготовки\"");
+                    goto finish;
+                }
+                
+                // Проверка на корректность заполнения веса заготовки
+                if (_landingData.WeightOne == 0)
+                {
+                    ShowMessage(MessageType.Danger, "Не заполнено поле \"Вес заготовки\"");
+                    goto finish;
+                }                
+                
+                // Проверка на корректность заполнения кода продукции
+                if (_landingData.ProductCode == 0)
+                {
+                    ShowMessage(MessageType.Danger, "Не заполнено поле \"Код продукции\"");
+                    goto finish;
+                }
+                
+                // Проверка на корректность заполнения диаметра
+                if (_landingData.Diameter == 0)
+                {
+                    ShowMessage(MessageType.Danger, "Не заполнено поле \"Диаметр\"");
+                    goto finish;
+                }
+                
+                // Проверка на корректность заполнения номера бригады
                 if (string.IsNullOrEmpty(_landingData.Shift))
                 {
-                    _landingData.Shift = "Не задано";
+                    ShowMessage(MessageType.Danger, "Не заполнено поле \"Бригада\"");
+                    goto finish;
+                    // _landingData.Shift = "Не задано";
                 }
-
+                
                 int uid = _db.CreateOvenLanding(_landingData);
 
                 if (uid == -1)
@@ -225,16 +272,24 @@ namespace OvenLanding.Pages
                     _logger.Info(message);
                     ShowMessage(MessageType.Success, $"Добавлена плавка №{_landingData.MeltNumber}");
                 }
-
-                // _landingData = new LandingData();
+                
+                // finish:
+                // await Task.Delay(TimeSpan.FromSeconds(5));
+                // HideMessage();
                 _landingData.MeltNumber = "";
                 _landingData.IngotsCount = 0;
-                UpdateDictionaries();
-                
-                await Task.Delay(TimeSpan.FromSeconds(5));
-                HideMessage();
+                _db.SaveState(_landingData);
                 StateHasChanged();
             }
+            else
+            {
+                ShowMessage(MessageType.Danger, "Не заполнено поле \"Номер плавки\"");
+            }
+            
+            finish:
+            await Task.Delay(TimeSpan.FromSeconds(5));
+            HideMessage();
+            StateHasChanged();
         }
 
         // Profile

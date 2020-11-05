@@ -1,14 +1,15 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using NLog;
+using OvenLanding.Data;
 
-namespace OvenLanding.Data
+namespace OvenLanding.Pages
 {
     public partial class EditLandingData : IDisposable
     {
-        private LandingTable _editData;
+        private LandingData _editData;
         private List<string> _profiles = new List<string>();
         private List<string> _steels = new List<string>();
         private List<string> _gosts = new List<string>();

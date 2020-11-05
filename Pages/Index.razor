@@ -25,8 +25,8 @@
             <th scope="col" style="vertical-align: middle">Длина (мм)<br />заготовки</th>
             <th scope="col" style="vertical-align: middle" colspan="2">Количество</th>
             @* <th scope="col" style="vertical-align: middle" colspan="2">Порядок</th> *@
-            @* <th scope="col" style="vertical-align: middle" colspan="2">Редактор</th> *@
-            <th scope="col" style="vertical-align: middle">Редактор</th>
+            @* <th scope="col" style="vertical-align: middle">Правка</th> *@
+            <th scope="col" style="vertical-align: middle">Удалить</th>
         </tr>
         </thead>
         <tbody>
@@ -34,13 +34,13 @@
         {
             <tr>
                 @* <th scope="row">@item.LandingId</th> *@
-                <th scope="row">@item.PlavNum</th>
-                <td>@item.Steel</td>
+                <th scope="row">@item.MeltNumber</th>
+                <td>@item.SteelMark</td>
                 <td>@item.Diameter</td>
                 <td>@item.ProductCode</td>
-                <td>@item.Profile</td>
+                <td>@item.IngotProfile</td>
                 <td>@item.IngotsCount</td>
-                <td>@item.Placed</td>
+                <td>@item.Weighted</td>
                 <td>@item.WeightAll</td>
                 <td>@item.WeightOne</td>
                 <td>@item.IngotLength</td>
@@ -49,7 +49,7 @@
                 @* <td><button class="btn btn-primary" @onclick="@(() => MoveUp(item.LandingId))">&uarr;</button></td> *@
                 @* <td><button class="btn btn-primary" @onclick="@(() => MoveDown(item.LandingId))">&darr;</button></td> *@
                 @* <td><button class="btn btn-primary" @onclick="@(() => EditLanding(item.LandingId))">&#128736;</button></td> *@
-                @if (item.Placed > 0)
+                @if (item.Weighted > 0)
                 {
                     <td><button class="btn btn-primary" disabled @onclick="@(() => Remove(item.LandingId))">&times;</button></td>
                 }

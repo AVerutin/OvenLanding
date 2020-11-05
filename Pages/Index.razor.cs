@@ -15,7 +15,7 @@ namespace OvenLanding.Pages
         private IConfigurationRoot _config;
         private static DBConnection _db;
         private bool _connectedToDb;
-        private static List<LandingTable> _landed = new List<LandingTable>();
+        private static List<LandingData> _landed = new List<LandingData>();
         private Timer _timer;
         
         private string _message = "";
@@ -80,7 +80,7 @@ namespace OvenLanding.Pages
             }
 
             StateHasChanged();
-            SetTimer(2);
+            SetTimer(1);
         }
 
         private async Task ConnectToDb(int reconnect)
@@ -154,7 +154,40 @@ namespace OvenLanding.Pages
 
         private void MoveUp(int uid)
         {
-            int res = -1;
+            int cnt = 0;
+            int currPosition = 0;
+            
+            List<LandingData> oldOrder = new List<LandingData>();
+            Dictionary<int, LandingData> order = new Dictionary<int, LandingData>();
+
+            try
+            {
+                oldOrder = _db.GetLandingOrder();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"[MeltMoveUp] => Не удалось получить текущий порядок плавок [{ex.Message}]");
+                return;
+            }
+
+            foreach (LandingData item in oldOrder)
+            {
+                order.Add(cnt, item);
+                if (item.LandingId == uid)
+                {
+                    currPosition = cnt;
+                }
+                cnt++;
+            }
+
+            if (currPosition != 0)
+            {
+                
+            }
+            else
+            {
+                _logger.Error($"Плавка [{uid}] находится последней в очереди, некуда поднимать");
+            }
 
         }
 
@@ -163,6 +196,8 @@ namespace OvenLanding.Pages
             int res = -1;
 
         }
+        
+        
 
         private async Task EditLanding(int uid)
         {
@@ -187,7 +222,15 @@ namespace OvenLanding.Pages
             try
             {
                 res = _db.Remove(uid);
-                _landed = _db.GetLandingOrder();
+                try
+                {
+                    _landed = _db.GetLandingOrder();
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error($"Не удалось удалить плавку {uid} [{ex.Message}]");
+                }
+
                 _logger.Info($"Удалена плавка [{uid}]");
             }
             catch (Exception ex)

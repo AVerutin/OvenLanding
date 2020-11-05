@@ -6,11 +6,10 @@ namespace OvenLanding.Data
 {
     public class LandingService : INotifyPropertyChanged
     {
-        public LandingTable EditableDate { get; set; }
+        public LandingData EditableDate { get; set; }
         public bool EditMode = false;
         
         private int _ingotsCount; 
-        private LandingData _savedState = new LandingData();
         public event PropertyChangedEventHandler PropertyChanged;
         
         public int IngotsCount
@@ -32,21 +31,5 @@ namespace OvenLanding.Data
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public void SaveState(LandingData state)
-        {
-            _savedState = state;
-            _savedState.MeltNumber = "";
-            _savedState.IngotsCount = 0;
-        }
-
-        public LandingData GetState()
-        {
-            if (_savedState == null)
-            {
-                _savedState = new LandingData();
-            }
-
-            return _savedState;
-        }
     }
 }

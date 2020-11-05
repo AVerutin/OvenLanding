@@ -16,7 +16,7 @@
         </div>
         <div class="form-group col-md-auto">
             <label for="ingotLength">Длина заготовки (мм)</label>
-            <InputNumber id="ingotLength"  class="form-control" placeholder="длина заготовки" @bind-Value="@_landingData.IngotLenght" />
+            <InputNumber id="ingotLength"  class="form-control" placeholder="длина заготовки" @bind-Value="@_landingData.IngotLength" />
         </div>
     </div>
     <div class="form-row">
@@ -43,7 +43,7 @@
             <InputNumber id="weightOne" class="form-control" placeholder="вес заготовки" @bind-Value="@_landingData.WeightOne" />
         </div>
         <div class="form-group col-md-1">
-            <label for="productCode">Код продукта</label>
+            <label for="productCode">Код продукции</label>
             <InputNumber id="productCode" class="form-control" placeholder="код продукта" @bind-Value="@_landingData.ProductCode" />
         </div>
     </div>
@@ -59,7 +59,7 @@
         </div>
         <div class="form-group col-md-1">
             <label for="gost">Стандарт</label>
-            <InputSelect id="gost" class="form-control" @bind-Value="@_landingData.Gost">
+            <InputSelect id="gost" class="form-control" @bind-Value="@_landingData.Standart">
                 @foreach (string item in _gosts)
                 {
                     <option value="@item">@item</option>
@@ -78,7 +78,7 @@
         </div>
         <div class="form-group col-md-1">
             <label for="class">Класс</label>
-            <InputSelect id="gost" class="form-control" @bind-Value="@_landingData.Class">
+            <InputSelect id="gost" class="form-control" @bind-Value="@_landingData.IngotClass">
                 @foreach (string item in _classes)
                 {
                     <option value="@item">@item</option>
@@ -99,7 +99,7 @@
     </div>
     <div class="form-row">
         <div class="form-group col-md-1">
-            <button type="button" class="btn btn-outline-primary" @onclick="@(() => ShowGost())">Добавить ГОСТ</button>
+            <button type="button" class="btn btn-outline-primary" @onclick="@(() => ShowGost())">Добавить стандарт</button>
         </div>
         <div class="form-group col-md-1">
             <button type="button" class="btn btn-outline-primary" @onclick="@(() => ShowCustomer())">Добавить заказчика</button>
@@ -159,8 +159,8 @@
             <tr>
                 <td id="gost" style="text-align: center;vertical-align: middle;">
                     <label>
-                        ГОСТ
-                        <InputText class="form-control" placeholder="ГОСТ" @bind-Value="@_gostData.GostName" />
+                        Стандарт
+                        <InputText class="form-control" placeholder="стандарт" @bind-Value="@_gostData.GostName" />
                     </label>
                 </td>
             </tr>
