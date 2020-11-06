@@ -80,7 +80,7 @@ namespace OvenLanding.Pages
             }
 
             StateHasChanged();
-            SetTimer(1);
+            SetTimer(3);
         }
 
         private async Task ConnectToDb(int reconnect)
@@ -152,13 +152,17 @@ namespace OvenLanding.Pages
             StateHasChanged();
         }
 
+        /// <summary>
+        /// Перемещение текущей плавки вверх (дальше от печи)
+        /// </summary>
+        /// <param name="uid">Идентификатор перемещаемой плавки</param>
         private void MoveUp(int uid)
         {
             int cnt = 0;
             int currPosition = 0;
             
-            List<LandingData> oldOrder = new List<LandingData>();
-            Dictionary<int, LandingData> order = new Dictionary<int, LandingData>();
+            List<LandingData> oldOrder;
+            List<LandingData> order = new List<LandingData>();
 
             try
             {
@@ -172,7 +176,7 @@ namespace OvenLanding.Pages
 
             foreach (LandingData item in oldOrder)
             {
-                order.Add(cnt, item);
+                order.Add(item);
                 if (item.LandingId == uid)
                 {
                     currPosition = cnt;
@@ -182,53 +186,191 @@ namespace OvenLanding.Pages
 
             if (currPosition != 0)
             {
-                
+                for (int i = 0; i < oldOrder.Count; i++)
+                {
+                    if (oldOrder[i].Weighted > 0)
+                    {
+                        continue;
+                    }
+                    
+                    if (i == currPosition - 1)
+                    {
+                        order[i] = oldOrder[currPosition];
+                        continue;
+                    }
+
+                    if (i == currPosition)
+                    {
+                        order[i] = oldOrder[currPosition - 1];
+                        continue;
+                    }
+
+                    order[i] = oldOrder[i];
+                }
+
+                ClearCurrentOrder(oldOrder);
+                SetNewOrder(order);
             }
             else
             {
                 _logger.Error($"Плавка [{uid}] находится последней в очереди, некуда поднимать");
             }
-
         }
-
+        
+        /// <summary>
+        /// Перемещение текущей плавки вниз (ближе к печи)
+        /// </summary>
+        /// <param name="uid">Идентификатор перемещаемой плавки</param>
         private void MoveDown(int uid)
         {
-            int res = -1;
+            int cnt = 0;
+            int currPosition = 0;
+            
+            List<LandingData> oldOrder;
+            List<LandingData> order = new List<LandingData>();
 
+            try
+            {
+                oldOrder = _db.GetLandingOrder();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"[MeltMoveUp] => Не удалось получить текущий порядок плавок [{ex.Message}]");
+                return;
+            }
+
+            foreach (LandingData item in oldOrder)
+            {
+                order.Add(item);
+                if (item.LandingId == uid)
+                {
+                    currPosition = cnt;
+                }
+                cnt++;
+            }
+
+            if (currPosition != oldOrder.Count - 1)
+            {
+                for (int i = 0; i < oldOrder.Count; i++)
+                {
+                    if (oldOrder[i].Weighted > 0)
+                    {
+                        continue;
+                    }
+                    
+                    if (i == currPosition)
+                    {
+                        order[i] = oldOrder[currPosition + 1];
+                        continue;
+                    }
+
+                    if (i == currPosition + 1)
+                    {
+                        order[i] = oldOrder[currPosition];
+                        continue;
+                    }
+
+                    order[i] = oldOrder[i];
+                }
+
+                ClearCurrentOrder(oldOrder);
+                SetNewOrder(order);
+            }
+            else
+            {
+                _logger.Error($"Плавка [{uid}] находится первой в очереди, некуда опускать");
+            }
         }
-        
-        
+
+        /// <summary>
+        /// Очистить текущую очередь на посаде печи
+        /// </summary>
+        private void ClearCurrentOrder(List<LandingData> order)
+        {
+            int i = 1;
+            foreach (LandingData melt in order)
+            {
+                if (melt.Weighted == 0)
+                {
+                    try
+                    {
+                        _db.Remove(melt.LandingId);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Error($"[{i}] Не удалось удалить плавку [{melt.LandingId}] => {ex.Message}");
+                    }
+                }
+
+                i++;
+            }
+
+            try
+            {
+                _landed = _db.GetLandingOrder();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"Не удалось обновить список плавок после очистки очереди [{ex.Message}]");
+            }
+
+            StateHasChanged();
+        }
+
+        /// <summary>
+        /// Установить новую очередь на посаде печи
+        /// </summary>
+        /// <param name="order">Плавка для постановки в очередь</param>
+        private void SetNewOrder(List<LandingData> order)
+        {
+            for (int i = order.Count-1; i >= 0; i--)
+            {
+                if (order[i].Weighted == 0)
+                {
+                    try
+                    {
+                        _db.CreateOvenLanding(order[i]);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Error($"Не удалось добавить плавку {order[i].LandingId} в очередь [{ex.Message}]");
+                    }
+                }
+            }
+
+            StateHasChanged();
+        }
 
         private async Task EditLanding(int uid)
         {
-            // LandingTable edit = new LandingTable();
-            // foreach (LandingTable item in _landed)
-            // {
-            //     if (item.LandingId == uid)
-            //     {
-            //         edit = item;
-            //         break;
-            //     }
-            // }
-            //
-            // _landingService.EditableDate = edit;
-            object[] quoteArray = { };
-            await JSRuntime.InvokeAsync<string>("openEditor", quoteArray);
+            LandingData edit = new LandingData();
+            foreach (LandingData item in _landed)
+            {
+                if (item.LandingId == uid)
+                {
+                    edit = item;
+                    break;
+                }
+            }
+            
+            _landingService.SetEditable(edit);
+            // _landingService;
+            // object[] quoteArray = { };
+            await JSRuntime.InvokeAsync<string>("openEditor", null);
         }
 
         private void Remove(int uid)
         {
-            int res = -1;
             try
             {
-                res = _db.Remove(uid);
+                _db.Remove(uid);
                 try
                 {
                     _landed = _db.GetLandingOrder();
                 }
-                catch (Exception ex)
+                catch (Exception e)
                 {
-                    _logger.Error($"Не удалось удалить плавку {uid} [{ex.Message}]");
+                    _logger.Error($"Не удалось удалить плавку {uid} [{e.Message}]");
                 }
 
                 _logger.Info($"Удалена плавка [{uid}]");
@@ -257,7 +399,7 @@ namespace OvenLanding.Pages
             }
             catch (Exception ex)
             {
-                _logger.Error($"Не удалось получить очередь на посаде [{ex.Message}]");
+                // _logger.Error($"Не удалось получить очередь на посаде [{ex.Message}]");
             }
 
             _landingService.IngotsCount = DateTime.Now.Millisecond;

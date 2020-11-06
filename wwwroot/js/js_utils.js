@@ -5,3 +5,7 @@
 function openEditor() {
     window.location.href = "/editlanding";
 }
+
+function openQuery() {
+    window.location.href = "/";
+}

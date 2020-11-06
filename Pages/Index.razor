@@ -24,8 +24,8 @@
             <th scope="col" style="vertical-align: middle">Вес одной<br />заготовки</th>
             <th scope="col" style="vertical-align: middle">Длина (мм)<br />заготовки</th>
             <th scope="col" style="vertical-align: middle" colspan="2">Количество</th>
-            @* <th scope="col" style="vertical-align: middle" colspan="2">Порядок</th> *@
-            @* <th scope="col" style="vertical-align: middle">Правка</th> *@
+            <th scope="col" style="vertical-align: middle" colspan="2">Порядок</th>
+            <th scope="col" style="vertical-align: middle">Правка</th>
             <th scope="col" style="vertical-align: middle">Удалить</th>
         </tr>
         </thead>
@@ -46,12 +46,24 @@
                 <td>@item.IngotLength</td>
                 <td><button class="btn btn-primary" @onclick="@(() => IncLanding(item.LandingId))">+</button></td>
                 <td><button class="btn btn-primary" @onclick="@(() => DecLanding(item.LandingId))">&minus;</button></td>
-                @* <td><button class="btn btn-primary" @onclick="@(() => MoveUp(item.LandingId))">&uarr;</button></td> *@
-                @* <td><button class="btn btn-primary" @onclick="@(() => MoveDown(item.LandingId))">&darr;</button></td> *@
-                @* <td><button class="btn btn-primary" @onclick="@(() => EditLanding(item.LandingId))">&#128736;</button></td> *@
                 @if (item.Weighted > 0)
                 {
-                    <td><button class="btn btn-primary" disabled @onclick="@(() => Remove(item.LandingId))">&times;</button></td>
+                    @* <td><button class="btn btn-primary" disabled @onclick="@(() => MoveUp(item.LandingId))">&uarr;</button></td> *@
+                    @* <td><button class="btn btn-primary" disabled @onclick="@(() => MoveDown(item.LandingId))">&darr;</button></td> *@
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                }
+                else
+                {
+                    <td><button class="btn btn-primary" @onclick="@(() => MoveUp(item.LandingId))">&uarr;</button></td>
+                    <td><button class="btn btn-primary" @onclick="@(() => MoveDown(item.LandingId))">&darr;</button></td>
+                }
+                
+                <td><button class="btn btn-primary" @onclick="@(() => EditLanding(item.LandingId))">&#128736;</button></td>
+                @if (item.Weighted > 0)
+                {
+                    @* <td><button class="btn btn-primary" disabled @onclick="@(() => Remove(item.LandingId))">&times;</button></td> *@
+                    <td>&nbsp;</td>
                 }
                 else
                 {

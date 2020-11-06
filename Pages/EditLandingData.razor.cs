@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -9,7 +9,7 @@ namespace OvenLanding.Pages
 {
     public partial class EditLandingData : IDisposable
     {
-        private LandingData _editData;
+        private LandingData _editData = new LandingData();
         private List<string> _profiles = new List<string>();
         private List<string> _steels = new List<string>();
         private List<string> _gosts = new List<string>();
@@ -43,12 +43,26 @@ namespace OvenLanding.Pages
             int reconnect = Int32.Parse(_config.GetSection("DBConnection:Reconnect").Value);
             
             await ConnectToDb(reconnect);
-            _editData = _landingService.EditableDate;
-            _profiles = _db.GetProfiles();
-            _steels = _db.GetSteels();
-            _gosts = _db.GetGosts();
-            _customers = _db.GetCustomers();
-            _classes = _db.GetClasses();
+            _editData = _landingService.EditMode ? _landingService.GetEditable() : new LandingData();
+
+            try
+            {
+                _profiles = _db.GetProfiles();
+                _steels = _db.GetSteels();
+                _gosts = _db.GetGosts();
+                _customers = _db.GetCustomers();
+                _classes = _db.GetClasses();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"Не удалось получить информацию из справочников [{ex.Message}]");
+                _profiles = new List<string>();
+                _steels = new List<string>();
+                _gosts = new List<string>();
+                _customers = new List<string>();
+                _classes = new List<string>();
+            }
+
             StateHasChanged();
         }
         
@@ -118,9 +132,15 @@ namespace OvenLanding.Pages
             StateHasChanged();
         }
 
-        private void EditLanding()
+        private async void EditLanding()
         {
-            
+            bool res =_db.EditMelt(_editData);
+            if (!res)
+            {
+                _logger.Error($"При изменении параметров плавки {_editData.LandingId} возникли ошибки");
+            }
+            _landingService.ClearEditable();
+            await JSRuntime.InvokeAsync<string>("openQuery", null);
         }
 
     }

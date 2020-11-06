@@ -16,6 +16,7 @@
         <e p="DBConnection.cs" t="Include" />
         <e p="GostData.cs" t="Include" />
         <e p="LandingData.cs" t="Include" />
+        <e p="LandingParam.cs" t="Include" />
         <e p="LandingService.cs" t="Include" />
         <e p="MessageType.cs" t="Include" />
         <e p="ProfileData.cs" t="Include" />
