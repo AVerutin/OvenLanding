@@ -7,6 +7,7 @@ namespace OvenLanding.Data
     public class LandingService : INotifyPropertyChanged
     {
         private LandingData _editableDate;
+        private LandingData _originalData;
         public int MeltUid { get; private set; }
         public bool EditMode {get; private set; }
         
@@ -32,14 +33,16 @@ namespace OvenLanding.Data
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public void SetEditable(LandingData editable)
+        public void SetEditable(LandingData original, LandingData editable)
         {
             EditMode = true;
             MeltUid = editable.LandingId;
             _editableDate = editable;
+            _originalData = original;
         }
 
         public LandingData GetEditable() => _editableDate;
+        public LandingData GetOriginal() => _originalData;
 
         public void ClearEditable()
         {

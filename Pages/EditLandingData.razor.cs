@@ -10,6 +10,7 @@ namespace OvenLanding.Pages
     public partial class EditLandingData : IDisposable
     {
         private LandingData _editData = new LandingData();
+        private LandingData _origData = new LandingData();
         private List<string> _profiles = new List<string>();
         private List<string> _steels = new List<string>();
         private List<string> _gosts = new List<string>();
@@ -44,6 +45,7 @@ namespace OvenLanding.Pages
             
             await ConnectToDb(reconnect);
             _editData = _landingService.EditMode ? _landingService.GetEditable() : new LandingData();
+            _origData = _landingService.EditMode ? _landingService.GetOriginal() : new LandingData();
 
             try
             {
@@ -134,7 +136,7 @@ namespace OvenLanding.Pages
 
         private async void EditLanding()
         {
-            bool res =_db.EditMelt(_editData);
+            bool res =_db.EditMelt(_origData, _editData);
             if (!res)
             {
                 _logger.Error($"При изменении параметров плавки {_editData.LandingId} возникли ошибки");

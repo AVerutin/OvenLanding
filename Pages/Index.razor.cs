@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using OvenLanding.Data;
 using System.Timers;
+using NLog.LayoutRenderers;
 
 namespace OvenLanding.Pages
 {
@@ -160,7 +161,7 @@ namespace OvenLanding.Pages
         {
             int cnt = 0;
             int currPosition = 0;
-            
+
             List<LandingData> oldOrder;
             List<LandingData> order = new List<LandingData>();
 
@@ -181,10 +182,11 @@ namespace OvenLanding.Pages
                 {
                     currPosition = cnt;
                 }
+
                 cnt++;
             }
 
-            if (currPosition != 0)
+            if (currPosition != 0 && oldOrder[currPosition - 1].Weighted == 0)
             {
                 for (int i = 0; i < oldOrder.Count; i++)
                 {
@@ -208,8 +210,20 @@ namespace OvenLanding.Pages
                     order[i] = oldOrder[i];
                 }
 
-                ClearCurrentOrder(oldOrder);
-                SetNewOrder(order);
+                int oldCnt = _landed.Count;
+                int newCnt;
+                do
+                {
+                    ClearCurrentOrder();
+                    SetNewOrder(order);
+                    List<LandingData> tmpOrder = _db.GetLandingOrder();
+                    newCnt = tmpOrder.Count;
+                } while (oldCnt != newCnt);
+
+                // Получить новую очередь плавок
+                // Если количество плавок в новой очереди не равно количеству плавок в заданной очереди
+                // Очистить текущую очередь
+                // Заполнить новую очередь
             }
             else
             {
@@ -249,7 +263,7 @@ namespace OvenLanding.Pages
                 cnt++;
             }
 
-            if (currPosition != oldOrder.Count - 1)
+            if (currPosition != oldOrder.Count - 1 && oldOrder[currPosition + 1].Weighted == 0)
             {
                 for (int i = 0; i < oldOrder.Count; i++)
                 {
@@ -257,7 +271,7 @@ namespace OvenLanding.Pages
                     {
                         continue;
                     }
-                    
+
                     if (i == currPosition)
                     {
                         order[i] = oldOrder[currPosition + 1];
@@ -273,8 +287,20 @@ namespace OvenLanding.Pages
                     order[i] = oldOrder[i];
                 }
 
-                ClearCurrentOrder(oldOrder);
-                SetNewOrder(order);
+                int oldCnt = _landed.Count;
+                int newCnt;
+                do
+                {
+                    ClearCurrentOrder();
+                    SetNewOrder(order);
+                    List<LandingData> tmpOrder = _db.GetLandingOrder();
+                    newCnt = tmpOrder.Count;
+                } while (oldCnt != newCnt);
+
+                // Получить новую очередь плавок
+                // Если количество плавок в новой очереди не равно количеству плавок в заданной очереди
+                // Очистить текущую очередь
+                // Заполнить новую очередь
             }
             else
             {
@@ -285,8 +311,9 @@ namespace OvenLanding.Pages
         /// <summary>
         /// Очистить текущую очередь на посаде печи
         /// </summary>
-        private void ClearCurrentOrder(List<LandingData> order)
+        private void ClearCurrentOrder()
         {
+            List<LandingData> order = _db.GetLandingOrder();
             int i = 1;
             foreach (LandingData melt in order)
             {
@@ -295,6 +322,7 @@ namespace OvenLanding.Pages
                     try
                     {
                         _db.Remove(melt.LandingId);
+                        Task.Delay(TimeSpan.FromMilliseconds(500));
                     }
                     catch (Exception ex)
                     {
@@ -330,6 +358,7 @@ namespace OvenLanding.Pages
                     try
                     {
                         _db.CreateOvenLanding(order[i]);
+                        Task.Delay(TimeSpan.FromMilliseconds(500));
                     }
                     catch (Exception ex)
                     {
@@ -344,18 +373,48 @@ namespace OvenLanding.Pages
         private async Task EditLanding(int uid)
         {
             LandingData edit = new LandingData();
+            LandingData orig = new LandingData();
+            
             foreach (LandingData item in _landed)
             {
                 if (item.LandingId == uid)
                 {
-                    edit = item;
+                    edit.LandingId = item.LandingId;
+                    orig.LandingId = item.LandingId;
+                    edit.MeltNumber = item.MeltNumber;
+                    orig.MeltNumber = item.MeltNumber;
+                    edit.IngotsCount = item.IngotsCount;
+                    orig.IngotsCount = item.IngotsCount;
+                    edit.IngotLength = item.IngotLength;
+                    orig.IngotLength = item.IngotLength;
+                    edit.SteelMark = item.SteelMark;
+                    orig.SteelMark = item.SteelMark;
+                    edit.IngotProfile = item.IngotProfile;
+                    orig.IngotProfile = item.IngotProfile;
+                    edit.WeightOne = item.WeightOne;
+                    orig.WeightOne = item.WeightOne;
+                    edit.WeightAll = item.WeightAll;
+                    orig.WeightAll = item.WeightAll;
+                    edit.Weighted = item.Weighted;
+                    orig.Weighted = item.Weighted;
+                    edit.ProductCode = item.ProductCode;
+                    orig.ProductCode = item.ProductCode;
+                    edit.Customer = item.Customer;
+                    orig.Customer = item.Customer;
+                    edit.Standart = item.Standart;
+                    orig.Standart = item.Standart;
+                    edit.Diameter = item.Diameter;
+                    orig.Diameter = item.Diameter;
+                    edit.Shift = item.Shift;
+                    orig.Shift = item.Shift;
+                    edit.IngotClass = item.IngotClass;
+                    orig.IngotClass = item.IngotClass;
                     break;
                 }
             }
             
-            _landingService.SetEditable(edit);
-            // _landingService;
-            // object[] quoteArray = { };
+            _landingService.SetEditable(orig, edit);
+            // object[] quoteArray = { null };
             await JSRuntime.InvokeAsync<string>("openEditor", null);
         }
 

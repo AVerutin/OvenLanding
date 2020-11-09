@@ -10,9 +10,9 @@ namespace OvenLanding.Data
 {
     public class DBConnection
     {
-        private readonly NpgsqlConnection Connection;
-        private readonly IConfigurationRoot config;
-        private readonly Logger logger;
+        private readonly NpgsqlConnection _connection;
+        private readonly Logger _logger;
+        private int _exceptionCode;
 
         /// <summary>
         /// Конструктор создания подключения к базе данных
@@ -45,8 +45,8 @@ namespace OvenLanding.Data
 
             
             // Читаем параметры подключения к СУБД PostgreSQL
-            logger = LogManager.GetCurrentClassLogger();
-            config = new ConfigurationBuilder()
+            _logger = LogManager.GetCurrentClassLogger();
+            var config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
                 .Build();
             
@@ -61,11 +61,11 @@ namespace OvenLanding.Data
 
             try
             {
-                Connection = new NpgsqlConnection(connectionString);
+                _connection = new NpgsqlConnection(connectionString);
             }
             catch (Exception e)
             {
-                logger.Error($"Не удалось создать подключение к БД [{e.Message}]");
+                _logger.Error($"Не удалось создать подключение к БД [{e.Message}]");
                 throw new DataException($"Не удалось создать подключение к БД [{e.Message}]");
             }
         }
@@ -81,7 +81,7 @@ namespace OvenLanding.Data
             bool res = WriteData(query);
             if (!res)
             {
-                logger.Error("Ошибка при создании справочника профилей арматуры");
+                _logger.Error("Ошибка при создании справочника профилей арматуры");
             }
             
             // Создание справочника марок стали
@@ -94,7 +94,7 @@ namespace OvenLanding.Data
             res = WriteData(query);
             if (!res)
             {
-                logger.Error("Ошибка при создании справочника профилей арматуры");
+                _logger.Error("Ошибка при создании справочника профилей арматуры");
             }
             
             // Создание справочника ГОСТов
@@ -107,7 +107,7 @@ namespace OvenLanding.Data
             res = WriteData(query);
             if (!res)
             {
-                logger.Error("Ошибка при создании справочника стандартов");
+                _logger.Error("Ошибка при создании справочника стандартов");
             }
             
             // Создание справочника заказчиков
@@ -120,7 +120,7 @@ namespace OvenLanding.Data
             res = WriteData(query);
             if (!res)
             {
-                logger.Error("Ошибка при создании справочника заказчиков");
+                _logger.Error("Ошибка при создании справочника заказчиков");
             }
             
             // Создание справочника классов
@@ -133,7 +133,7 @@ namespace OvenLanding.Data
             res = WriteData(query);
             if (!res)
             {
-                logger.Error("Ошибка при создании справочника классов");
+                _logger.Error("Ошибка при создании справочника классов");
             }
             
             // Создание таблицы заготовок на посаде печи
@@ -158,7 +158,7 @@ namespace OvenLanding.Data
             res = WriteData(query);
             if (!res)
             {
-                logger.Error("Ошибка при создании таблицы [OvenLanding]");
+                _logger.Error("Ошибка при создании таблицы [OvenLanding]");
             }
             
             // Проверяем, есть ли в таблице public.oven_landing записи
@@ -171,7 +171,7 @@ namespace OvenLanding.Data
                 res = WriteData(query);
                 if (!res)
                 {
-                    logger.Error("Ошибка при добавлении записи в таблицу [OvenLanding]");
+                    _logger.Error("Ошибка при добавлении записи в таблицу [OvenLanding]");
                 }
             }
             
@@ -180,11 +180,11 @@ namespace OvenLanding.Data
         
         private bool IsConnected()
         {
-            if (Connection == null)
+            if (_connection == null)
                 return false;
             
             bool result;
-            switch (Connection.FullState)
+            switch (_connection.FullState)
             {
                 case ConnectionState.Closed:
                 case ConnectionState.Broken:
@@ -204,25 +204,202 @@ namespace OvenLanding.Data
             return result;
         }
 
-        public bool EditMelt(LandingData newMelt)
+        public bool EditMelt(LandingData oldMelt, LandingData newMelt)
         {
             bool res = false;
             if (newMelt != null && newMelt.LandingId > 0)
             {
-                res = ChangeParam(newMelt.LandingId, LandingParam.SteelMark, newMelt.SteelMark);
-                res = ChangeParam(newMelt.LandingId, LandingParam.IngotProfile, newMelt.IngotProfile);
-                res = ChangeParam(newMelt.LandingId, LandingParam.IngotLength, newMelt.IngotLength.ToString());
-                res = ChangeParam(newMelt.LandingId, LandingParam.Standart, newMelt.Standart);
-                res = ChangeParam(newMelt.LandingId, LandingParam.Diameter, newMelt.Diameter.ToString());
-                res = ChangeParam(newMelt.LandingId, LandingParam.Customer, newMelt.Customer);
-                res = ChangeParam(newMelt.LandingId, LandingParam.Shift, newMelt.Shift);
-                res = ChangeParam(newMelt.LandingId, LandingParam.Class, newMelt.IngotClass);
-                res = ChangeParam(newMelt.LandingId, LandingParam.MeltNumber, newMelt.MeltNumber);
-                res = ChangeParam(newMelt.LandingId, LandingParam.ProductCode, newMelt.ProductCode.ToString());
-                res = ChangeParam(newMelt.LandingId, LandingParam.IngotsCount, newMelt.IngotsCount.ToString());
-                res = ChangeParam(newMelt.LandingId, LandingParam.WeightOne, newMelt.WeightOne.ToString());
-                int weightAll = newMelt.IngotsCount * newMelt.WeightOne;
-                res = ChangeParam(newMelt.LandingId, LandingParam.WeightAll, weightAll.ToString());
+                if (oldMelt.SteelMark != newMelt.SteelMark)
+                {
+                    res = ChangeParam(newMelt.LandingId, LandingParam.SteelMark, newMelt.SteelMark);
+                    if (!res)
+                    {
+                        _logger.Error(
+                            $"[{_exceptionCode}] => Ошибка при изменении марки стали для плавки №{newMelt.LandingId} на [{newMelt.SteelMark}]");
+                    }
+                    else
+                    {
+                        _logger.Info($"Для плавки №{newMelt.LandingId} изменена марка стали с [{oldMelt.SteelMark}] на [{newMelt.SteelMark}]");
+                    }
+                }
+
+                if (oldMelt.IngotProfile != newMelt.IngotProfile)
+                {
+                    res = ChangeParam(newMelt.LandingId, LandingParam.IngotProfile, newMelt.IngotProfile);
+                    if (!res)
+                    {
+                        _logger.Error(
+                            $"[{_exceptionCode}] => Ошибка при изменении сечения заготовки для плавки №{newMelt.LandingId} на [{newMelt.IngotProfile}]");
+                    }
+                    else
+                    {
+                        _logger.Info($"Для плавки №{newMelt.LandingId} изменено сечения заготовки с [{oldMelt.IngotProfile}] на [{newMelt.IngotProfile}]");
+                    }
+                }
+
+                if (oldMelt.IngotLength != newMelt.IngotLength)
+                {
+                    res = ChangeParam(newMelt.LandingId, LandingParam.IngotLength, newMelt.IngotLength.ToString());
+                    if (!res)
+                    {
+                        _logger.Error(
+                            $"[{_exceptionCode}] => Ошибка при изменении длины заготовки для плавки №{newMelt.LandingId} на [{newMelt.IngotLength}]");
+                    }
+                    else
+                    {
+                        _logger.Info($"Для плавки №{newMelt.LandingId} изменена длины заготовки с [{oldMelt.IngotLength}] на [{newMelt.IngotLength}]");
+                    }
+                }
+
+                if (oldMelt.Standart != newMelt.Standart)
+                {
+                    res = ChangeParam(newMelt.LandingId, LandingParam.Standart, newMelt.Standart);
+                    if (!res)
+                    {
+                        _logger.Error(
+                            $"[{_exceptionCode}] => Ошибка при изменении стандарта для плавки №{newMelt.LandingId} на [{newMelt.Standart}]");
+                    }
+                    else
+                    {
+                        _logger.Info($"Для плавки №{newMelt.LandingId} изменен стандарт с [{oldMelt.Standart}] на [{newMelt.Standart}]");
+                    }
+                }
+
+                if (oldMelt.Diameter != newMelt.Diameter)
+                {
+                    res = ChangeParam(newMelt.LandingId, LandingParam.Diameter, newMelt.Diameter.ToString());
+                    if (!res)
+                    {
+                        _logger.Error(
+                            $"[{_exceptionCode}] => Ошибка при изменении диаметра для плавки №{newMelt.LandingId} на [{newMelt.Diameter}]");
+                    }
+                    else
+                    {
+                        _logger.Info($"Для плавки №{newMelt.LandingId} изменен диаметра с [{oldMelt.Diameter}] на [{newMelt.Diameter}]");
+                    }
+                }
+
+                if (oldMelt.Customer != newMelt.Customer)
+                {
+                    res = ChangeParam(newMelt.LandingId, LandingParam.Customer, newMelt.Customer);
+                    if (!res)
+                    {
+                        _logger.Error(
+                            $"[{_exceptionCode}] => Ошибка при изменении заказчика для плавки №{newMelt.LandingId} на [{newMelt.Customer}]");
+                    }
+                    else
+                    {
+                        _logger.Info($"Для плавки №{newMelt.LandingId} изменен заказчик с [{oldMelt.Customer}] на [{newMelt.Customer}]");
+                    }
+                }
+
+                if (oldMelt.Shift != newMelt.Shift)
+                {
+                    res = ChangeParam(newMelt.LandingId, LandingParam.Shift, newMelt.Shift);
+                    if (!res)
+                    {
+                        _logger.Error(
+                            $"[{_exceptionCode}] => Ошибка при изменении бригады для плавки №{newMelt.LandingId} на [{newMelt.Shift}]");
+                    }
+                    else
+                    {
+                        _logger.Info($"Для плавки №{newMelt.LandingId} изменена бригада с [{oldMelt.Shift}] на [{newMelt.Shift}]");
+                    }
+                }
+
+                if (oldMelt.IngotClass != newMelt.IngotClass)
+                {
+                    res = ChangeParam(newMelt.LandingId, LandingParam.Class, newMelt.IngotClass);
+                    if (!res)
+                    {
+                        _logger.Error(
+                            $"[{_exceptionCode}] => Ошибка при изменении класса для плавки №{newMelt.LandingId} на [{newMelt.IngotClass}]");
+                    }
+                    else
+                    {
+                        _logger.Info($"Для плавки №{newMelt.LandingId} изменен класс с [{oldMelt.IngotClass}] на [{newMelt.IngotClass}]");
+                    }
+                }
+
+                if (oldMelt.MeltNumber != newMelt.MeltNumber)
+                {
+                    res = ChangeParam(newMelt.LandingId, LandingParam.MeltNumber, newMelt.MeltNumber);
+                    if (!res)
+                    {
+                        _logger.Error(
+                            $"[{_exceptionCode}] => Ошибка при изменении номера плавки для плавки №{newMelt.LandingId} на [{newMelt.MeltNumber}]");
+                    }
+                    else
+                    {
+                        _logger.Info($"Для плавки №{newMelt.LandingId} изменен номер плавки с [{oldMelt.MeltNumber}] на [{newMelt.MeltNumber}]");
+                    }
+                }
+
+                if (oldMelt.ProductCode != newMelt.ProductCode)
+                {
+                    res = ChangeParam(newMelt.LandingId, LandingParam.ProductCode, newMelt.ProductCode.ToString());
+                    if (!res)
+                    {
+                        _logger.Error(
+                            $"[{_exceptionCode}] => Ошибка при изменении кода продукции для плавки №{newMelt.LandingId} на [{newMelt.ProductCode}]");
+                    }
+                    else
+                    {
+                        _logger.Info($"Для плавки №{newMelt.LandingId} изменен код продукции с [{oldMelt.ProductCode}] на [{newMelt.ProductCode}]");
+                    }
+                }
+
+                if (oldMelt.IngotsCount != newMelt.IngotsCount)
+                {
+                    res = ChangeParam(newMelt.LandingId, LandingParam.IngotsCount, newMelt.IngotsCount.ToString());
+                    if (!res)
+                    {
+                        _logger.Error(
+                            $"[{_exceptionCode}] => Ошибка при изменении количества заготовок для плавки №{newMelt.LandingId} на [{newMelt.IngotsCount}]");
+                    }
+                    else
+                    {
+                        _logger.Info($"Для плавки №{newMelt.LandingId} изменено количество заготовок с [{oldMelt.IngotsCount}] на [{newMelt.IngotsCount}]");
+                    }
+
+                    int weightAll = newMelt.IngotsCount * newMelt.WeightOne;
+                    res = ChangeParam(newMelt.LandingId, LandingParam.WeightAll, weightAll.ToString());
+                    if (!res)
+                    {
+                        _logger.Error(
+                            $"[{_exceptionCode}] => Ошибка при изменении веса всех заготовок для плавки №{newMelt.LandingId} на [{weightAll}]");
+                    }
+                    else
+                    {
+                        _logger.Info($"Для плавки №{newMelt.LandingId} изменен вес всех заготовок с [{oldMelt.WeightAll}] на [{weightAll}]");
+                    }
+                }
+
+                if(oldMelt.WeightOne!=newMelt.WeightOne)
+                {
+                    res = ChangeParam(newMelt.LandingId, LandingParam.WeightOne, newMelt.WeightOne.ToString());
+                    if (!res)
+                    {
+                        _logger.Error(
+                            $"[{_exceptionCode}] => Ошибка при изменении веса одной заготовки для плавки №{newMelt.LandingId} на [{newMelt.WeightOne}]");
+                    }
+                    else
+                    {
+                        _logger.Info($"Для плавки №{newMelt.LandingId} изменен вес одной заготовки с [{oldMelt.WeightOne}] на [{newMelt.WeightOne}]");
+                    }
+
+                    int weightAll = newMelt.IngotsCount * newMelt.WeightOne;
+                    res = ChangeParam(newMelt.LandingId, LandingParam.WeightAll, weightAll.ToString());
+                    if (!res)
+                    {
+                        _logger.Error(
+                            $"[{_exceptionCode}] => Ошибка при изменении веса всех заготовок для плавки №{newMelt.LandingId} на [{weightAll}]");
+                    }
+                    else
+                    {
+                        _logger.Info($"Для плавки №{newMelt.LandingId} изменен вес всех заготовок с [{oldMelt.WeightAll}] на [{weightAll}]");
+                    }
+                }
             }
 
             return res;
@@ -246,16 +423,16 @@ namespace OvenLanding.Data
             
             if (!IsConnected())
             {
-                Connection.Open();
+                _connection.Open();
             }
 
-            using (NpgsqlCommand comm = new NpgsqlCommand(query, Connection))
+            using (NpgsqlCommand comm = new NpgsqlCommand(query, _connection))
             {
                 using (NpgsqlDataReader reader = comm.ExecuteReader())
                 {
-                    if (reader.HasRows)
+                    if (reader.FieldCount > 0) // Вместо reader.HasRows 
                     {
-                        while (reader.Read())
+                        while (reader.Read()) 
                         {
                             try
                             {
@@ -264,11 +441,11 @@ namespace OvenLanding.Data
                             catch (Exception ex)
                             {
                                 lastId = 0;
-                                logger.Error(
+                                _logger.Error(
                                     $"Ошибка при получении максимального идентификатора таблицы {tableName} [{ex.Message}]");
                                 // if (IsConnected())
                                 {
-                                    Connection.Close();
+                                    _connection.Close();
                                 }
                             }
                         }
@@ -278,7 +455,7 @@ namespace OvenLanding.Data
             
             // if (IsConnected())
             {
-                Connection.Close();
+                _connection.Close();
             }
             return lastId;
         }
@@ -310,7 +487,7 @@ namespace OvenLanding.Data
             bool res = WriteData(query);
             if (!res)
             {
-                logger.Error("Ошибка при сохранении состояния полей формы ввода");
+                _logger.Error("Ошибка при сохранении состояния полей формы ввода");
             }
         }
 
@@ -326,10 +503,10 @@ namespace OvenLanding.Data
             string query = $"select * from public.oven_landing where id = {lastId};";
             if (!IsConnected())
             {
-                Connection.Open();
+                _connection.Open();
             }
 
-            using (NpgsqlCommand comm = new NpgsqlCommand(query, Connection))
+            using (NpgsqlCommand comm = new NpgsqlCommand(query, _connection))
             {
                 using (NpgsqlDataReader reader = comm.ExecuteReader())
                 {
@@ -354,11 +531,11 @@ namespace OvenLanding.Data
                             }
                             catch (Exception ex)
                             {
-                                logger.Error(
+                                _logger.Error(
                                     $"Ошибка при получении сохраненного состояния полей формы ввода [{ex.Message}]");
                                 // if (IsConnected())
                                 {
-                                    Connection.Close();
+                                    _connection.Close();
                                 }
                             }
                         }
@@ -368,7 +545,7 @@ namespace OvenLanding.Data
             
             // if (IsConnected())
             {
-                Connection.Close();
+                _connection.Close();
             }
             return result;
         }
@@ -378,34 +555,36 @@ namespace OvenLanding.Data
         /// </summary>
         /// <param name="query">SQL-запрос</param>
         /// <returns>Результат выполнения операции</returns>
-        public bool WriteData(string query)
+        private bool WriteData(string query)
         {
             bool result = false;
 
             try
             {
-                NpgsqlCommand command = new NpgsqlCommand(query, Connection);
+                NpgsqlCommand command = new NpgsqlCommand(query, _connection);
                 if (!IsConnected())
                 {
-                    Connection.Open();
+                    _connection.Open();
                 }
 
                 command.ExecuteNonQuery();
                 // if(IsConnected())
                 {
-                    Connection.Close();
+                    _connection.Close();
                 }
                 result = true;
             }
             catch (Exception e)
             {
-                logger.Error($"Не удалось записать данные в базу данных: [{e.Message}]");
+                _logger.Error($"Не удалось записать данные в базу данных: [{e.Message}]");
+                _exceptionCode = e.HResult;
                 Debug.WriteLine(e.Message);
                 // if (IsConnected())
                 {
-                    Connection.Close();
+                    _connection.Close();
                 }
             }
+
 
             return result;
         }
@@ -421,10 +600,10 @@ namespace OvenLanding.Data
             string query = "select id, gost from public.gosts order by gost";
             if (!IsConnected())
             {
-                Connection.Open();
+                _connection.Open();
             }
 
-            using (NpgsqlCommand comm = new NpgsqlCommand(query, Connection))
+            using (NpgsqlCommand comm = new NpgsqlCommand(query, _connection))
             {
                 using (NpgsqlDataReader reader = comm.ExecuteReader())
                 {
@@ -440,10 +619,10 @@ namespace OvenLanding.Data
                             catch (Exception ex)
                             {
                                 value = "";
-                                logger.Error($"Ошибка при получении списка стандартов [{ex.Message}]");
+                                _logger.Error($"Ошибка при получении списка стандартов [{ex.Message}]");
                                 // if (IsConnected())
                                 {
-                                    Connection.Close();
+                                    _connection.Close();
                                 }
                             }
 
@@ -455,7 +634,7 @@ namespace OvenLanding.Data
             
             // if (IsConnected())
             {
-                Connection.Close();
+                _connection.Close();
             }
             return result;
         }
@@ -473,10 +652,10 @@ namespace OvenLanding.Data
             string query = "select id, profile from public.profiles order by id";
             if (!IsConnected())
             {
-                Connection.Open();
+                _connection.Open();
             }
 
-            using (NpgsqlCommand comm = new NpgsqlCommand(query, Connection))
+            using (NpgsqlCommand comm = new NpgsqlCommand(query, _connection))
             {
                 using (NpgsqlDataReader reader = comm.ExecuteReader())
                 {
@@ -493,10 +672,10 @@ namespace OvenLanding.Data
                             {
                                 // key = 0;
                                 value = "";
-                                logger.Error($"Ошибка при получении списка профилей [{ex.Message}]");
+                                _logger.Error($"Ошибка при получении списка профилей [{ex.Message}]");
                                 // if (IsConnected())
                                 {
-                                    Connection.Close();
+                                    _connection.Close();
                                 }
                             }
 
@@ -508,7 +687,7 @@ namespace OvenLanding.Data
 
             // if (IsConnected())
             {
-                Connection.Close();
+                _connection.Close();
             }
 
             return result;
@@ -525,10 +704,10 @@ namespace OvenLanding.Data
             string query = "select id, customer from public.customers order by customer";
             if (!IsConnected())
             {
-                Connection.Open();
+                _connection.Open();
             }
 
-            using (NpgsqlCommand comm = new NpgsqlCommand(query, Connection))
+            using (NpgsqlCommand comm = new NpgsqlCommand(query, _connection))
             {
                 using (NpgsqlDataReader reader = comm.ExecuteReader())
                 {
@@ -544,10 +723,10 @@ namespace OvenLanding.Data
                             catch (Exception ex)
                             {
                                 value = "";
-                                logger.Error($"Ошибка при получении списка заказчиков [{ex.Message}]");
+                                _logger.Error($"Ошибка при получении списка заказчиков [{ex.Message}]");
                                 // if (IsConnected())
                                 {
-                                    Connection.Close();
+                                    _connection.Close();
                                 }
                             }
 
@@ -559,7 +738,7 @@ namespace OvenLanding.Data
 
             // if (IsConnected())
             {
-                Connection.Close();
+                _connection.Close();
             }
 
             return result;
@@ -576,10 +755,10 @@ namespace OvenLanding.Data
             string query = "select id, class from public.classes order by class";
             if (!IsConnected())
             {
-                Connection.Open();
+                _connection.Open();
             }
 
-            using (NpgsqlCommand comm = new NpgsqlCommand(query, Connection))
+            using (NpgsqlCommand comm = new NpgsqlCommand(query, _connection))
             {
                 using (NpgsqlDataReader reader = comm.ExecuteReader())
                 {
@@ -595,10 +774,10 @@ namespace OvenLanding.Data
                             catch (Exception ex)
                             {
                                 value = "";
-                                logger.Error($"Ошибка при получении списка классов [{ex.Message}]");
+                                _logger.Error($"Ошибка при получении списка классов [{ex.Message}]");
                                 // if (IsConnected())
                                 {
-                                    Connection.Close();
+                                    _connection.Close();
                                 }
                             }
 
@@ -610,7 +789,7 @@ namespace OvenLanding.Data
 
             // if (IsConnected())
             {
-                Connection.Close();
+                _connection.Close();
             }
 
             return result;
@@ -635,11 +814,11 @@ namespace OvenLanding.Data
 
             if (!IsConnected())
             {
-                Connection.Open();
+                _connection.Open();
             }
 
             int result = -1;
-            using (NpgsqlCommand comm = new NpgsqlCommand(query, Connection))
+            using (NpgsqlCommand comm = new NpgsqlCommand(query, _connection))
             {
                 using (NpgsqlDataReader reader = comm.ExecuteReader())
                 {
@@ -654,10 +833,10 @@ namespace OvenLanding.Data
                             catch (Exception ex)
                             {
                                 result = -1;
-                                logger.Error($"Ошибка при получении списка профилей [{ex.Message}]");
+                                _logger.Error($"Ошибка при получении списка профилей [{ex.Message}]");
                                 // if (IsConnected())
                                 {
-                                    Connection.Close();
+                                    _connection.Close();
                                 }
                             }
                         }
@@ -667,7 +846,7 @@ namespace OvenLanding.Data
 
             // if (IsConnected())
             {
-                Connection.Close();
+                _connection.Close();
             }
 
             return result;
@@ -685,10 +864,10 @@ namespace OvenLanding.Data
             string query = $"select * from public.f_add_unit({uid})";
             if (!IsConnected())
             {
-                Connection.Open();
+                _connection.Open();
             }
 
-            using (NpgsqlCommand comm = new NpgsqlCommand(query, Connection))
+            using (NpgsqlCommand comm = new NpgsqlCommand(query, _connection))
             {
                 using (NpgsqlDataReader reader = comm.ExecuteReader())
                 {
@@ -703,11 +882,11 @@ namespace OvenLanding.Data
                             catch (Exception ex)
                             {
                                 result = -1;
-                                logger.Error(
+                                _logger.Error(
                                     $"Ошибка при увеличении количества заготовок в плавке ({uid}) => [{ex.Message}]");
                                 // if (IsConnected())
                                 {
-                                    Connection.Close();
+                                    _connection.Close();
                                 }
                             }
                         }
@@ -717,7 +896,7 @@ namespace OvenLanding.Data
 
             // if (IsConnected())
             {
-                Connection.Close();
+                _connection.Close();
             }
 
             return result;
@@ -735,10 +914,10 @@ namespace OvenLanding.Data
             string query = $"select * from public.f_delete_unit({uid})";
             if (!IsConnected())
             {
-                Connection.Open();
+                _connection.Open();
             }
 
-            using (NpgsqlCommand comm = new NpgsqlCommand(query, Connection))
+            using (NpgsqlCommand comm = new NpgsqlCommand(query, _connection))
             {
                 using (NpgsqlDataReader reader = comm.ExecuteReader())
                 {
@@ -753,11 +932,11 @@ namespace OvenLanding.Data
                             catch (Exception ex)
                             {
                                 result = -1;
-                                logger.Error(
+                                _logger.Error(
                                     $"Ошибка при уменьшении количества заготовок в плавке ({uid}) => [{ex.Message}]");
                                 // if (IsConnected())
                                 {
-                                    Connection.Close();
+                                    _connection.Close();
                                 }
                             }
                         }
@@ -767,7 +946,7 @@ namespace OvenLanding.Data
 
             // if (IsConnected())
             {
-                Connection.Close();
+                _connection.Close();
             }
 
             return result;
@@ -785,10 +964,10 @@ namespace OvenLanding.Data
             string query = $"select * from public.f_delete_from_queue({uid})";
             if (!IsConnected())
             {
-                Connection.Open();
+                _connection.Open();
             }
 
-            using (NpgsqlCommand comm = new NpgsqlCommand(query, Connection))
+            using (NpgsqlCommand comm = new NpgsqlCommand(query, _connection))
             {
                 using (NpgsqlDataReader reader = comm.ExecuteReader())
                 {
@@ -803,10 +982,10 @@ namespace OvenLanding.Data
                             catch (Exception ex)
                             {
                                 result = -1;
-                                logger.Error($"Ошибка при удалении плавки ({uid}) [{ex.Message}]");
+                                _logger.Error($"Ошибка при удалении плавки ({uid}) [{ex.Message}]");
                                 // if (IsConnected())
                                 {
-                                    Connection.Close();
+                                    _connection.Close();
                                 }
                             }
                         }
@@ -816,7 +995,7 @@ namespace OvenLanding.Data
 
             //if (IsConnected())
             {
-                Connection.Close();
+                _connection.Close();
             }
 
             return result;
@@ -826,7 +1005,7 @@ namespace OvenLanding.Data
         {
             if(IsConnected())
             {
-                Connection.Close();
+                _connection.Close();
             }
         }
 
@@ -845,11 +1024,11 @@ namespace OvenLanding.Data
 
             if (!IsConnected())
             {
-                Connection.Open();
+                _connection.Open();
             }
 
             int result = -1;
-            using (NpgsqlCommand comm = new NpgsqlCommand(query, Connection))
+            using (NpgsqlCommand comm = new NpgsqlCommand(query, _connection))
             {
                 using (NpgsqlDataReader reader = comm.ExecuteReader())
                 {
@@ -864,11 +1043,11 @@ namespace OvenLanding.Data
                             catch (Exception ex)
                             {
                                 result = -1;
-                                logger.Error(
+                                _logger.Error(
                                     $"Ошибка при добавлении плавки №({data.MeltNumber}) в очередь [{ex.Message}]");
                                 // if (IsConnected())
                                 {
-                                    Connection.Close();
+                                    _connection.Close();
                                 }
                             }
                         }
@@ -878,7 +1057,7 @@ namespace OvenLanding.Data
 
             // if (IsConnected())
             {
-                Connection.Close();
+                _connection.Close();
             }
 
             return result;
@@ -897,10 +1076,10 @@ namespace OvenLanding.Data
             string query = "select id, steel from public.steels order by steel";
             if (!IsConnected())
             {
-                Connection.Open();
+                _connection.Open();
             }
 
-            using (NpgsqlCommand comm = new NpgsqlCommand(query, Connection))
+            using (NpgsqlCommand comm = new NpgsqlCommand(query, _connection))
             {
                 using (NpgsqlDataReader reader = comm.ExecuteReader())
                 {
@@ -917,10 +1096,10 @@ namespace OvenLanding.Data
                             {
                                 // key = 0;
                                 value = "";
-                                logger.Error($"Ошибка при получении списка марок стали [{ex.Message}]");
+                                _logger.Error($"Ошибка при получении списка марок стали [{ex.Message}]");
                                 // if (IsConnected())
                                 {
-                                    Connection.Close();
+                                    _connection.Close();
                                 }
                             }
 
@@ -932,7 +1111,7 @@ namespace OvenLanding.Data
 
             // if (IsConnected())
             {
-                Connection.Close();
+                _connection.Close();
             }
 
             return result;
@@ -944,15 +1123,15 @@ namespace OvenLanding.Data
         /// <returns>Список нарядов на посад в печь</returns>
         public List<LandingData> GetLandingOrder()
         {
-            if (Connection.State == ConnectionState.Executing)
+            if (_connection.State == ConnectionState.Executing)
             {
-                logger.Warn("Выполняется еще предыдущий запрс");
+                _logger.Warn("Выполняется еще предыдущий запрс");
                 return new List<LandingData>();
             }
 
-            if (Connection.State == ConnectionState.Fetching)
+            if (_connection.State == ConnectionState.Fetching)
             {
-                logger.Warn("Производится выборка из предыдущего запроса");
+                _logger.Warn("Производится выборка из предыдущего запроса");
                 return new List<LandingData>();
             }
             
@@ -960,10 +1139,10 @@ namespace OvenLanding.Data
             string query = "select * from public.f_get_queue();";
             if (!IsConnected())
             {
-                Connection.Open();
+                _connection.Open();
             }
             
-            using (NpgsqlCommand comm = new NpgsqlCommand(query, Connection))
+            using (NpgsqlCommand comm = new NpgsqlCommand(query, _connection))
             {
                 using (NpgsqlDataReader reader = comm.ExecuteReader())
                 {
@@ -1007,11 +1186,11 @@ namespace OvenLanding.Data
                                 item.IngotClass = "";
                                 item.ProductCode = 0;
                                 item.Weighted = 0;
-                                logger.Error(
+                                _logger.Error(
                                     $"Ошибка при получении списка очереди заготовок на посаде печи [{ex.Message}]");
                                 // if (IsConnected())
                                 {
-                                    Connection.Close();
+                                    _connection.Close();
                                 }
                             }
 
@@ -1023,7 +1202,7 @@ namespace OvenLanding.Data
             
             // if (IsConnected())
             {
-                Connection.Close();
+                _connection.Close();
             }
 
             return result;
