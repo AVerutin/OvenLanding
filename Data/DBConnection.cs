@@ -178,7 +178,7 @@ namespace OvenLanding.Data
             return res;
         }
         
-        private bool IsConnected()
+        public bool IsConnected()
         {
             if (_connection == null)
                 return false;

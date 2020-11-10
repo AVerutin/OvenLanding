@@ -104,6 +104,9 @@ namespace OvenLanding.Pages
 
             if(!_connectedToDb)
             {
+                if(_db.IsConnected())
+                    _db.Close();
+                
                 DateTime now = DateTime.Now;
                 string msg = String.Format("[{0:G}] => {1}", now, "Не удалось подключиться к базе данных");
                 _logger.Error(msg);
