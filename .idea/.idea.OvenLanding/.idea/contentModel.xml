@@ -12,6 +12,7 @@
       <e p="bin" t="ExcludeRecursive" />
       <e p="Data" t="Include">
         <e p="ClassData.cs" t="Include" />
+        <e p="CoilData.cs" t="Include" />
         <e p="CustomerData.cs" t="Include" />
         <e p="DBConnection.cs" t="Include" />
         <e p="GostData.cs" t="Include" />
@@ -39,11 +40,15 @@
         <e p="_Host.cshtml" t="Include" />
         <e p="AddLanding.razor" t="Include" />
         <e p="AddLanding.razor.cs" t="Include" />
+        <e p="EditCoils.razor" t="Include" />
+        <e p="EditCoils.razor.cs" t="Include" />
         <e p="EditLandingData.razor" t="Include" />
         <e p="EditLandingData.razor.cs" t="Include" />
         <e p="Error.cshtml" t="Include" />
         <e p="Index.razor" t="Include" />
         <e p="Index.razor.cs" t="Include" />
+        <e p="ViewCoils.razor" t="Include" />
+        <e p="ViewCoils.razor.cs" t="Include" />
       </e>
       <e p="Program.cs" t="Include" />
       <e p="Properties" t="Include">

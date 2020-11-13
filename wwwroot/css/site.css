@@ -286,3 +286,56 @@ caption {
     left: 400px;
     top: 600px;
 }
+
+#scrollTable tr:nth-child(odd) { 
+    background: #EEE;
+}
+
+#scrollTable {
+    width: 1614px;
+}
+
+#oven {
+    display: none;
+    position: absolute;
+    top: 450px;
+    left: 270px;
+    width: 650px;
+    caption-side: top;
+}
+
+#mill {
+    display: none;
+    position: absolute;
+    top: 450px;
+    left: 930px;
+    width: 970px;
+    caption-side: top;
+}
+
+.h3 {
+    padding: 10px;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 18pt;
+    text-align: center;
+    vertical-align: middle;
+    border-bottom: 1px solid lightgrey;
+}
+
+#coilNumber {
+    display: inline;
+}
+
+#currentMelt {
+    border: 2px solid #818182;
+    border-radius: 15px;
+    width: 860px;
+    height: 900px;
+}
+
+#viewMelt {
+    border: 2px solid #818182;
+    border-radius: 15px;
+    width: 730px;
+    height: 900px;
+}

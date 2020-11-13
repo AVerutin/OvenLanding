@@ -13,28 +13,27 @@ namespace OvenLanding.Pages
     public partial class Index : IDisposable
     {
         private Logger _logger;
-        private IConfigurationRoot _config;
-        private static DBConnection _db;
-        private bool _connectedToDb;
+        private static readonly DBConnection Db = new DBConnection();
         private static List<LandingData> _landed = new List<LandingData>();
+        private static CoilData _coilData = new CoilData();
         private Timer _timer;
         
         private string _message = "";
         private string _messageClass = "";
         private string _messageVisible = "none";
         private string _semaphoreColor = "darkcyan";
+        private string _selectRow = "none";
         
-        protected override async void OnInitialized()
+        protected override void OnInitialized()
         {
             _logger = LogManager.GetCurrentClassLogger();
             _landingService.PropertyChanged += UpdateMessage;
-            await Initialize();
+            Initialize();
         }
 
         public void Dispose()
         {
             _landingService.PropertyChanged -= UpdateMessage;
-            _db.Close();
         }
 
         private void ShowMessage(MessageType type, string message)
@@ -63,17 +62,11 @@ namespace OvenLanding.Pages
             StateHasChanged();
         }
 
-        private async Task Initialize()
+        private void Initialize()
         {
-            _config = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json")
-                .Build();
-            int reconnect = Int32.Parse(_config.GetSection("DBConnection:Reconnect").Value);
-            
-            await ConnectToDb(reconnect);
             try
             {
-                _landed = _db.GetLandingOrder();
+                _landed = Db.GetLandingOrder();
             }
             catch (Exception ex)
             {
@@ -84,52 +77,12 @@ namespace OvenLanding.Pages
             SetTimer(3);
         }
 
-        private async Task ConnectToDb(int reconnect)
-        {
-            while (!_connectedToDb)
-            {
-                if(!TryConnectToDb())
-                {
-                    await Task.Delay(TimeSpan.FromMilliseconds(reconnect));
-                }
-                StateHasChanged();
-            }
-        }
-
-        private bool TryConnectToDb()
-        {
-            bool res;
-            _db = new DBConnection();
-            _connectedToDb = _db.DbInit();
-
-            if(!_connectedToDb)
-            {
-                if(_db.IsConnected())
-                    _db.Close();
-                
-                DateTime now = DateTime.Now;
-                string msg = String.Format("[{0:G}] => {1}", now, "Не удалось подключиться к базе данных");
-                _logger.Error(msg);
-                res = false;
-            }
-            else
-            {
-                // DateTime now = DateTime.Now;
-                // string msg = String.Format("[{0:G}] => {1}", now, "Подключение к БД установлено");
-                // _logger.Info(msg);
-                res = true;
-            }
-
-            return res;
-        }
-
         private void IncLanding(int uid)
         {
-            int res = -1;
             try
             {
-                res = _db.IncLanding(uid);
-                _landed = _db.GetLandingOrder();
+                Db.IncLanding(uid);
+                _landed = Db.GetLandingOrder();
                 _logger.Info($"Добавлена заготовка в плавку [{uid}]");
             }
             catch (Exception ex)
@@ -141,11 +94,10 @@ namespace OvenLanding.Pages
 
         private void DecLanding(int uid)
         {
-            int res = -1;
             try
             {
-                res = _db.DecLanding(uid);
-                _landed = _db.GetLandingOrder();
+                Db.DecLanding(uid);
+                _landed = Db.GetLandingOrder();
                 _logger.Info($"Удалена заготовка из плавки [{uid}]");
             }
             catch (Exception ex)
@@ -170,7 +122,7 @@ namespace OvenLanding.Pages
 
             try
             {
-                oldOrder = _db.GetLandingOrder();
+                oldOrder = Db.GetLandingOrder();
             }
             catch (Exception ex)
             {
@@ -219,7 +171,7 @@ namespace OvenLanding.Pages
                 {
                     ClearCurrentOrder();
                     SetNewOrder(order);
-                    List<LandingData> tmpOrder = _db.GetLandingOrder();
+                    List<LandingData> tmpOrder = Db.GetLandingOrder();
                     newCnt = tmpOrder.Count;
                 } while (oldCnt != newCnt);
 
@@ -248,7 +200,7 @@ namespace OvenLanding.Pages
 
             try
             {
-                oldOrder = _db.GetLandingOrder();
+                oldOrder = Db.GetLandingOrder();
             }
             catch (Exception ex)
             {
@@ -296,7 +248,7 @@ namespace OvenLanding.Pages
                 {
                     ClearCurrentOrder();
                     SetNewOrder(order);
-                    List<LandingData> tmpOrder = _db.GetLandingOrder();
+                    List<LandingData> tmpOrder = Db.GetLandingOrder();
                     newCnt = tmpOrder.Count;
                 } while (oldCnt != newCnt);
 
@@ -311,12 +263,23 @@ namespace OvenLanding.Pages
             }
         }
 
+        private void NextLabelNumber(int uid)
+        {
+            foreach (LandingData item in _landed)
+            {
+                if (item.Weighted > 0)
+                {
+                    _logger.Info($"Установлен номер бунта {_coilData.CoilNumber} для плавки [ID={item.LandingId}, №{item.MeltNumber}]");
+                }
+            }
+        }
+
         /// <summary>
         /// Очистить текущую очередь на посаде печи
         /// </summary>
         private void ClearCurrentOrder()
         {
-            List<LandingData> order = _db.GetLandingOrder();
+            List<LandingData> order = Db.GetLandingOrder();
             int i = 1;
             foreach (LandingData melt in order)
             {
@@ -324,7 +287,8 @@ namespace OvenLanding.Pages
                 {
                     try
                     {
-                        _db.Remove(melt.LandingId);
+                        int id = Db.Remove(melt.LandingId);
+                        _logger.Warn($"Удалена плавка [{id}] при очистке очереди");
                         Task.Delay(TimeSpan.FromMilliseconds(500));
                     }
                     catch (Exception ex)
@@ -338,7 +302,7 @@ namespace OvenLanding.Pages
 
             try
             {
-                _landed = _db.GetLandingOrder();
+                _landed = Db.GetLandingOrder();
             }
             catch (Exception ex)
             {
@@ -360,7 +324,8 @@ namespace OvenLanding.Pages
                 {
                     try
                     {
-                        _db.CreateOvenLanding(order[i]);
+                        int id = Db.CreateOvenLanding(order[i]);
+                        _logger.Warn($"Добавлена плавка [{id}] при заполнении очереди");
                         Task.Delay(TimeSpan.FromMilliseconds(500));
                     }
                     catch (Exception ex)
@@ -425,17 +390,17 @@ namespace OvenLanding.Pages
         {
             try
             {
-                _db.Remove(uid);
+                int id = Db.Remove(uid);
                 try
                 {
-                    _landed = _db.GetLandingOrder();
+                    _landed = Db.GetLandingOrder();
                 }
                 catch (Exception e)
                 {
                     _logger.Error($"Не удалось удалить плавку {uid} [{e.Message}]");
                 }
 
-                _logger.Info($"Удалена плавка [{uid}]");
+                _logger.Info($"Удалена плавка [{uid}={id}]");
             }
             catch (Exception ex)
             {
@@ -457,7 +422,7 @@ namespace OvenLanding.Pages
         {
             try
             {
-                _landed = _db.GetLandingOrder();
+                _landed = Db.GetLandingOrder();
             }
             catch (Exception ex)
             {

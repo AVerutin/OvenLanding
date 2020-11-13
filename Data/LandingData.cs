@@ -1,7 +1,11 @@
-﻿namespace OvenLanding.Data
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace OvenLanding.Data
 {
     public class LandingData
     {
+        [Required]
+        [StringLength(10, ErrorMessage = "Слишком длинный номер плавки (ограничение в 10 символов).")]
         public int LandingId { get; set; }
         public string MeltNumber { get; set; }
         public string SteelMark { get; set; }
@@ -12,7 +16,7 @@
         public int ProductCode { get; set; }
         public int IngotLength { get; set; }
         public string Standart { get; set; }
-        public int Diameter { get; set; }
+        public double Diameter { get; set; }
         public string Customer { get; set; }
         public string Shift { get; set; }
         public string IngotClass { get; set; }

@@ -1,6 +1,7 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Configuration;
 using NLog;
 using OvenLanding.Data;
@@ -22,9 +23,7 @@ namespace OvenLanding.Pages
         private List<string> _classes = new List<string>();
 
         private Logger _logger;
-        private DBConnection _db;
-        private bool _connectedToDb;
-        private IConfigurationRoot _config;
+        private DBConnection _db = new DBConnection();
         private string _showWindowAddProfile = "none";
         private string _showWindowAddSteel = "none";
         private string _showWindowAddGost = "none";
@@ -35,20 +34,14 @@ namespace OvenLanding.Pages
         private string _messageClass = "";
         private string _messageVisible = "none";
 
-        protected override async void OnInitialized()
+        protected override void OnInitialized()
         {
             _logger = LogManager.GetCurrentClassLogger();
-            await Initialize();
+            Initialize();
         }
         
-        private async Task Initialize()
+        private void Initialize()
         {
-            _config = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json")
-                .Build();
-            int reconnect = Int32.Parse(_config.GetSection("DBConnection:Reconnect").Value);
-            
-            await ConnectToDb(reconnect);
             UpdateDictionaries();
             
             try
@@ -66,7 +59,6 @@ namespace OvenLanding.Pages
         public void Dispose()
         {
             _db.SaveState(_landingData);
-            _db.Close();
         }
 
         /// <summary>
@@ -145,7 +137,7 @@ namespace OvenLanding.Pages
                     }
                     else
                     {
-                        ShowMessage(MessageType.Danger, "Не заполнено поле \"Сечение заготовки\"");
+                        ShowMessage(MessageType.Danger, "Не заполнено поле [Сечение заготовки]");
                         goto finish;
                         // _landingData.IngotProfile = "Не задано";
                     }
@@ -161,7 +153,7 @@ namespace OvenLanding.Pages
                     }
                     else
                     {
-                        ShowMessage(MessageType.Danger, "Не заполнено поле \"Марка стали\"");
+                        ShowMessage(MessageType.Danger, "Не заполнено поле [Марка стали]");
                         goto finish;
                         // _landingData.SteelMark = "Не задано";
                     }
@@ -177,7 +169,7 @@ namespace OvenLanding.Pages
                     }
                     else
                     {
-                        ShowMessage(MessageType.Danger, "Не заполнено поле \"Заказчик\"");
+                        ShowMessage(MessageType.Danger, "Не заполнено поле [Заказчик]");
                         goto finish;
                         // _landingData.Customer = "Не задано";
                     }
@@ -193,7 +185,7 @@ namespace OvenLanding.Pages
                     }
                     else
                     {
-                        ShowMessage(MessageType.Danger, "Не заполнено поле \"Стандарт\"");
+                        ShowMessage(MessageType.Danger, "Не заполнено поле [Стандарт]");
                         goto finish;
                         // _landingData.Gost = "Не задано";
                     }
@@ -209,7 +201,7 @@ namespace OvenLanding.Pages
                     }
                     else
                     {
-                        ShowMessage(MessageType.Danger, "Не заполнено поле \"Класс\"");
+                        ShowMessage(MessageType.Danger, "Не заполнено поле [Класс]");
                         goto finish;
                         // _landingData.Class = "Не задано";
                     }
@@ -218,42 +210,42 @@ namespace OvenLanding.Pages
                 // Проверка на корректность заполнения количества заготовок
                 if (_landingData.IngotsCount == 0)
                 {
-                    ShowMessage(MessageType.Danger, "Не заполнено поле \"Количество заготовок\"");
+                    ShowMessage(MessageType.Danger, "Не заполнено поле [Количество заготовок]");
                     goto finish;
                 }
                 
                 // Проверка на корректность заполнения длины заготовки
                 if (_landingData.IngotLength == 0)
                 {
-                    ShowMessage(MessageType.Danger, "Не заполнено поле \"Длина заготовки\"");
+                    ShowMessage(MessageType.Danger, "Не заполнено поле [Длина заготовки]");
                     goto finish;
                 }
                 
                 // Проверка на корректность заполнения веса заготовки
                 if (_landingData.WeightOne == 0)
                 {
-                    ShowMessage(MessageType.Danger, "Не заполнено поле \"Вес заготовки\"");
+                    ShowMessage(MessageType.Danger, "Не заполнено поле [Вес заготовки]");
                     goto finish;
                 }                
                 
                 // Проверка на корректность заполнения кода продукции
                 if (_landingData.ProductCode == 0)
                 {
-                    ShowMessage(MessageType.Danger, "Не заполнено поле \"Код продукции\"");
+                    ShowMessage(MessageType.Danger, "Не заполнено поле [Код продукции]");
                     goto finish;
                 }
                 
                 // Проверка на корректность заполнения диаметра
-                if (_landingData.Diameter == 0)
+                if ((int)_landingData.Diameter == 0)
                 {
-                    ShowMessage(MessageType.Danger, "Не заполнено поле \"Диаметр\"");
+                    ShowMessage(MessageType.Danger, "Не заполнено поле [Диаметр]");
                     goto finish;
                 }
                 
                 // Проверка на корректность заполнения номера бригады
                 if (string.IsNullOrEmpty(_landingData.Shift))
                 {
-                    ShowMessage(MessageType.Danger, "Не заполнено поле \"Бригада\"");
+                    ShowMessage(MessageType.Danger, "Не заполнено поле [Бригада]");
                     goto finish;
                     // _landingData.Shift = "Не задано";
                 }
@@ -283,7 +275,7 @@ namespace OvenLanding.Pages
             }
             else
             {
-                ShowMessage(MessageType.Danger, "Не заполнено поле \"Номер плавки\"");
+                ShowMessage(MessageType.Danger, "Не заполнено поле [Номер плавки]");
             }
             
             finish:
@@ -310,13 +302,13 @@ namespace OvenLanding.Pages
             {
                 // Добавили профиль заготовки
                 _profiles = _db.GetProfiles();
-                _logger.Info($"Добавлен профиль заготовки{profileName}");
+                _logger.Info($"Добавлен профиль заготовки [{profileName}]");
                 StateHasChanged();
             }
             else
             {
                 // Не добавили профиль заготовки
-                _logger.Error($"Не удалось добавить профиль заготовки{profileName}");
+                _logger.Error($"Не удалось добавить профиль заготовки [{profileName}]");
                 StateHasChanged();
             }
 
@@ -343,13 +335,13 @@ namespace OvenLanding.Pages
             {
                 // Добавили марку стали
                 _steels = _db.GetSteels();
-                _logger.Info($"Добавлена марка стали{steelName}");
+                _logger.Info($"Добавлена марка стали [{steelName}]");
                 StateHasChanged();
             }
             else
             {
                 // Не добавили марку стали
-                _logger.Error($"Не удалось добавить марку стали{steelName}");
+                _logger.Error($"Не удалось добавить марку стали [{steelName}]");
                 StateHasChanged();
             }
 
@@ -374,13 +366,13 @@ namespace OvenLanding.Pages
             {
                 // Добавили профиль заготовки
                 _gosts = _db.GetGosts();
-                _logger.Info($"Добавлен ГОСТ{gostName}");
+                _logger.Info($"Добавлен ГОСТ [{gostName}]");
                 StateHasChanged();
             }
             else
             {
                 // Не добавили профиль заготовки
-                _logger.Error($"Не удалось добавить ГОСТ{gostName}");
+                _logger.Error($"Не удалось добавить ГОСТ [{gostName}]");
                 StateHasChanged();
             }
 
@@ -406,13 +398,13 @@ namespace OvenLanding.Pages
             {
                 // Добавили профиль заготовки
                 _customers = _db.GetCustomers();
-                _logger.Info($"Добавлен заказчик{customerName}");
+                _logger.Info($"Добавлен заказчик [{customerName}]");
                 StateHasChanged();
             }
             else
             {
                 // Не добавили профиль заготовки
-                _logger.Error($"Не удалось добавить заказчика{customerName}");
+                _logger.Error($"Не удалось добавить заказчика [{customerName}]");
                 StateHasChanged();
             }
 
@@ -437,58 +429,17 @@ namespace OvenLanding.Pages
             {
                 // Добавили профиль заготовки
                 _classes = _db.GetClasses();
-                _logger.Info($"Добавлен класс{className}");
+                _logger.Info($"Добавлен класс [{className}]");
                 StateHasChanged();
             }
             else
             {
                 // Не добавили профиль заготовки
-                _logger.Error($"Не удалось добавить класс{className}");
+                _logger.Error($"Не удалось добавить класс [{className}]");
                 StateHasChanged();
             }
 
             _showWindowAddClass = "none";
-        }
-
-
-        private async Task ConnectToDb(int reconnect)
-        {
-            while (!_connectedToDb)
-            {
-                if(!TryConnectToDb())
-                {
-                    await Task.Delay(TimeSpan.FromMilliseconds(reconnect));
-                }
-                else
-                {
-                    await Task.Delay(TimeSpan.FromMilliseconds(200));
-                }
-                StateHasChanged();
-            }
-        }
-
-        private bool TryConnectToDb()
-        {
-            bool res;
-            _db = new DBConnection();
-            _connectedToDb = _db.DbInit();
-
-            if(!_connectedToDb)
-            {
-                DateTime now = DateTime.Now;
-                string msg = String.Format("[{0:G}] => {1}", now, "Не удалось подключиться к базе данных");
-                _logger.Error(msg);
-                res = false;
-            }
-            else
-            {
-                // DateTime now = DateTime.Now;
-                // string msg = String.Format("[{0:G}] => {1}", now, "Подключение к БД установлено");
-                // _logger.Info(msg);
-                res = true;
-            }
-
-            return res;
         }
         
         private void ShowMessage(MessageType type, string message)

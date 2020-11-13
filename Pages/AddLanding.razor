@@ -1,4 +1,4 @@
-﻿@page "/addlanding"
+﻿@page "/addLanding"
 @inject LandingService _landingService
 
 <h1>Добавить плавку в очередь</h1>
@@ -8,15 +8,15 @@
     <div class="form-row">
         <div class="form-group col-md-1">
             <label for="meltNum">Плавка №</label>
-            <InputText id="meltNum" class="form-control" placeholder="номер плавки" @bind-Value="@_landingData.MeltNumber" />
+            <InputText id="meltNum" class="form-control" placeholder="номер плавки" @bind-Value="@_landingData.MeltNumber"/>
         </div>
         <div class="form-group col-md-1">
             <label for="ingotsCount">Кол-во заготовок</label>
-            <InputNumber id="ingotsCount" class="form-control" placeholder="количество заготовок" @bind-Value="@_landingData.IngotsCount" />
+            <InputNumber id="ingotsCount" class="form-control" placeholder="количество заготовок" @bind-Value="@_landingData.IngotsCount"/>
         </div>
         <div class="form-group col-md-auto">
             <label for="ingotLength">Длина заготовки (мм)</label>
-            <InputNumber id="ingotLength"  class="form-control" placeholder="длина заготовки" @bind-Value="@_landingData.IngotLength" />
+            <InputNumber id="ingotLength" class="form-control" placeholder="длина заготовки" @bind-Value="@_landingData.IngotLength"/>
         </div>
     </div>
     <div class="form-row">
@@ -40,22 +40,22 @@
         </div>
         <div class="form-group col-md-1">
             <label for="weightOne">Вес заготовки</label>
-            <InputNumber id="weightOne" class="form-control" placeholder="вес заготовки" @bind-Value="@_landingData.WeightOne" />
+            <InputNumber id="weightOne" class="form-control" placeholder="вес заготовки" @bind-Value="@_landingData.WeightOne"/>
         </div>
         <div class="form-group col-md-1">
             <label for="productCode">Код продукции</label>
-            <InputNumber id="productCode" class="form-control" placeholder="код продукта" @bind-Value="@_landingData.ProductCode" />
+            <InputNumber id="productCode" class="form-control" placeholder="код продукта" @bind-Value="@_landingData.ProductCode"/>
         </div>
     </div>
     <div class="form-row">
         <div class="form-group col-md-2">
             <label for="customer">Заказчик</label>
-                <InputSelect id="customer" class="form-control" @bind-Value="@_landingData.Customer">
-                    @foreach (string item in _customers)
-                    {
-                        <option value="@item">@item</option>
-                    }
-                </InputSelect>
+            <InputSelect id="customer" class="form-control" @bind-Value="@_landingData.Customer">
+                @foreach (string item in _customers)
+                {
+                    <option value="@item">@item</option>
+                }
+            </InputSelect>
         </div>
         <div class="form-group col-md-1">
             <label for="gost">Стандарт</label>
@@ -70,11 +70,11 @@
     <div class="form-row">
         <div class="form-group col-md-1">
             <label for="diameter">Диаметр</label>
-            <InputNumber id="diameter" class="form-control" placeholder="диаметр" @bind-Value="@_landingData.Diameter" />
+            <InputNumber id="diameter" class="form-control" placeholder="диаметр" @bind-Value="@_landingData.Diameter"/>
         </div>
         <div class="form-group col-md-1">
             <label for="shift">Бригада</label>
-            <InputText id="shift" class="form-control" placeholder="бригада" @bind-Value="@_landingData.Shift" />
+            <InputText id="shift" class="form-control" placeholder="бригада" @bind-Value="@_landingData.Shift"/>
         </div>
         <div class="form-group col-md-1">
             <label for="class">Класс</label>

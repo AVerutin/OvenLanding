@@ -1,0 +1,91 @@
+﻿@page "/viewCoils"
+@inject LandingService _landingService
+
+<div id="viewMelt">
+    @* <div class="h3">Плавка №@_currentMelt[0].MeltNumber диаметр @_currentMelt[0].Diameter от @_currentMelt[0].DateReg</div> *@
+    <table>
+        <caption>Очередь заготовок на посаде печи</caption>
+        <tr>
+            <td>
+                <table>
+                    <tr>
+                        <th scope="col" style="vertical-align: middle; width: 100px;">Плавка<br/>№</th>
+                        <th scope="col" style="vertical-align: middle; width: 100px;">Диаметр</th>
+                        <th scope="col" style="vertical-align: middle; width: 100px;">№<br/>бунта</th>
+                        <th scope="col" style="vertical-align: middle; width: 155px;">Вес<br/>бунта</th>
+                        <th scope="col" style="vertical-align: middle; width: 250px;">Дата<br/>взвешивания</th>
+                        @* <th scope="col" style="vertical-align: middle; width: 123px;">Сброс<br/>бунта</th> *@
+                        <th scope="col" style="vertical-align: middle; width: 15px;">&nbsp;</th>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div style="height:780px; overflow:auto;">
+                    <table class="table table-hover">
+                        <tbody>
+                        @foreach (CoilData item in _meltsToReset)
+                        {
+                            <tr>
+                                <td style="width: 100px;">@item.MeltNumber</td>
+                                <td style="width: 100px;">@item.Diameter</td>
+                                <td style="width: 100px;">@item.CoilNumber</td>
+                                <td style="width: 155px;">@item.WeightFact</td>
+                                <td style="width: 250px;">@item.DateWeight</td>
+                                @* <td style="width: 123px;">
+                                    <button class="btn btn-primary" @onclick="@(() => ResetCoil(item.CoilUid))">&#8634;</button>
+                                </td> *@
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+
+@*
+<div id="previousMelt">
+    <div class="h3">Плавка №@_previousMelt[0].MeltNumber диаметр @_previousMelt[0].Diameter от @_previousMelt[0].DateReg</div>
+    <table>
+        <caption>Очередь заготовок на посаде печи</caption>
+        <tr>
+            <td>
+                <table>
+                    <tr>
+                        <th scope="col" style="vertical-align: middle; width: 100px;">№<br/>бунта</th>
+                        <th scope="col" style="vertical-align: middle; width: 155px;">Вес<br/>фактический</th>
+                        <th scope="col" style="vertical-align: middle; width: 250px;">Дата<br/>взвешивания</th>
+                        <th scope="col" style="vertical-align: middle; width: 114px;">Вес<br/>бунта</th>
+                        <th scope="col" style="vertical-align: middle; width: 123px;">Сброс<br/>бунта</th>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div style="height:750px; overflow:auto;">
+                    <table class="table table-hover">
+                        <tbody>
+                        @foreach (CoilData item in _previousMelt)
+                        {
+                            <tr>
+                                <td style="width: 100px;">@item.CoilNumber</td>
+                                <td style="width: 155px;">@item.WeightFact</td>
+                                <td style="width: 250px;">@item.DateWeight</td>
+                                <td style="width: 114px;">@item.WeightFact</td>
+                                <td style="width: 123px;">
+                                    <button class="btn btn-primary" @onclick="@(() => ResetCoil(item.CoilUid))">&#8634;</button>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+*@
