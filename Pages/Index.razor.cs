@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using NLog;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 using OvenLanding.Data;
 using System.Timers;
-using NLog.LayoutRenderers;
 
 namespace OvenLanding.Pages
 {

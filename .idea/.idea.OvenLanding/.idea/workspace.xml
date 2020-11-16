@@ -18,23 +18,11 @@
     </select>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="97baf1e9-2485-46d7-b3c2-3bfb354916b0" name="Default Changelist" comment="Before insert changes into index page layout">
-      <change afterPath="$PROJECT_DIR$/Data/CoilData.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Pages/EditCoils.razor" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Pages/EditCoils.razor.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Pages/ViewCoils.razor" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Pages/ViewCoils.razor.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.OvenLanding/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.OvenLanding/.idea/contentModel.xml" afterDir="false" />
+    <list default="true" id="97baf1e9-2485-46d7-b3c2-3bfb354916b0" name="Default Changelist" comment="Add reset weight for last coil in melt and view all coils in two last melts">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.OvenLanding/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.OvenLanding/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/DBConnection.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Data/DBConnection.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/LandingData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Data/LandingData.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Pages/AddLanding.razor" beforeDir="false" afterPath="$PROJECT_DIR$/Pages/AddLanding.razor" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Pages/AddLanding.razor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Pages/AddLanding.razor.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Pages/EditLandingData.razor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Pages/EditLandingData.razor.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Pages/Index.razor" beforeDir="false" afterPath="$PROJECT_DIR$/Pages/Index.razor" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Pages/Index.razor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Pages/Index.razor.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Shared/NavMenu.razor" beforeDir="false" afterPath="$PROJECT_DIR$/Shared/NavMenu.razor" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wwwroot/css/site.css" beforeDir="false" afterPath="$PROJECT_DIR$/wwwroot/css/site.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -91,21 +79,21 @@
         <option value="$PROJECT_DIR$/Pages/_Host.cshtml" />
         <option value="$PROJECT_DIR$/Pages/EditLandingData.razor.cs" />
         <option value="$PROJECT_DIR$/Data/LabelData.cs" />
-        <option value="$PROJECT_DIR$/Pages/AddLanding.razor.cs" />
         <option value="$PROJECT_DIR$/Data/LandingData.cs" />
-        <option value="$PROJECT_DIR$/Pages/Index.razor.cs" />
         <option value="$PROJECT_DIR$/Pages/EditCoils.cshtml" />
         <option value="$PROJECT_DIR$/Pages/AddLanding.razor" />
         <option value="$PROJECT_DIR$/Data/CoilsToReset.cs" />
         <option value="$PROJECT_DIR$/Data/CoilData.cs" />
         <option value="$PROJECT_DIR$/Pages/EditCoils.razor.cs" />
         <option value="$PROJECT_DIR$/Pages/Index.razor" />
-        <option value="$PROJECT_DIR$/Shared/NavMenu.razor" />
         <option value="$PROJECT_DIR$/Pages/ViewCoils.razor.cs" />
         <option value="$PROJECT_DIR$/Data/DBConnection.cs" />
         <option value="$PROJECT_DIR$/Pages/ViewCoils.razor" />
         <option value="$PROJECT_DIR$/wwwroot/css/site.css" />
         <option value="$PROJECT_DIR$/Pages/EditCoils.razor" />
+        <option value="$PROJECT_DIR$/Shared/NavMenu.razor" />
+        <option value="$PROJECT_DIR$/Pages/Index.razor.cs" />
+        <option value="$PROJECT_DIR$/Pages/AddLanding.razor.cs" />
       </list>
     </option>
   </component>
@@ -188,7 +176,7 @@
       <workItem from="1604653926304" duration="5980000" />
       <workItem from="1604664982547" duration="13930000" />
       <workItem from="1604988317104" duration="67324000" />
-      <workItem from="1605243286230" duration="21077000" />
+      <workItem from="1605243286230" duration="25292000" />
     </task>
     <task id="LOCAL-00001" summary="Complete">
       <created>1603176593286</created>
@@ -253,7 +241,14 @@
       <option name="project" value="LOCAL" />
       <updated>1605001110506</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Add reset weight for last coil in melt and view all coils in two last melts">
+      <created>1605274011195</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1605274011195</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -285,7 +280,8 @@
     <MESSAGE value="Add edit melts in order and moving to up and to down" />
     <MESSAGE value="Add ban to moving up or down when next melt has weighted ingots" />
     <MESSAGE value="Before insert changes into index page layout" />
-    <option name="LAST_COMMIT_MESSAGE" value="Before insert changes into index page layout" />
+    <MESSAGE value="Add reset weight for last coil in melt and view all coils in two last melts" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add reset weight for last coil in melt and view all coils in two last melts" />
   </component>
   <component name="WindowStateProjectService">
     <state width="536" height="618" key="DebuggerActiveHint" timestamp="1605260928174">
@@ -297,26 +293,26 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="92" y="92" width="1736" height="856" key="DiffContextDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1604572745187" />
-    <state width="1877" height="198" key="GridCell.Tab.0.bottom" timestamp="1605273933420">
+    <state width="1877" height="198" key="GridCell.Tab.0.bottom" timestamp="1605530241992">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1237" height="261" key="GridCell.Tab.0.bottom/0.0.1280.984@0.0.1280.984" timestamp="1604147895093" />
-    <state width="1877" height="198" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1605273933420" />
-    <state width="1877" height="198" key="GridCell.Tab.0.center" timestamp="1605273933420">
+    <state width="1877" height="198" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1605530241992" />
+    <state width="1877" height="198" key="GridCell.Tab.0.center" timestamp="1605530241966">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1237" height="261" key="GridCell.Tab.0.center/0.0.1280.984@0.0.1280.984" timestamp="1604147895093" />
-    <state width="1877" height="198" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1605273933420" />
-    <state width="1877" height="198" key="GridCell.Tab.0.left" timestamp="1605273933420">
+    <state width="1877" height="198" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1605530241966" />
+    <state width="1877" height="198" key="GridCell.Tab.0.left" timestamp="1605530241926">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1237" height="261" key="GridCell.Tab.0.left/0.0.1280.984@0.0.1280.984" timestamp="1604147895093" />
-    <state width="1877" height="198" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1605273933420" />
-    <state width="1877" height="198" key="GridCell.Tab.0.right" timestamp="1605273933420">
+    <state width="1877" height="198" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1605530241926" />
+    <state width="1877" height="198" key="GridCell.Tab.0.right" timestamp="1605530241967">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1237" height="261" key="GridCell.Tab.0.right/0.0.1280.984@0.0.1280.984" timestamp="1604147895093" />
-    <state width="1877" height="198" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1605273933420" />
+    <state width="1877" height="198" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1605530241967" />
     <state width="1877" height="278" key="GridCell.Tab.1.bottom" timestamp="1605270973504">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -397,10 +393,10 @@
     </state>
     <state width="1237" height="261" key="GridCell.Tab.4.right/0.0.1280.984@0.0.1280.984" timestamp="1604147895093" />
     <state width="1877" height="278" key="GridCell.Tab.4.right/0.0.1920.1040@0.0.1920.1040" timestamp="1605270973506" />
-    <state x="552" y="252" key="Rider.ProjectTemplateDialog.Size" timestamp="1603883020680">
+    <state x="552" y="252" key="Rider.ProjectTemplateDialog.Size" timestamp="1605510594916">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="552" y="252" key="Rider.ProjectTemplateDialog.Size/0.0.1920.1040@0.0.1920.1040" timestamp="1603883020680" />
+    <state x="552" y="252" key="Rider.ProjectTemplateDialog.Size/0.0.1920.1040@0.0.1920.1040" timestamp="1605510594916" />
     <state x="710" y="151" width="743" height="774" key="RiderGenerateDialog" timestamp="1605189359230">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -409,11 +405,11 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="92" y="92" width="1736" height="856" key="VCS.FileHistoryDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1604384065782" />
-    <state x="552" y="249" key="Vcs.Push.Dialog.v2" timestamp="1605001117797">
+    <state x="552" y="249" key="Vcs.Push.Dialog.v2" timestamp="1605274021542">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="368" y="236" key="Vcs.Push.Dialog.v2/0.0.1280.984@0.0.1280.984" timestamp="1604147876199" />
-    <state x="552" y="249" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1605001117797" />
+    <state x="552" y="249" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1605274021542" />
     <state x="92" y="92" width="1736" height="856" key="com.intellij.history.integration.ui.views.DirectoryHistoryDialog" timestamp="1604572745187">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -432,13 +428,13 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/Pages/Index.razor.cs</url>
-          <line>267</line>
+          <line>265</line>
           <properties documentPath="E:\Projects\NET\OvenLanding\Pages\Index.razor.cs" initialLine="265">
             <startOffsets>
-              <option value="8470" />
+              <option value="8400" />
             </startOffsets>
             <endOffsets>
-              <option value="8507" />
+              <option value="8437" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="14" />

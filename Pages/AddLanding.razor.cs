@@ -53,6 +53,10 @@ namespace OvenLanding.Pages
                 _landingData = new LandingData();
                 _logger.Error($"Не удалось получить предыдущее состояние полей ввода [{ex.Message}]");
             }
+
+            int shift = GetShiftNumber(DateTime.Now);
+            _landingData.Shift = shift.ToString();
+            
             StateHasChanged();
         }
         
@@ -115,6 +119,19 @@ namespace OvenLanding.Pages
                 _classes = new List<string>();
                 _logger.Error($"Не удалось получить список классов [{ex.Message}]");
             }
+        }
+        
+        private static int GetShiftNumber(DateTime date)
+        {
+            int[] shifts = {1, 4, 2, 1, 3, 2, 4, 3};
+            DateTime startDate = DateTime.Parse("2020-01-01 08:00:00");
+            
+            TimeSpan dateInterval = date - startDate;
+            int shiftIndex = (int)(dateInterval.TotalHours / 12) % 8;
+
+            int shift = shifts[shiftIndex];
+
+            return shift;
         }
 
         /// <summary>
