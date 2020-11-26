@@ -129,18 +129,20 @@ namespace OvenLanding.Data
             // Создание таблицы заготовок на посаде печи
             query = "create table if not exists public.oven_landing (" +
                     "id serial not null, " +
-                    "melt_number varchar(15) not null, " +
-                    "ingots_count integer not null, " +
-                    "ingot_length integer not null, " +
-                    "steel_mark varchar(25) not null, " +
-                    "ingot_profile varchar(10) not null, " +
-                    "ingot_weight integer not null, " +
-                    "production_code integer not null, " +
-                    "customer varchar(150) not null, " +
-                    "standart varchar(150) not null, " +
-                    "diameter float not null, " +
-                    "shift varchar(15) not null, " +
-                    "class varchar(50) not null, " +
+                    "melt_number varchar(15), " +
+                    "ingots_count numeric, " +
+                    "ingot_length numeric, " +
+                    "steel_mark varchar(25), " +
+                    "ingot_profile varchar(10), " +
+                    "ingot_weight numeric, " +
+                    "production_code numeric, " +
+                    "customer varchar(150), " +
+                    "standart varchar(150), " +
+                    "diameter numeric, " +
+                    "shift varchar(15), " +
+                    "class varchar(50), " +
+                    "specification varchar(50), " +
+                    "lot numeric, " +
                     "constraint oven_landing_pk primary key (id)); " +
                     "comment on table public.oven_landing is 'Сохранение данных полей формы ввода'; " +
                     "alter table public.oven_landing owner to mts;";
@@ -201,6 +203,20 @@ namespace OvenLanding.Data
                     }
                 }
 
+                if (oldMelt.ProductProfile != newMelt.ProductProfile)
+                {
+                    res = ChangeParam(newMelt.LandingId, LandingParam.ProductProfile, newMelt.ProductProfile);
+                    if (!res)
+                    {
+                        _logger.Error(
+                            $"[{_exceptionCode}] => Ошибка при изменении профиля годной продукции и для плавки №{newMelt.LandingId} на [{newMelt.ProductProfile}]");
+                    }
+                    else
+                    {
+                        _logger.Info($"Для плавки №{newMelt.LandingId} изменен профиль годной продукции с [{oldMelt.ProductProfile}] на [{newMelt.ProductProfile}]");
+                    }
+                }
+
                 if (oldMelt.IngotLength != newMelt.IngotLength)
                 {
                     res = ChangeParam(newMelt.LandingId, LandingParam.IngotLength, newMelt.IngotLength.ToString());
@@ -214,6 +230,20 @@ namespace OvenLanding.Data
                         _logger.Info($"Для плавки №{newMelt.LandingId} изменена длины заготовки с [{oldMelt.IngotLength}] на [{newMelt.IngotLength}]");
                     }
                 }
+
+                // if (oldMelt.Shift != newMelt.Shift)
+                // {
+                //     res = ChangeParam(newMelt.LandingId, LandingParam.ShiftNumber, newMelt.Shift);
+                //     if (!res)
+                //     {
+                //         _logger.Error(
+                //             $"[{_exceptionCode}] => Ошибка при изменении номера бригады для плавки №{newMelt.LandingId} на [{newMelt.Shift}]");
+                //     }
+                //     else
+                //     {
+                //         _logger.Info($"Для плавки №{newMelt.LandingId} изменен номер бригады с [{oldMelt.Shift}] на [{newMelt.Shift}]");
+                //     }
+                // }
 
                 if (oldMelt.Standart != newMelt.Standart)
                 {
@@ -314,33 +344,7 @@ namespace OvenLanding.Data
                         _logger.Info($"Для плавки №{newMelt.LandingId} изменен код продукции с [{oldMelt.ProductCode}] на [{newMelt.ProductCode}]");
                     }
                 }
-
-                if (oldMelt.IngotsCount != newMelt.IngotsCount)
-                {
-                    res = ChangeParam(newMelt.LandingId, LandingParam.IngotsCount, newMelt.IngotsCount.ToString());
-                    if (!res)
-                    {
-                        _logger.Error(
-                            $"[{_exceptionCode}] => Ошибка при изменении количества заготовок для плавки №{newMelt.LandingId} на [{newMelt.IngotsCount}]");
-                    }
-                    else
-                    {
-                        _logger.Info($"Для плавки №{newMelt.LandingId} изменено количество заготовок с [{oldMelt.IngotsCount}] на [{newMelt.IngotsCount}]");
-                    }
-
-                    int weightAll = newMelt.IngotsCount * newMelt.WeightOne;
-                    res = ChangeParam(newMelt.LandingId, LandingParam.WeightAll, weightAll.ToString());
-                    if (!res)
-                    {
-                        _logger.Error(
-                            $"[{_exceptionCode}] => Ошибка при изменении веса всех заготовок для плавки №{newMelt.LandingId} на [{weightAll}]");
-                    }
-                    else
-                    {
-                        _logger.Info($"Для плавки №{newMelt.LandingId} изменен вес всех заготовок с [{oldMelt.WeightAll}] на [{weightAll}]");
-                    }
-                }
-
+                
                 if(oldMelt.WeightOne!=newMelt.WeightOne)
                 {
                     res = ChangeParam(newMelt.LandingId, LandingParam.WeightOne, newMelt.WeightOne.ToString());
@@ -419,20 +423,20 @@ namespace OvenLanding.Data
             if (lastId == 0)
             {
                 query = "insert into public.oven_landing (melt_number, ingots_count, ingot_length, steel_mark, " +
-                        "ingot_profile, ingot_weight, production_code, customer, standart, diameter, shift, class) VALUES (" +
-                        "'{0}', {1}, {2}, '{3}', '{4}', {5}, {6}, '{7}', '{8}', {9}, '{10}', '{11}');";
+                        "ingot_profile, ingot_weight, production_code, customer, standart, diameter, shift, class, product_profile, specification, lot) VALUES (" +
+                        "'{0}', {1}, {2}, '{3}', '{4}', {5}, {6}, '{7}', '{8}', {9}, '{10}', '{11}', '{12}', '{13}', {14});";
             }
             else
             {
                 query = "update public.oven_landing set melt_number='{0}', ingots_count={1}, ingot_length={2}, steel_mark='{3}', " +
                         "ingot_profile='{4}', ingot_weight={5}, production_code={6}, customer='{7}', standart='{8}', diameter={9}, " +
-                        "shift='{10}', class='{11}' where id={12};";
+                        "shift='{10}', class='{11}', product_profile='{12}', specification='{13}', lot={14} where id={15};";
             }
 
             string diam = state.Diameter.ToString("F1").Replace(",", ".");
             query = string.Format(query, state.MeltNumber, state.IngotsCount, state.IngotLength, state.SteelMark,
                 state.IngotProfile, state.WeightOne, state.ProductCode, state.Customer, state.Standart, diam,
-                state.Shift, state.IngotClass, lastId);
+                state.Shift, state.IngotClass, state.ProductProfile, state.Specification, state.Lot, lastId);
 
             bool res = WriteData(query);
             if (!res)
@@ -481,6 +485,14 @@ namespace OvenLanding.Data
                                 result.Diameter = double.Parse(diam);
                                 result.Shift = dataTable.Rows[i][11].ToString();
                                 result.IngotClass = dataTable.Rows[i][12].ToString();
+                                result.Specification = dataTable.Rows[i][13].ToString();
+                                
+                                string lot = dataTable.Rows[i][14].ToString() ?? "0";
+                                if (string.IsNullOrEmpty(lot))
+                                    lot = "0";
+                                result.Lot = int.Parse(lot);
+                                result.ProductProfile = dataTable.Rows[i][15].ToString();
+
                             }
                             catch (Exception ex)
                             {
@@ -963,7 +975,7 @@ namespace OvenLanding.Data
             string query =
                 $"SELECT public.f_create_queue ('{data.MeltNumber}', '{data.IngotProfile}', '{data.SteelMark}', " +
                 $"{data.IngotsCount}, {data.WeightAll}, {data.WeightOne}, {data.IngotLength}, '{data.Standart}', " +
-                $"{diam}, '{data.Customer}', '{data.Shift}', '{data.IngotClass}', {data.ProductCode});";
+                $"{diam}, '{data.Customer}', '{data.Shift}', '{data.IngotClass}', {data.ProductCode}, '{data.ProductProfile}');";
 
             int result = -1;
             
@@ -1043,7 +1055,8 @@ namespace OvenLanding.Data
                                 item.Shift = dataTable.Rows[i][11].ToString();
                                 item.IngotClass = dataTable.Rows[i][12].ToString();
                                 item.ProductCode = int.Parse(dataTable.Rows[i][13].ToString() ?? "0");
-                                item.Weighted = int.Parse(dataTable.Rows[i][14].ToString() ?? "0");
+                                item.ProductProfile = dataTable.Rows[i][14].ToString();
+                                item.Weighted = int.Parse(dataTable.Rows[i][15].ToString() ?? "0");
                             }
                             catch (Exception ex)
                             {
@@ -1164,7 +1177,7 @@ namespace OvenLanding.Data
             return result;
         }
 
-        private List<CoilData> GetCoilsByMelt(string melt, double diameter, bool last=true)
+        public List<CoilData> GetCoilsByMelt(string melt, double diameter, bool last=true)
         {
             List<CoilData> result = new List<CoilData>();
             DataTable dataTable = new DataTable();
@@ -1203,67 +1216,57 @@ namespace OvenLanding.Data
                                 
                                 val = dataTable.Rows[i][9].ToString();
                                 if (string.IsNullOrEmpty(val))
+                                    val = " ";
+                                item.ProductionProfile = val;
+
+                                val = dataTable.Rows[i][10].ToString();
+                                if (string.IsNullOrEmpty(val))
                                     val = "0";
                                 val = val.Replace(".", ",");
                                 item.Diameter = double.Parse(val);
-                                
-                                val = dataTable.Rows[i][14].ToString();
-                                if (string.IsNullOrEmpty(val))
-                                    val = "0";
-                                item.CoilUid = int.Parse(val);
-                                
+
                                 val = dataTable.Rows[i][15].ToString();
                                 if (string.IsNullOrEmpty(val))
                                     val = "0";
-                                item.CoilPos = int.Parse(val);
-                                
+                                item.CoilUid = int.Parse(val);
+
                                 val = dataTable.Rows[i][16].ToString();
                                 if (string.IsNullOrEmpty(val))
                                     val = "0";
-                                item.CoilNumber = int.Parse(val);
+                                item.CoilPos = int.Parse(val);
 
                                 val = dataTable.Rows[i][17].ToString();
                                 if (string.IsNullOrEmpty(val))
                                     val = "0";
-                                item.WeightFact = int.Parse(val);
+                                item.CoilNumber = int.Parse(val);
 
                                 val = dataTable.Rows[i][18].ToString();
                                 if (string.IsNullOrEmpty(val))
+                                    val = "0";
+                                item.WeightFact = int.Parse(val);
+
+                                val = dataTable.Rows[i][19].ToString();
+                                if (string.IsNullOrEmpty(val))
+                                    val = "0";
+                                item.ShiftNumber = val;
+
+                                val = dataTable.Rows[i][22].ToString();
+                                if (string.IsNullOrEmpty(val))
                                     val = "01-01-2020 00:00:00";
                                 item.DateReg = DateTime.Parse(val);
-                                
-                                val = dataTable.Rows[i][19].ToString();
+
+                                val = dataTable.Rows[i][23].ToString();
                                 if (string.IsNullOrEmpty(val))
                                     val = "01-01-2020 00:00:00";
                                 item.DateWeight = DateTime.Parse(val);
-                                
-                                // 0 c_id_posad numeric, 
-                                // 1 c_melt text, 
-                                // 2 c_steel_grade text, 
-                                // 3 c_section text, 
-                                // 4 c_count numeric, 
-                                // 5 c_weight_all numeric, 
-                                // 6 c_weight_one numeric, 
-                                // 7 c_length numeric, 
-                                // 8 c_gost text, 
-                                // 9 c_diameter numeric, 
-                                // 10 c_customer text, 
-                                // 11 c_shift text, 
-                                // 12 c_class text, 
-                                // 13 c_prod_code numeric, 
-                                //
-                                // 14 c_id_coil numeric, -- идентификатор бунта
-                                // 15 c_pos numeric, -- номер пп внутри посада
-                                // 16 c_num_coil numeric,-- номер бунта, присвоенный при взвешивании (начинается со 101)
-                                // 17 c_weight_fact numeric, -- вес фактический
-                                // 18 c_date_reg timestamp, -- дата регистрации посада
-                                // 19 c_date_weight timestamp) -- время взвешивания
+
                             }
                             catch (Exception ex)
                             {
-                                _logger.Error($"Не удалось получить список бунтов для плавки №{melt} с диаметром {diam} [{ex.Message}]");
+                                _logger.Error(
+                                    $"Не удалось получить список бунтов для плавки №{melt} с диаметром {diam} [{ex.Message}]");
                             }
-                            
+
                             result.Add(item);
                         }
                     }

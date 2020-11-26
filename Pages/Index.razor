@@ -16,15 +16,16 @@
                     <tr>
                         @* <th scope="col">№<br />п/п</th> *@
                         <th scope="col" style="vertical-align: middle; width: 88px;">№<br/>плавки</th>
-                        <th scope="col" style="vertical-align: middle; width: 105px;">Марка<br/>стали</th>
-                        <th scope="col" style="vertical-align: middle; width: 100px;">Диаметр</th>
+                        <th scope="col" style="vertical-align: middle; width: 88px;">Профиль</th>
+                        <th scope="col" style="vertical-align: middle; width: 100px;">Диаметр<br />профиля</th>
+                        <th scope="col" style="vertical-align: middle; width: 105px;">Марка<br />стали</th>
                         <th scope="col" style="vertical-align: middle; width: 155px;">Код продукции</th>
-                        <th scope="col" style="vertical-align: middle; width: 112px;">Сечение<br/>заготовки</th>
-                        <th scope="col" style="vertical-align: middle; width: 129px;">Количество<br/>заготовок</th>
-                        <th scope="col" style="vertical-align: middle; width: 114px;">Взвешено<br/>бунтов</th>
-                        <th scope="col" style="vertical-align: middle; width: 123px;">Общий вес<br/>заготовок</th>
-                        <th scope="col" style="vertical-align: middle; width: 118px;">Вес одной<br/>заготовки</th>
-                        <th scope="col" style="vertical-align: middle; width: 124px;">Длина (мм)<br/>заготовки</th>
+                        <th scope="col" style="vertical-align: middle; width: 112px;">Сечение<br />заготовки</th>
+                        <th scope="col" style="vertical-align: middle; width: 129px;">Количество<br />заготовок</th>
+                        <th scope="col" style="vertical-align: middle; width: 114px;">Взвешено<br />бунтов</th>
+                        <th scope="col" style="vertical-align: middle; width: 123px;">Общий вес<br />заготовок</th>
+                        <th scope="col" style="vertical-align: middle; width: 118px;">Вес одной<br />заготовки</th>
+                        <th scope="col" style="vertical-align: middle; width: 124px;">Длина (мм)<br />заготовки</th>
                         <th scope="col" style="vertical-align: middle; width: 132px;">Количество</th>
                         <th scope="col" style="vertical-align: middle; width: 128px;">Порядок</th>
                         <th scope="col" style="vertical-align: middle; width: 90px;">Правка</th>
@@ -50,8 +51,9 @@
  
                                 @* <th scope="row">@item.LandingId</th> *@
                                 <th scope="row" style="width: 88px;">@item.MeltNumber</th>
-                                <td style="width: 105px;">@item.SteelMark</td>
+                                <td style="width: 88px;">@item.ProductProfile</td>
                                 <td style="width: 100px;">@item.Diameter</td>
+                                <td style="width: 105px;">@item.SteelMark</td>
                                 <td style="width: 155px;">@item.ProductCode</td>
                                 <td style="width: 112px;">@item.IngotProfile</td>
                                 <td style="width: 129px;">@item.IngotsCount</td>

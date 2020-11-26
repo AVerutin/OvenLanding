@@ -24,9 +24,10 @@ namespace OvenLanding.Data
         public int CoilPos { get; set; }             // c_pos [numeric], -- номер пп внутри посада
         public int CoilNumber { get; set; }          // c_num_coil [numeric],-- номер бунта, присвоенный при взвешивании (начинается со 101)
         public int WeightFact { get; set; }          // c_weight_fact [numeric], -- вес фактический
+        public string ShiftNumber { get; set; }      // c_shift_number [text], -- номер бригады
+        public string ProductionProfile { get; set; }// c_profile [text], -- профиль готовой продукции
         public DateTime DateReg { get; set; }        // c_date_reg [timestamp], -- дата регистрации посада
         public DateTime DateWeight { get; set; }     // c_date_weight [timestamp] -- время взвешивания
-        public bool NeedToReset { get; set; }        // Признак сброса веса бунта и его перевески
 
         public CoilData()
         {
@@ -48,9 +49,10 @@ namespace OvenLanding.Data
             CoilPos = default;
             CoilNumber = default;
             WeightFact = default;
+            ShiftNumber = default;
             DateReg = default;
             DateWeight = default;
-            NeedToReset = default;
+            ProductionProfile = default;
         }
     }
 }

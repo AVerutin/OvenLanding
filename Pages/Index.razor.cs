@@ -375,6 +375,8 @@ namespace OvenLanding.Pages
                     orig.Shift = item.Shift;
                     edit.IngotClass = item.IngotClass;
                     orig.IngotClass = item.IngotClass;
+                    edit.ProductProfile = item.ProductProfile;
+                    orig.ProductProfile = item.ProductProfile;
                     break;
                 }
             }
@@ -424,7 +426,7 @@ namespace OvenLanding.Pages
             }
             catch (Exception ex)
             {
-                // _logger.Error($"Не удалось получить очередь на посаде [{ex.Message}]");
+                _logger.Error($"Не удалось получить очередь на посаде [{ex.Message}]");
             }
 
             _landingService.IngotsCount = DateTime.Now.Millisecond;

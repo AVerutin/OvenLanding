@@ -16,11 +16,14 @@ namespace OvenLanding.Data
         public int ProductCode { get; set; }
         public int IngotLength { get; set; }
         public string Standart { get; set; }
+        public string ProductProfile { get; set; }
         public double Diameter { get; set; }
         public string Customer { get; set; }
         public string Shift { get; set; }
         public string IngotClass { get; set; }
         public int Weighted { get; set; }
+        public string Specification { get; set; }
+        public int Lot { get; set; }
 
         public LandingData()
         {
@@ -33,11 +36,14 @@ namespace OvenLanding.Data
             IngotLength = 0;
             WeightOne = 0;
             ProductCode = 0;
+            ProductProfile = default;
             Diameter = default;
             Customer = default;
             Shift = default;
             IngotClass = default;
             Weighted = default;
+            Specification = default;
+            Lot = default;
         }
     }
 }

@@ -1,10 +1,10 @@
 ﻿@page "/viewCoils"
-@inject LandingService _landingService
+@* inject LandingService _landingService *@
 
 <div id="viewMelt">
     @* <div class="h3">Плавка №@_currentMelt[0].MeltNumber диаметр @_currentMelt[0].Diameter от @_currentMelt[0].DateReg</div> *@
     <table>
-        <caption>Очередь заготовок на посаде печи</caption>
+        <caption>Список бунтов</caption>
         <tr>
             <td>
                 <table>
@@ -22,21 +22,37 @@
         </tr>
         <tr>
             <td>
-                <div style="height:780px; overflow:auto;">
+                <div style="height:830px; overflow:auto;">
                     <table class="table table-hover">
                         <tbody>
-                        @foreach (CoilData item in _meltsToReset)
+                        @foreach (CoilData item in _selectedMelts)
                         {
-                            <tr>
-                                <td style="width: 100px;">@item.MeltNumber</td>
-                                <td style="width: 100px;">@item.Diameter</td>
-                                <td style="width: 100px;">@item.CoilNumber</td>
-                                <td style="width: 155px;">@item.WeightFact</td>
-                                <td style="width: 250px;">@item.DateWeight</td>
-                                @* <td style="width: 123px;">
+                            if (!string.IsNullOrEmpty(item.MeltNumber))
+                            {
+                                <tr>
+                                    <td style="width: 100px;">@item.MeltNumber</td>
+                                    <td style="width: 100px;">@item.Diameter</td>
+                                    <td style="width: 100px;">@item.CoilNumber</td>
+                                    <td style="width: 155px;">@item.WeightFact</td>
+                                    <td style="width: 250px;">@item.DateWeight</td>
+                                    @* <td style="width: 123px;">
                                     <button class="btn btn-primary" @onclick="@(() => ResetCoil(item.CoilUid))">&#8634;</button>
                                 </td> *@
-                            </tr>
+                                </tr>
+                            }
+                            else
+                            {
+                                <tr style="background-color: #eeeeee">
+                                    <td style="width: 100px;">&nbsp;</td>
+                                    <td style="width: 100px;">&nbsp;</td>
+                                    <td style="width: 100px;">&nbsp;</td>
+                                    <td style="width: 155px;">&nbsp;</td>
+                                    <td style="width: 250px;">&nbsp;</td>
+                                    @* <td style="width: 123px;">
+                                    <button class="btn btn-primary" @onclick="@(() => ResetCoil(item.CoilUid))">&#8634;</button>
+                                </td> *@
+                                </tr>
+                            }
                         }
                         </tbody>
                     </table>

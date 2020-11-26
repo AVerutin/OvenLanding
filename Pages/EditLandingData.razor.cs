@@ -16,6 +16,7 @@ namespace OvenLanding.Pages
         private List<string> _gosts = new List<string>();
         private List<string> _customers = new List<string>();
         private List<string> _classes = new List<string>();
+        private Shift _shift = new Shift();
         
         // private IConfigurationRoot _config;
         private Logger _logger;
@@ -88,6 +89,117 @@ namespace OvenLanding.Pages
 
         private async void EditLanding()
         {
+            // Проверка на корректность заполнения сечения заготовки
+            if (string.IsNullOrEmpty(_editData.IngotProfile))
+            {
+                _profiles = _db.GetProfiles();
+                if (_profiles.Count > 0)
+                {
+                    _editData.IngotProfile = _profiles[0];
+                }
+                else
+                {
+                    _editData.IngotProfile = "0";
+                }
+            }
+
+            // Проверка на корректность заполнения марки стали
+            if (string.IsNullOrEmpty(_editData.SteelMark))
+            {
+                _steels = _db.GetSteels();
+                if (_steels.Count > 0)
+                {
+                    _editData.SteelMark = _steels[0];
+                }
+                else
+                {
+                    _editData.SteelMark = "Не задано";
+                }
+            }
+
+            // Проверка на корректность заполнения заказчика
+            if (string.IsNullOrEmpty(_editData.Customer))
+            {
+                _customers = _db.GetCustomers();
+                if (_customers.Count > 0)
+                {
+                    _editData.Customer = _customers[0];
+                }
+                else
+                {
+                    _editData.Customer = "Не задано";
+                }
+            }
+
+            // Проверка на корректность заполнения ГОСТа
+            if (string.IsNullOrEmpty(_editData.Standart))
+            {
+                _gosts = _db.GetGosts();
+                if (_gosts.Count > 0)
+                {
+                    _editData.Standart = _gosts[0];
+                }
+                else
+                {
+                    _editData.Standart = "Не задано";
+                }
+            }
+
+            // Проверка на корректность заполнения класса
+            if (string.IsNullOrEmpty(_editData.IngotClass))
+            {
+                _classes = _db.GetClasses();
+                if (_classes.Count > 0)
+                {
+                    _editData.IngotClass = _classes[0];
+                }
+                else
+                {
+                    _editData.IngotClass = "Не задано";
+                }
+            }
+
+            // Проверка на корректность заполнения длины заготовки
+            if (_editData.IngotLength == 0)
+            {
+                ShowMessage(MessageType.Danger, "Не заполнено поле [Длина заготовки]");
+                goto finish;
+            }
+
+            // Проверка на корректность заполнения веса заготовки
+            if (_editData.WeightOne == 0)
+            {
+                ShowMessage(MessageType.Danger, "Не заполнено поле [Вес заготовки]");
+                goto finish;
+            }
+
+            // Проверка на корректность заполнения кода продукции
+            if (_editData.ProductCode == 0)
+            {
+                ShowMessage(MessageType.Danger, "Не заполнено поле [Код продукции]");
+                goto finish;
+            }
+
+            // Проверка на корректность заполнения диаметра
+            if ((int) _editData.Diameter == 0)
+            {
+                ShowMessage(MessageType.Danger, "Не заполнено поле [Диаметр]");
+                goto finish;
+            }
+
+            // Проверка на корректность заполнения номера бригады
+            if (string.IsNullOrEmpty(_editData.Shift))
+            {
+                _editData.Shift = _shift.GetCurrentShiftNumber().ToString();
+            }
+
+            // Проверка на корректность заполнения профиля годной продукции
+            if (string.IsNullOrEmpty(_editData.ProductProfile))
+            {
+                _editData.ProductProfile = "№";
+            }
+
+            _editData.WeightAll = _editData.WeightOne * _editData.IngotsCount;
             bool res =_db.EditMelt(_origData, _editData);
             if (!res)
             {
@@ -95,7 +207,11 @@ namespace OvenLanding.Pages
             }
             _landingService.ClearEditable();
             await JSRuntime.InvokeAsync<string>("openQuery", null);
+            
+            finish:
+            await Task.Delay(TimeSpan.FromSeconds(5));
+            HideMessage();
+            StateHasChanged();
         }
-
     }
 }

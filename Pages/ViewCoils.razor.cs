@@ -10,7 +10,7 @@ namespace OvenLanding.Pages
         private static readonly DBConnection Db = new DBConnection();
         private List<CoilData> _currentMelt = new List<CoilData>();
         private List<CoilData> _previousMelt = new List<CoilData>();
-        private List<CoilData> _meltsToReset = new List<CoilData>();
+        private List<CoilData> _selectedMelts = new List<CoilData>();
         
         protected override void OnInitialized()
         {
@@ -26,18 +26,20 @@ namespace OvenLanding.Pages
 
             _currentMelt = Db.GetCoilData(true, false);
             _previousMelt = Db.GetCoilData(false, false);
+
             foreach (CoilData prev in _previousMelt)
             {
-                _meltsToReset.Add(prev);
+                _selectedMelts.Add(prev);
             }
+            _selectedMelts.Add(new CoilData());
             
             foreach (CoilData curr in _currentMelt)
             {
-                _meltsToReset.Add(curr);
+                _selectedMelts.Add(curr);
             }
-            
             StateHasChanged();
         }
+        
 
         private void ResetCoil(int coilUid)
         {

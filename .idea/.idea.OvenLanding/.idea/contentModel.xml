@@ -21,6 +21,8 @@
         <e p="LandingService.cs" t="Include" />
         <e p="MessageType.cs" t="Include" />
         <e p="ProfileData.cs" t="Include" />
+        <e p="Shift.cs" t="Include" />
+        <e p="ShiftData.cs" t="Include" />
         <e p="SteelData.cs" t="Include" />
       </e>
       <e p="NLog.config" t="Include" />
@@ -66,6 +68,18 @@
             <e p="bootstrap.min.css" t="Include" />
             <e p="bootstrap.min.css.map" t="Include" />
           </e>
+          <e p="bootstrap-grid.css" t="Include" />
+          <e p="bootstrap-grid.css.map" t="Include" />
+          <e p="bootstrap-grid.min.css" t="Include" />
+          <e p="bootstrap-grid.min.css.map" t="Include" />
+          <e p="bootstrap-reboot.css" t="Include" />
+          <e p="bootstrap-reboot.css.map" t="Include" />
+          <e p="bootstrap-reboot.min.css" t="Include" />
+          <e p="bootstrap-reboot.min.css.map" t="Include" />
+          <e p="bootstrap.css" t="Include" />
+          <e p="bootstrap.css.map" t="Include" />
+          <e p="bootstrap.min.css" t="Include" />
+          <e p="bootstrap.min.css.map" t="Include" />
           <e p="open-iconic" t="Include">
             <e p="font" t="Include">
               <e p="css" t="Include">
@@ -87,7 +101,17 @@
         </e>
         <e p="favicon.ico" t="Include" />
         <e p="js" t="Include">
+          <e p="bootstrap.bundle.js" t="Include" />
+          <e p="bootstrap.bundle.js.map" t="Include" />
+          <e p="bootstrap.bundle.min.js" t="Include" />
+          <e p="bootstrap.bundle.min.js.map" t="Include" />
+          <e p="bootstrap.js" t="Include" />
+          <e p="bootstrap.js.map" t="Include" />
+          <e p="bootstrap.min.js" t="Include" />
+          <e p="bootstrap.min.js.map" t="Include" />
+          <e p="jquery-3.5.1.min.js" t="Include" />
           <e p="js_utils.js" t="Include" />
+          <e p="popper-1.16.1.min.js" t="Include" />
         </e>
       </e>
     </e>

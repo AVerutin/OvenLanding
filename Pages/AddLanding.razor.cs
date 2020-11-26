@@ -21,6 +21,7 @@ namespace OvenLanding.Pages
         private List<string> _gosts = new List<string>();
         private List<string> _customers = new List<string>();
         private List<string> _classes = new List<string>();
+        private Shift _shift = new Shift();
 
         private Logger _logger;
         private DBConnection _db = new DBConnection();
@@ -54,7 +55,7 @@ namespace OvenLanding.Pages
                 _logger.Error($"Не удалось получить предыдущее состояние полей ввода [{ex.Message}]");
             }
 
-            int shift = GetShiftNumber(DateTime.Now);
+            int shift = _shift.GetShiftNumber(DateTime.Now);
             _landingData.Shift = shift.ToString();
             
             StateHasChanged();
@@ -121,19 +122,6 @@ namespace OvenLanding.Pages
             }
         }
         
-        private static int GetShiftNumber(DateTime date)
-        {
-            int[] shifts = {1, 4, 2, 1, 3, 2, 4, 3};
-            DateTime startDate = DateTime.Parse("2020-01-01 08:00:00");
-            
-            TimeSpan dateInterval = date - startDate;
-            int shiftIndex = (int)(dateInterval.TotalHours / 12) % 8;
-
-            int shift = shifts[shiftIndex];
-
-            return shift;
-        }
-
         /// <summary>
         /// Добавить плавку в очередь на посад печи
         /// </summary>
@@ -142,7 +130,6 @@ namespace OvenLanding.Pages
             if(!string.IsNullOrEmpty(_landingData.MeltNumber))
             {
                 _logger.Info($"Номер плавки: {_landingData.MeltNumber}");
-                _landingData.WeightAll = _landingData.WeightOne * _landingData.IngotsCount;
 
                 // Проверка на корректность заполнения сечения заготовки
                 if (string.IsNullOrEmpty(_landingData.IngotProfile))
@@ -267,6 +254,13 @@ namespace OvenLanding.Pages
                     // _landingData.Shift = "Не задано";
                 }
                 
+                // Проверка на корректность заполнения профиля годной продукции
+                if (string.IsNullOrEmpty(_landingData.ProductProfile))
+                {
+                    _landingData.ProductProfile = "№";
+                }
+                
+                _landingData.WeightAll = _landingData.WeightOne * _landingData.IngotsCount;
                 int uid = _db.CreateOvenLanding(_landingData);
 
                 if (uid == -1)
