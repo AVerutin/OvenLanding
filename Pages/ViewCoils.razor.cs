@@ -39,6 +39,12 @@ namespace OvenLanding.Pages
             }
             StateHasChanged();
         }
+
+        private void SetDowntime()
+        {
+            DateTime startTime = DateTime.Now.AddMinutes(5);
+            Db.SetDowntime(startTime, "Плановый простой");
+        }
         
 
         private void ResetCoil(int coilUid)

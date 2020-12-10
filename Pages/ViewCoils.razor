@@ -1,6 +1,7 @@
 ﻿@page "/viewCoils"
 @* inject LandingService _landingService *@
 
+<button class="btn btn-primary" @onclick="@(SetDowntime)">Простой</button>
 <div id="viewMelt">
     @* <div class="h3">Плавка №@_currentMelt[0].MeltNumber диаметр @_currentMelt[0].Diameter от @_currentMelt[0].DateReg</div> *@
     <table>

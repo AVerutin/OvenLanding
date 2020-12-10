@@ -5,6 +5,7 @@ using System.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using NLog;
 using Npgsql;
+using OvenLanding.Annotations;
 
 namespace OvenLanding.Data
 {
@@ -510,6 +511,43 @@ namespace OvenLanding.Data
 
             return result;
         }
+
+        /// <summary>
+        /// Открыть новый, или закрыть ранее открытый простой
+        /// </summary>
+        /// <param name="startTime">Время начала или окончания простоя</param>
+        /// <param name="comment">Комментарий</param>
+        public void SetDowntime(DateTime? startTime, [CanBeNull] string comment)
+        {
+            string query = "call public.p_set_downtime(";
+            
+            if (startTime != null)
+            {
+                query += $"'{startTime:O}'";
+            }
+            else
+            {
+                DateTime start = DateTime.Now.AddMinutes(-3);
+                query += $"'{start:O}'";
+            }
+
+            if (!string.IsNullOrEmpty(comment))
+            {
+                query += $", '{comment}'";
+            }
+            else
+            {
+                query += ", ''";
+            }
+            
+            query += ");";
+            bool res = WriteData(query);
+            if (!res)
+            {
+                _logger.Error($"Не удалось открыть простой с датой начала {startTime} и комментарием {comment}");
+            }
+        }
+
 
         /// <summary>
         /// Записать данные в таблицу БД
