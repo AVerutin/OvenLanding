@@ -18,11 +18,20 @@
     </select>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="97baf1e9-2485-46d7-b3c2-3bfb354916b0" name="Default Changelist" comment="Final result with redirection on external reports page">
+    <list default="true" id="97baf1e9-2485-46d7-b3c2-3bfb354916b0" name="Default Changelist" comment="Detached reports into external services">
+      <change afterPath="$PROJECT_DIR$/Data/Areas.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Data/AreasData.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Pages/Start.razor" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Pages/Start.razor.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.OvenLanding/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.OvenLanding/.idea/contentModel.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.OvenLanding/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.OvenLanding/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.OvenLanding/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.OvenLanding/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Data/DBConnection.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Data/DBConnection.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Pages/ViewCoils.razor" beforeDir="false" afterPath="$PROJECT_DIR$/Pages/ViewCoils.razor" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Pages/ViewCoils.razor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Pages/ViewCoils.razor.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/LandingData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Data/LandingData.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pages/Index.razor" beforeDir="false" afterPath="$PROJECT_DIR$/Pages/Index.razor" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pages/Index.razor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Pages/Index.razor.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/appsettings.json" beforeDir="false" afterPath="$PROJECT_DIR$/appsettings.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wwwroot/css/site.css" beforeDir="false" afterPath="$PROJECT_DIR$/wwwroot/css/site.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,65 +49,33 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/4065B38D-0F9F-44D9-8F53-F4C9102AF396/25F/AsyncMethodBuilder.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/4065B38D-0F9F-44D9-8F53-F4C9102AF396/38/String.Manipulation.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/88AF82DF-D459-4726-BC5E-EBB98920992D/11/EventCallbackWorkItem.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/9F0C406F-1F07-468A-8089-7D32F8D98C6A/39/RemoteRenderer.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/4065B38D-0F9F-44D9-8F53-F4C9102AF396/1E0/ExceptionDispatchInfo.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/2BC5ED24-0D5C-402C-8B6A-BD14FFCEE267/1E0/ExceptionDispatchInfo.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/4065B38D-0F9F-44D9-8F53-F4C9102AF396/38/String.Manipulation.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/4065B38D-0F9F-44D9-8F53-F4C9102AF396/14E/ExecutionContext.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/88AF82DF-D459-4726-BC5E-EBB98920992D/8/ComponentBase.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/88AF82DF-D459-4726-BC5E-EBB98920992D/11/EventCallbackWorkItem.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="IdeDocumentHistory">
-    <option name="CHANGED_PATHS">
-      <list>
-        <option value="$PROJECT_DIR$/Shared/SurveyPrompt.razor" />
-        <option value="$PROJECT_DIR$/appsettings.json" />
-        <option value="$PROJECT_DIR$/Data/ProfileData.cs" />
-        <option value="$PROJECT_DIR$/Data/SteelData.cs" />
-        <option value="$PROJECT_DIR$/Shared/MainLayout.razor" />
-        <option value="$PROJECT_DIR$/Pages/AddLanding.cshtml.cs" />
-        <option value="$PROJECT_DIR$/Pages/AddLanding.cshtml" />
-        <option value="$PROJECT_DIR$/Data/GostData.cs" />
-        <option value="$PROJECT_DIR$/Data/CustomerData.cs" />
-        <option value="$PROJECT_DIR$/Data/ClassData.cs" />
-        <option value="$PROJECT_DIR$/Data/MtsConnect.cs" />
-        <option value="$PROJECT_DIR$/Data/DataController.cs" />
-        <option value="$PROJECT_DIR$/_Imports.razor" />
-        <option value="$PROJECT_DIR$/Data/MessageType.cs" />
-        <option value="$PROJECT_DIR$/wwwroot/js.js" />
-        <option value="$PROJECT_DIR$/Startup.cs" />
-        <option value="$PROJECT_DIR$/Data/EditLanding.cshtml.cs" />
-        <option value="$PROJECT_DIR$/Data/EditLandingData.cshtml" />
-        <option value="$PROJECT_DIR$/Data/EditLandingData.razor.cs" />
-        <option value="$PROJECT_DIR$/Data/EditLandingData.razor" />
-        <option value="$PROJECT_DIR$/Data/SaveInputFormState.cs" />
-        <option value="$PROJECT_DIR$/Data/LandingTable.cs" />
-        <option value="$PROJECT_DIR$/Data/LandingService.cs" />
-        <option value="$PROJECT_DIR$/Data/LabelData.cs" />
-        <option value="$PROJECT_DIR$/Pages/EditCoils.cshtml" />
-        <option value="$PROJECT_DIR$/Data/CoilsToReset.cs" />
-        <option value="$PROJECT_DIR$/Pages/EditCoils.razor.cs" />
-        <option value="$PROJECT_DIR$/Pages/EditLandingData.razor" />
-        <option value="$PROJECT_DIR$/Data/LandingParam.cs" />
-        <option value="$PROJECT_DIR$/Pages/AddLanding.razor" />
-        <option value="$PROJECT_DIR$/Data/ShiftData.cs" />
-        <option value="$PROJECT_DIR$/Data/Shift.cs" />
-        <option value="$PROJECT_DIR$/Pages/EditLandingData.razor.cs" />
-        <option value="$PROJECT_DIR$/Pages/Index.razor.cs" />
-        <option value="$PROJECT_DIR$/Pages/AddLanding.razor.cs" />
-        <option value="$PROJECT_DIR$/Data/LandingData.cs" />
-        <option value="$PROJECT_DIR$/Pages/Index.razor" />
-        <option value="$PROJECT_DIR$/wwwroot/js/js_utils.js" />
-        <option value="$PROJECT_DIR$/Pages/_Host.cshtml" />
-        <option value="$PROJECT_DIR$/wwwroot/css/site.css" />
-        <option value="$PROJECT_DIR$/Data/CoilData.cs" />
-        <option value="$PROJECT_DIR$/Pages/EditCoils.razor" />
-        <option value="$PROJECT_DIR$/Pages/ViewCoils.razor" />
-        <option value="$PROJECT_DIR$/Pages/ViewCoils.razor.cs" />
-        <option value="$PROJECT_DIR$/Data/DBConnection.cs" />
-        <option value="$PROJECT_DIR$/Shared/NavMenu.razor" />
-      </list>
-    </option>
+    <changedPaths>
+      <option value="$PROJECT_DIR$/Pages/Index.razor" />
+      <option value="$PROJECT_DIR$/Data/Areas.cs" />
+      <option value="$PROJECT_DIR$/appsettings.json" />
+      <option value="$PROJECT_DIR$/Data/LandingData.cs" />
+      <option value="$PROJECT_DIR$/wwwroot/css/site.css" />
+      <option value="$PROJECT_DIR$/Data/AreasData.cs" />
+      <option value="$PROJECT_DIR$/Data/DBConnection.cs" />
+      <option value="$PROJECT_DIR$/Pages/Start.razor.cs" />
+      <option value="$PROJECT_DIR$/Pages/Start.razor" />
+    </changedPaths>
   </component>
   <component name="ProjectId" id="1j5vkH0RPjHxTBbXH5WnvUOvgC2" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
@@ -111,8 +88,8 @@
   <component name="PropertiesComponent">
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="DebuggerViewTab_PTCS_FirstProportionKey" value="0.34991708" />
-    <property name="DebuggerViewTab_PTCS_LastProportionKey" value="0.30016583" />
+    <property name="DebuggerViewTab_PTCS_FirstProportionKey" value="0.34994584" />
+    <property name="DebuggerViewTab_PTCS_LastProportionKey" value="0.0" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="nodejs_package_manager_path" value="npm" />
@@ -184,6 +161,12 @@
       <workItem from="1607423962335" duration="906000" />
       <workItem from="1607425609765" duration="1261000" />
       <workItem from="1607429886583" duration="817000" />
+      <workItem from="1607595011344" duration="1970000" />
+      <workItem from="1608537991457" duration="10468000" />
+      <workItem from="1608621736684" duration="1044000" />
+      <workItem from="1608628171665" duration="1333000" />
+      <workItem from="1609131814373" duration="15760000" />
+      <workItem from="1609220899574" duration="16466000" />
     </task>
     <task id="LOCAL-00001" summary="Complete">
       <created>1603176593286</created>
@@ -269,7 +252,14 @@
       <option name="project" value="LOCAL" />
       <updated>1606392359492</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="Detached reports into external services">
+      <created>1607595109937</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1607595109937</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -304,181 +294,12 @@
     <MESSAGE value="Add reset weight for last coil in melt and view all coils in two last melts" />
     <MESSAGE value="Add calculator to shift number by current date and time" />
     <MESSAGE value="Final result with redirection on external reports page" />
-    <option name="LAST_COMMIT_MESSAGE" value="Final result with redirection on external reports page" />
-  </component>
-  <component name="WindowStateProjectService">
-    <state width="536" height="618" key="DebuggerActiveHint" timestamp="1606296825013">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state width="419" height="585" key="DebuggerActiveHint/0.0.1280.984@0.0.1280.984" timestamp="1604147653288" />
-    <state width="536" height="618" key="DebuggerActiveHint/0.0.1920.1040@0.0.1920.1040" timestamp="1606296825013" />
-    <state x="92" y="92" width="1736" height="856" key="DiffContextDialog" timestamp="1606218307109">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="92" y="92" width="1736" height="856" key="DiffContextDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1606218307109" />
-    <state width="1237" height="260" key="GridCell.Tab.0.bottom" timestamp="1607430712499">
-      <screen x="0" y="0" width="1280" height="984" />
-    </state>
-    <state width="1237" height="260" key="GridCell.Tab.0.bottom/0.0.1280.984@0.0.1280.984" timestamp="1607430712499" />
-    <state width="1877" height="278" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1606392813383" />
-    <state width="1237" height="260" key="GridCell.Tab.0.center" timestamp="1607430712499">
-      <screen x="0" y="0" width="1280" height="984" />
-    </state>
-    <state width="1237" height="260" key="GridCell.Tab.0.center/0.0.1280.984@0.0.1280.984" timestamp="1607430712499" />
-    <state width="1877" height="278" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1606392813383" />
-    <state width="1237" height="260" key="GridCell.Tab.0.left" timestamp="1607430712499">
-      <screen x="0" y="0" width="1280" height="984" />
-    </state>
-    <state width="1237" height="260" key="GridCell.Tab.0.left/0.0.1280.984@0.0.1280.984" timestamp="1607430712499" />
-    <state width="1877" height="278" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1606392813383" />
-    <state width="1237" height="260" key="GridCell.Tab.0.right" timestamp="1607430712499">
-      <screen x="0" y="0" width="1280" height="984" />
-    </state>
-    <state width="1237" height="260" key="GridCell.Tab.0.right/0.0.1280.984@0.0.1280.984" timestamp="1607430712499" />
-    <state width="1877" height="278" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1606392813383" />
-    <state width="1237" height="260" key="GridCell.Tab.1.bottom" timestamp="1607430712500">
-      <screen x="0" y="0" width="1280" height="984" />
-    </state>
-    <state width="1237" height="260" key="GridCell.Tab.1.bottom/0.0.1280.984@0.0.1280.984" timestamp="1607430712500" />
-    <state width="1877" height="278" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1606392813384" />
-    <state width="1237" height="260" key="GridCell.Tab.1.center" timestamp="1607430712499">
-      <screen x="0" y="0" width="1280" height="984" />
-    </state>
-    <state width="1237" height="260" key="GridCell.Tab.1.center/0.0.1280.984@0.0.1280.984" timestamp="1607430712499" />
-    <state width="1877" height="278" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1606392813384" />
-    <state width="1237" height="260" key="GridCell.Tab.1.left" timestamp="1607430712499">
-      <screen x="0" y="0" width="1280" height="984" />
-    </state>
-    <state width="1237" height="260" key="GridCell.Tab.1.left/0.0.1280.984@0.0.1280.984" timestamp="1607430712499" />
-    <state width="1877" height="278" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1606392813384" />
-    <state width="1237" height="260" key="GridCell.Tab.1.right" timestamp="1607430712500">
-      <screen x="0" y="0" width="1280" height="984" />
-    </state>
-    <state width="1237" height="260" key="GridCell.Tab.1.right/0.0.1280.984@0.0.1280.984" timestamp="1607430712500" />
-    <state width="1877" height="278" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1606392813384" />
-    <state width="1237" height="260" key="GridCell.Tab.2.bottom" timestamp="1607430712500">
-      <screen x="0" y="0" width="1280" height="984" />
-    </state>
-    <state width="1237" height="260" key="GridCell.Tab.2.bottom/0.0.1280.984@0.0.1280.984" timestamp="1607430712500" />
-    <state width="1877" height="278" key="GridCell.Tab.2.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1606392813384" />
-    <state width="1237" height="260" key="GridCell.Tab.2.center" timestamp="1607430712500">
-      <screen x="0" y="0" width="1280" height="984" />
-    </state>
-    <state width="1237" height="260" key="GridCell.Tab.2.center/0.0.1280.984@0.0.1280.984" timestamp="1607430712500" />
-    <state width="1877" height="278" key="GridCell.Tab.2.center/0.0.1920.1040@0.0.1920.1040" timestamp="1606392813384" />
-    <state width="1237" height="260" key="GridCell.Tab.2.left" timestamp="1607430712500">
-      <screen x="0" y="0" width="1280" height="984" />
-    </state>
-    <state width="1237" height="260" key="GridCell.Tab.2.left/0.0.1280.984@0.0.1280.984" timestamp="1607430712500" />
-    <state width="1877" height="278" key="GridCell.Tab.2.left/0.0.1920.1040@0.0.1920.1040" timestamp="1606392813384" />
-    <state width="1237" height="260" key="GridCell.Tab.2.right" timestamp="1607430712500">
-      <screen x="0" y="0" width="1280" height="984" />
-    </state>
-    <state width="1237" height="260" key="GridCell.Tab.2.right/0.0.1280.984@0.0.1280.984" timestamp="1607430712500" />
-    <state width="1877" height="278" key="GridCell.Tab.2.right/0.0.1920.1040@0.0.1920.1040" timestamp="1606392813384" />
-    <state width="1237" height="260" key="GridCell.Tab.3.bottom" timestamp="1607430712501">
-      <screen x="0" y="0" width="1280" height="984" />
-    </state>
-    <state width="1237" height="260" key="GridCell.Tab.3.bottom/0.0.1280.984@0.0.1280.984" timestamp="1607430712501" />
-    <state width="1877" height="278" key="GridCell.Tab.3.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1606392813384" />
-    <state width="1237" height="260" key="GridCell.Tab.3.center" timestamp="1607430712501">
-      <screen x="0" y="0" width="1280" height="984" />
-    </state>
-    <state width="1237" height="260" key="GridCell.Tab.3.center/0.0.1280.984@0.0.1280.984" timestamp="1607430712501" />
-    <state width="1877" height="278" key="GridCell.Tab.3.center/0.0.1920.1040@0.0.1920.1040" timestamp="1606392813384" />
-    <state width="1237" height="260" key="GridCell.Tab.3.left" timestamp="1607430712501">
-      <screen x="0" y="0" width="1280" height="984" />
-    </state>
-    <state width="1237" height="260" key="GridCell.Tab.3.left/0.0.1280.984@0.0.1280.984" timestamp="1607430712501" />
-    <state width="1877" height="278" key="GridCell.Tab.3.left/0.0.1920.1040@0.0.1920.1040" timestamp="1606392813384" />
-    <state width="1237" height="260" key="GridCell.Tab.3.right" timestamp="1607430712501">
-      <screen x="0" y="0" width="1280" height="984" />
-    </state>
-    <state width="1237" height="260" key="GridCell.Tab.3.right/0.0.1280.984@0.0.1280.984" timestamp="1607430712501" />
-    <state width="1877" height="278" key="GridCell.Tab.3.right/0.0.1920.1040@0.0.1920.1040" timestamp="1606392813384" />
-    <state width="1237" height="260" key="GridCell.Tab.4.bottom" timestamp="1607430712502">
-      <screen x="0" y="0" width="1280" height="984" />
-    </state>
-    <state width="1237" height="260" key="GridCell.Tab.4.bottom/0.0.1280.984@0.0.1280.984" timestamp="1607430712502" />
-    <state width="1877" height="278" key="GridCell.Tab.4.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1606392813385" />
-    <state width="1237" height="260" key="GridCell.Tab.4.center" timestamp="1607430712501">
-      <screen x="0" y="0" width="1280" height="984" />
-    </state>
-    <state width="1237" height="260" key="GridCell.Tab.4.center/0.0.1280.984@0.0.1280.984" timestamp="1607430712501" />
-    <state width="1877" height="278" key="GridCell.Tab.4.center/0.0.1920.1040@0.0.1920.1040" timestamp="1606392813385" />
-    <state width="1237" height="260" key="GridCell.Tab.4.left" timestamp="1607430712501">
-      <screen x="0" y="0" width="1280" height="984" />
-    </state>
-    <state width="1237" height="260" key="GridCell.Tab.4.left/0.0.1280.984@0.0.1280.984" timestamp="1607430712501" />
-    <state width="1877" height="278" key="GridCell.Tab.4.left/0.0.1920.1040@0.0.1920.1040" timestamp="1606392813385" />
-    <state width="1237" height="260" key="GridCell.Tab.4.right" timestamp="1607430712502">
-      <screen x="0" y="0" width="1280" height="984" />
-    </state>
-    <state width="1237" height="260" key="GridCell.Tab.4.right/0.0.1280.984@0.0.1280.984" timestamp="1607430712502" />
-    <state width="1877" height="278" key="GridCell.Tab.4.right/0.0.1920.1040@0.0.1920.1040" timestamp="1606392813385" />
-    <state x="566" y="238" key="Rider.ProjectTemplateDialog.Size" timestamp="1605532399179">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="566" y="238" key="Rider.ProjectTemplateDialog.Size/0.0.1920.1040@0.0.1920.1040" timestamp="1605532399179" />
-    <state x="710" y="151" width="743" height="774" key="RiderGenerateDialog" timestamp="1605189359230">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="710" y="151" width="743" height="774" key="RiderGenerateDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1605189359230" />
-    <state x="92" y="92" width="1736" height="856" key="VCS.FileHistoryDialog" timestamp="1604384065782">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="92" y="92" width="1736" height="856" key="VCS.FileHistoryDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1604384065782" />
-    <state x="552" y="249" key="Vcs.Push.Dialog.v2" timestamp="1606392628732">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="368" y="236" key="Vcs.Push.Dialog.v2/0.0.1280.984@0.0.1280.984" timestamp="1604147876199" />
-    <state x="552" y="249" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1606392628732" />
-    <state width="968" height="528" key="XDebugger.FullValuePopup" timestamp="1606300500129">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state width="968" height="528" key="XDebugger.FullValuePopup/0.0.1920.1040@0.0.1920.1040" timestamp="1606300500129" />
-    <state x="92" y="92" width="1736" height="856" key="com.intellij.history.integration.ui.views.DirectoryHistoryDialog" timestamp="1606218307109">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="92" y="92" width="1736" height="856" key="com.intellij.history.integration.ui.views.DirectoryHistoryDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1606218307109" />
-    <state x="616" y="240" key="run.anything.popup" timestamp="1603989891039">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="616" y="240" key="run.anything.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1603989891039" />
-    <state x="623" y="225" key="search.everywhere.popup" timestamp="1605194492468">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="623" y="225" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1605194492468" />
+    <MESSAGE value="Detached reports into external services" />
+    <option name="LAST_COMMIT_MESSAGE" value="Detached reports into external services" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/Pages/Index.razor.cs</url>
-          <line>265</line>
-          <properties documentPath="E:\Projects\NET\OvenLanding\Pages\Index.razor.cs" initialLine="265">
-            <startOffsets>
-              <option value="8400" />
-            </startOffsets>
-            <endOffsets>
-              <option value="8437" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="14" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/Data/DBConnection.cs</url>
-          <line>521</line>
-          <properties documentPath="E:\Projects\NET\OvenLanding\Data\DBConnection.cs" initialLine="521">
-            <startOffsets>
-              <option value="23931" />
-            </startOffsets>
-            <endOffsets>
-              <option value="23976" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="17" />
-        </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/Pages/ViewCoils.razor.cs</url>
           <line>44</line>
@@ -491,6 +312,32 @@
             </endOffsets>
           </properties>
           <option name="timeStamp" value="18" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Pages/Start.razor.cs</url>
+          <line>113</line>
+          <properties documentPath="E:\Projects\NET\OvenLanding\Pages\Start.razor.cs" initialLine="113" containingFunctionPresentation="method 'GetMeltsInArea'">
+            <startOffsets>
+              <option value="4339" />
+            </startOffsets>
+            <endOffsets>
+              <option value="4376" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="39" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Pages/Start.razor.cs</url>
+          <line>60</line>
+          <properties documentPath="E:\Projects\NET\OvenLanding\Pages\Start.razor.cs" initialLine="60" containingFunctionPresentation="method 'Initialize'">
+            <startOffsets>
+              <option value="2284" />
+            </startOffsets>
+            <endOffsets>
+              <option value="2315" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="40" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

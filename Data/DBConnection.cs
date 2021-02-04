@@ -11,7 +11,8 @@ namespace OvenLanding.Data
 {
     public class DBConnection
     {
-        private string _connectionString;
+        private readonly string _connectionString;
+        private readonly string _connectionStringTest;
         private readonly Logger _logger;
         private int _exceptionCode;
 
@@ -43,22 +44,42 @@ namespace OvenLanding.Data
             //     "Trust Server Certificate": "true",
             //     "Reconnect": "20000"
             // }
+            
+            // "DBTest": {
+            //  "Host": "10.23.196.58",
+            //  "Port": "5432",
+            //  "Database": "mtsbase",
+            //  "UserName": "mts",
+            //  "Password": "dfaf@we jkjcld!",
+            //  "SslMode": "Prefer",
+            //  "Trust Server Certificate": "true",
+            //  "Reconnect": "5000"
+            // }
 
             
             // Читаем параметры подключения к СУБД PostgreSQL
             _logger = LogManager.GetCurrentClassLogger();
-            var config = new ConfigurationBuilder()
+            IConfigurationRoot config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
                 .Build();
             
             string host = config.GetSection("DBConnection:Host").Value;
+            string hostT = config.GetSection("DBTest:Host").Value;
             int port = int.Parse(config.GetSection("DBConnection:Port").Value);
+            int portT = int.Parse(config.GetSection("DBTest:Port").Value);
             string database = config.GetSection("DBConnection:Database").Value;
+            string databaseT = config.GetSection("DBTest:Database").Value;
             string user = config.GetSection("DBConnection:UserName").Value;
+            string userT = config.GetSection("DBTest:UserName").Value;
             string password = config.GetSection("DBConnection:Password").Value;
+            string passwordT = config.GetSection("DBTest:Password").Value;
+            // string sslMode = config.GetSection("DBConnection:SslMode").Value;
+            // string sslModeT = config.GetSection("DBTest:SslMode").Value;
 
             _connectionString =
-                $"Server={host};Username={user};Database={database};Port={port};Password={password}"; //";SSLMode=Prefer";
+                $"Server={host};Username={user};Database={database};Port={port};Password={password}"; //";SslMode=Prefer";
+            _connectionStringTest =
+                $"Server={hostT};Username={userT};Database={databaseT};Port={portT};Password={passwordT}"; //";SslMode=Prefer";
         }
 
         public bool DbInit()
@@ -763,6 +784,86 @@ namespace OvenLanding.Data
 
             return result;
         }
+
+        /// <summary>
+        /// Получить количество взвешенных заготовок по номеру плавки и диаметру
+        /// </summary>
+        /// <param name="meltId">Идентификатор плавки</param>
+        /// <returns>Количество взвешенных заготовок</returns>
+        public WeightedIngotsCount GetWeightedIngotsCount(int meltId)
+        {
+            WeightedIngotsCount result = new WeightedIngotsCount();
+            DataTable dataTable = new DataTable();
+            string query =
+                "select rp.unit_id_parent id_posad_test, " +
+                "pr.value_s as id_posad_prod, " +
+                "pm.value_s melt, " +
+                "pc.value_n count_posad, " +
+                "count(distinct l.unit_id) count_dt " +
+                "from mts.locations l join mts.units_relations r on r.unit_id_child = l.unit_id " +
+                "join mts.unit_tasks t on t.unit_id = r.unit_id_parent and t.node_id = 20100 " +
+                "join mts.units_relations rp on rp.unit_id_child = r.unit_id_parent " +
+                "join mts.passport pm on pm.unit_id = rp.unit_id_parent and pm.param_id=10000001 " +
+                "join mts.passport pc on pc.unit_id = rp.unit_id_parent and pc.param_id=10000004 " +
+                "join mts.passport pr on pr.unit_id = rp.unit_id_parent and pr.param_id=1 " +
+                "join mts.passport p on p.unit_id = l.unit_id and p.param_id = 1000 " +
+                "where l.node_id = 20100 and l.tm_beg >= now() - interval '1 day' " +
+                $"and pr.value_s = '{meltId}' group by rp.unit_id_parent,pr.value_s,pm.value_s,pc.value_n;";
+            try
+            {
+                using (NpgsqlConnection connection = new NpgsqlConnection(_connectionStringTest))
+                {
+                    connection.Open();
+                    new NpgsqlDataAdapter(new NpgsqlCommand(query, connection)).Fill(dataTable);
+                    connection.Close();
+                    if (dataTable.Rows.Count > 0)
+                    {
+                        for (int i = 0; i < dataTable.Rows.Count; i++)
+                        {
+                            try
+                            {
+                                string val = dataTable.Rows[i][0].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = "0";
+                                result.LandingTestId = int.Parse(val);
+                                
+                                val = dataTable.Rows[i][1].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = "0";
+                                result.LandingProdId = int.Parse(val);
+                                
+                                val = dataTable.Rows[i][2].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = "0";
+                                result.Melt = val;
+                                
+                                val = dataTable.Rows[i][3].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = "0";
+                                result.LandingCount = int.Parse(val);
+                                
+                                val = dataTable.Rows[i][4].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = "0";
+                                result.WeightedCount = int.Parse(val);
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.Error(
+                                    $"Не удалось прочитать количество взвешенных заготвок для плавки с идентификатором [{meltId}] - {ex.Message}");
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(
+                    $"Не удалось получить количество взвешенных заготвок для плавки с идентификатором [{meltId}] - {ex.Message}");
+            }
+
+            return result;
+        }
         
         /// <summary>
         /// Получить список марок стали
@@ -1050,18 +1151,266 @@ namespace OvenLanding.Data
             return result;
         }
 
+        /// <summary>
+        /// Получить список плавок на участке
+        /// </summary>
+        /// <param name="area"></param>
+        /// <returns></returns>
+        public List<AreasData> GetMeltsByArea(Areas area)
+        {
+            List<AreasData> result = new List<AreasData>();
+            DataTable dataTable = new DataTable();
+            string thread = "";
+            string ret = "0";
+            switch (area)
+            {
+                case Areas.Returning :
+                {
+                    thread = "5";
+                    ret = "50100";
+                    break;
+                }
+                case Areas.Mill :
+                {
+                    thread = "5";
+                    break;
+                }
+                case Areas.BeforeFurnace : thread = "2"; break;
+                case Areas.Furnace : thread = "3"; break;
+                case Areas.Shifter : thread = "11"; break;
+                case Areas.Binding : thread = "14"; break;
+                case Areas.Scales : thread = "15"; break;
+                case Areas.Drag : thread = "17"; break;
+            }
+            
+            string query = "select c_id_posad, c_melt, c_diam, max(c_date_reg) as c_date_reg\n";
+            query += $"from public.f_get_queue_thread({thread}, {ret})\n";
+            query += "group by c_melt, c_diam, c_id_posad;";
+            try
+            {
+                using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    new NpgsqlDataAdapter(new NpgsqlCommand(query, connection)).Fill(dataTable);
+                    connection.Close();
+                    if (dataTable.Rows.Count > 0)
+                    {
+                        for (int i = 0; i < dataTable.Rows.Count; i++)
+                        {
+                            AreasData item = new AreasData();
+
+                            try
+                            {
+                                string val = dataTable.Rows[i][0].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = "0";
+                                item.LandingId = int.Parse(val);
+
+                                val = dataTable.Rows[i][1].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = "";
+                                item.MeltNumber = val;
+
+                                val = dataTable.Rows[i][2].ToString()?.Trim().Replace(".",",");
+                                if (string.IsNullOrEmpty(val))
+                                    val = "0";
+                                item.Diameter = double.Parse(val);
+
+                                val = dataTable.Rows[i][3].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = DateTime.MinValue.ToString("G");
+                                item.LandingDate = DateTime.Parse(val);
+                                
+                                result.Add(item);
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.Error(
+                                    $"Не удалось прочитать плавок заготовок на участке {area.ToString()} [{ex.Message}]");
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"Не удалось получить список плавок на участке {area.ToString()} [{ex.Message}]");
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Получить список ЕУ на участке
+        /// </summary>
+        /// <param name="area">Участок цеха</param>
+        /// <returns>Список единиц учета</returns>
+        public List<AreasData> GetIngotsByArea(Areas area)
+        {
+            // string thread = "0";
+            // string returning = "0";
+            string areas = "";
+            switch (area)
+            {
+                case Areas.Returning :
+                {
+                    // thread = "5";
+                    // returning = "50100";
+                    areas = "n.thread_id=5 and n.id=50100";
+                    break;
+                }
+                case Areas.Mill :
+                {
+                    // thread = "5";
+                    // returning = "0";
+                    areas = "n.thread_id=5 and n.id=0";
+                    break;
+                }
+                case Areas.BeforeFurnace : areas = "n.thread_id=2"; break;
+                case Areas.Furnace : areas = "n.thread_id=3"; break;
+                case Areas.Shifter : areas = "n.thread_id=11"; break;
+                case Areas.Binding : areas = "n.thread_id=14"; break;
+                case Areas.Scales : areas = "n.thread_id=15"; break;
+                case Areas.Drag : areas = "n.thread_id=17"; break;
+            }
+            
+            List<AreasData> result = new List<AreasData>();
+            DataTable dataTable = new DataTable();
+
+            string query = "select distinct\n";
+            query += "\trp.unit_id_parent id_posad,\n";
+            query +=
+                "\tfirst_value(to_char(l.tm_beg,'DD-MM-YYYY HH24:MI:SS')) over (partition by l.unit_id order by l.id desc) date_enter,\n";
+            query += "\tfirst_value(n.thread_id) over (partition by l.unit_id order by l.id desc) thread,\n";
+            query += "\tfirst_value(n.id) over (partition by l.unit_id order by l.id desc) node_id,\n";
+            query += "\tfirst_value(n.node_code) over (partition by l.unit_id order by l.id desc) node_name,\n";
+            query += "\tpm.value_s as melt,\n";
+            query += "\tpd.value_s as diam,\n";
+            query += "\tt.date_reg date_reg,\n";
+            query += "\tt.pos,\n";
+            query += "\tpc.value_s as count_posad,\n";
+            query += "\tp.value_n as billet_weight\n";
+            query += "from mts.locations l\n";
+            query += "\tjoin mts.nodes n on n.id = l.node_id\n";
+            query += "\tjoin mts.units u on u.id = l.unit_id\n";
+            query += "\tleft join mts.units_relations r on r.unit_id_child = u.id\n";
+            query += "\tleft join mts.unit_tasks t on t.unit_id = r.unit_id_parent and t.node_id = 20100\n";
+            query += "\tleft join mts.units_relations rp on rp.unit_id_child = r.unit_id_parent\n";
+            query += "\tleft join mts.passport pm on pm.unit_id = rp.unit_id_parent and pm.param_id=10000001\n";
+            query += "\tleft join mts.passport pd on pd.unit_id = rp.unit_id_parent and pd.param_id=10000010\n";
+            query += "\tleft join mts.passport pc on pc.unit_id = rp.unit_id_parent and pc.param_id=10000004\n";
+            query += "\tleft join mts.passport pr on pr.unit_id = rp.unit_id_parent and pr.param_id=1\n";
+            query += "\tleft join mts.passport p on p.unit_id = l.unit_id and p.param_id=1000\n";
+            query += "\tleft join mts.passport pw on pw.unit_id = t.unit_id and pw.param_id=10000014\n";
+            query += $"where l.node_id in (select id from mts.nodes n where {areas})\n";
+            query += "\tand l.tm_end is null\n";
+            query += "order by 4,5,2 desc;";
+
+            try
+            {
+                using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    new NpgsqlDataAdapter(new NpgsqlCommand(query, connection)).Fill(dataTable);
+                    connection.Close();
+                    if (dataTable.Rows.Count > 0)
+                    {
+                        for (int i = 0; i < dataTable.Rows.Count; i++)
+                        {
+                            AreasData item = new AreasData();
+                            
+                            try
+                            {
+                                string val = dataTable.Rows[i][0].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = "0";
+                                item.LandingId = int.Parse(val);
+
+                                val = dataTable.Rows[i][1].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = DateTime.MinValue.ToString("G");
+                                item.DateEnter = DateTime.Parse(val);
+                                
+                                val = dataTable.Rows[i][2].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = "0";
+                                item.Thread = int.Parse(val);
+
+                                val = dataTable.Rows[i][3].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = "0";
+                                item.NodeId = int.Parse(val);
+
+                                val = dataTable.Rows[i][4].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = "";
+                                item.NodeName = val;
+
+                                val = dataTable.Rows[i][5].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = "";
+                                item.MeltNumber = val;
+                                
+                                val = dataTable.Rows[i][6].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = "0";
+                                val = val.Replace(".", ",");
+                                item.Diameter = double.Parse(val);
+                                
+                                val = dataTable.Rows[i][7].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = DateTime.MinValue.ToString("G");
+                                item.LandingDate = DateTime.Parse(val);
+
+                                val = dataTable.Rows[i][8].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = "0";
+                                item.Position = int.Parse(val);
+                                
+                                val = dataTable.Rows[i][9].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = "0";
+                                item.CountPosad = int.Parse(val);
+                                
+                                val = dataTable.Rows[i][10].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = "0";
+                                item.BilletWeight = int.Parse(val);
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.Error(
+                                    $"Не удалось прочитать список заготовок на участке {area.ToString()} [{ex.Message}]");
+                            }
+
+                            result.Add(item);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"Не удалось получить список заготовок на участке {area.ToString()} [{ex.Message}]");
+            }
+
+            return result;
+        }
+
 
         /// <summary>
         /// Получить список нарядов заготовок на посаде печи
         /// </summary>
         /// <returns>Список нарядов на посад в печь</returns>
-        public List<LandingData> GetLandingOrder()
+        public List<LandingData> GetLandingOrder(string melt="", double diameter=0.0)
         {
             List<LandingData> result = new List<LandingData>();
             DataTable dataTable = new DataTable();
-            
-            string query = "select * from public.f_get_queue();";
-            
+            string query;
+
+            query = string.IsNullOrEmpty(melt)
+                ? "select * from public.f_get_queue();"
+                : $"select * from public.f_get_queue() where c_melt='{melt}' and c_diameter={diameter.ToString("F1").Replace(",", ".")};";
+
             try
             {
                 using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString))
@@ -1077,6 +1426,7 @@ namespace OvenLanding.Data
                             try
                             {
                                 item.LandingId = int.Parse(dataTable.Rows[i][0].ToString() ?? "0");
+                                // item.LandingDate = DateTime.Parse(dataTable.Rows[i][1].ToString() ?? DateTime.MinValue.ToString("G"));
                                 item.MeltNumber = dataTable.Rows[i][1].ToString();
                                 item.SteelMark = dataTable.Rows[i][2].ToString();
                                 item.IngotProfile = dataTable.Rows[i][3].ToString();
@@ -1089,6 +1439,7 @@ namespace OvenLanding.Data
                                 string diam = dataTable.Rows[i][9].ToString() ?? "0";
                                 diam = diam.Replace(".", ",");
                                 item.Diameter = double.Parse(diam);
+                                
                                 item.Customer = dataTable.Rows[i][10].ToString();
                                 item.Shift = dataTable.Rows[i][11].ToString();
                                 item.IngotClass = dataTable.Rows[i][12].ToString();
@@ -1099,6 +1450,7 @@ namespace OvenLanding.Data
                             catch (Exception ex)
                             {
                                 item.LandingId = 0;
+                                item.LandingDate = DateTime.MinValue;
                                 item.MeltNumber = "";
                                 item.SteelMark = "";
                                 item.IngotProfile = "";
@@ -1318,6 +1670,10 @@ namespace OvenLanding.Data
             return result;
         }
 
+        /// <summary>
+        /// Вернуть бунт в очередь на взвешивание
+        /// </summary>
+        /// <param name="coilUid">Идентификатор бунта</param>
         public void ResetCoil(int coilUid)
         {
             string query = $"select * from public.f_return_to_queue({coilUid});";

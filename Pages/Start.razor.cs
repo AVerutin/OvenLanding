@@ -8,18 +8,25 @@ using System.Timers;
 
 namespace OvenLanding.Pages
 {
-    public partial class Index : IDisposable
+    public partial class Start : IDisposable
     {
         private Logger _logger;
         private static readonly DBConnection Db = new DBConnection();
         private static List<LandingData> _landed = new List<LandingData>();
+        private List<LandingData> _beforeFurnace = new List<LandingData>();
+        private List<LandingData> _inFurnace = new List<LandingData>();
+        private List<LandingData> _inReturn = new List<LandingData>();
+        private List<LandingData> _inMill = new List<LandingData>();
+        
+        private List<AreasData> _furnace = new List<AreasData>();
+        private List<AreasData> _returning = new List<AreasData>();
+        private List<AreasData> _mill = new List<AreasData>();
+        private List<AreasData> _pallets = new List<AreasData>();
+        private List<AreasData> _hooks = new List<AreasData>();
         
         private static readonly CoilData CoilData = new CoilData();
         private Timer _timer;
         
-        private string _message = "";
-        private string _messageClass = "";
-        private string _messageVisible = "none";
         private string _semaphoreColor = "darkcyan";
         private string _selectRow = "none";
         
@@ -35,56 +42,141 @@ namespace OvenLanding.Pages
             _landingService.PropertyChanged -= UpdateMessage;
         }
 
-        private void ShowMessage(MessageType type, string message)
+        private void Initialize()
         {
-            _message = message ?? "";
-            switch (type)
-            {
-                case MessageType.Primary: _messageClass = "alert alert-primary"; break;
-                case MessageType.Secondary: _messageClass = "alert alert-secondary"; break;
-                case MessageType.Success: _messageClass = "alert alert-success"; break;
-                case MessageType.Danger: _messageClass = "alert alert-danger"; break;
-                case MessageType.Warning: _messageClass = "alert alert-warning"; break;
-                case MessageType.Info: _messageClass = "alert alert-info"; break;
-                case MessageType.Light: _messageClass = "alert alert-light"; break;
-                case MessageType.Dark: _messageClass = "alert alert-dark"; break;
-            }
-
-            _messageVisible = "block";
-            StateHasChanged();
-        }
-
-        private void HideMessage()
-        {
-            _message = "";
-            _messageVisible = "none";
-            StateHasChanged();
-        }
-
-        private async void Initialize()
-        {
-            // Получение очереди плавок
+            // Получить список ЕУ на весах перед печью
+            _beforeFurnace = GetMeltsBeforeFurnace();
+            _inFurnace = GetMeltsInArea(Areas.Furnace);
+            _inReturn = GetMeltsInArea(Areas.Returning);
+            _inMill = GetMeltsInArea(Areas.Mill);
+            
+            // _furnace = Db.GetIngotsByArea(Areas.Furnace);
+            // _returning = Db.GetIngotsByArea(Areas.Returning);
+            // _mill = Db.GetIngotsByArea(Areas.Mill);
+            // _pallets = Db.GetIngotsByArea(Areas.Shifter);
+            // _hooks = Db.GetIngotsByArea(Areas.Drag);
+            
             try
             {
-                // _landed = Db.GetLandingOrder();
-                _landed = await GetLandingOrder();
+                _landed = Db.GetLandingOrder();
             }
             catch (Exception ex)
             {
                 _logger.Error($"Не удалось получить очередь на посаде [{ex.Message}]");
             }
-            
+
             StateHasChanged();
-            SetTimer(5);
+            // SetTimer(3);
         }
 
-        private async void IncLanding(int uid)
+        /// <summary>
+        /// Получить список плавок у весов перед печью
+        /// </summary>
+        /// <returns>Список плавок</returns>
+        private List<LandingData> GetMeltsBeforeFurnace()
+        {
+            // Получить очередь перед весами 
+            // Получить плавку на весах, определить дату ее постановки в очередь
+            // Вывести список плавок, дата постановки которых больше.
+            
+            // Этап 1 - Получить плавку на весах
+            // Этап 2 - Получить время постановки плавки на весах
+            // Этап 3 - Получить список плавок, время поставноки в очередь которых больше
+            // select * from public.f_get_queue() where c_melt='8200304' and c_diameter=5.5; -- Время постановки плавки на весах в очередь
+            // select * from public.f_get_queue() where c_date_reg>'29-12-2020 06:36:21'; -- Список плавок выше то, которая взвешивается
+
+            List<LandingData> result = new List<LandingData>();
+            List<AreasData> beforeFurnace = Db.GetIngotsByArea(Areas.BeforeFurnace);
+            _landed = Db.GetLandingOrder();
+
+            foreach (LandingData melt in _landed)
+            {
+                if (melt.LandingDate > beforeFurnace[0].LandingDate)
+                {
+                    result.Add(melt);
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Получить список плавок на участке
+        /// </summary>
+        /// <param name="area"></param>
+        /// <returns>Список плавок</returns>
+        private List<LandingData> GetMeltsInArea(Areas area)
+        {
+            List<LandingData> result = new List<LandingData>();
+            List<AreasData> inArea = Db.GetMeltsByArea(area);
+            _landed = Db.GetLandingOrder();
+
+            foreach (LandingData melt in _landed)
+            {
+                foreach (var ml in inArea)
+                {
+                    if(melt.LandingId == ml.LandingId)
+                        result.Add(melt);
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Получмить список плавок в печи
+        /// </summary>
+        /// <returns>Список плавок</returns>
+        private List<LandingData> GetMeltsInFurnace()
+        {
+            List<LandingData> result = new List<LandingData>();
+            List<AreasData> inFurnace = Db.GetMeltsByArea(Areas.Furnace);
+            _landed = Db.GetLandingOrder();
+
+            foreach (LandingData melt in _landed)
+            {
+                foreach (var ml in inFurnace)
+                {
+                    if(melt.LandingId == ml.LandingId)
+                        result.Add(melt);
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Получить список плавок, возвращенных из печи
+        /// </summary>
+        /// <returns></returns>
+        private List<LandingData> GetMeltsInReturn()
+        {
+            List<LandingData> result = new List<LandingData>();
+            List<AreasData> inFurnace = Db.GetMeltsByArea(Areas.Returning);
+            _landed = Db.GetLandingOrder();
+
+            foreach (LandingData melt in _landed)
+            {
+                foreach (var ml in inFurnace)
+                {
+                    if(melt.LandingId == ml.LandingId)
+                        result.Add(melt);
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Увеличить количество заготовок в плавке
+        /// </summary>
+        /// <param name="uid">Идентификатор плавки</param>
+        private void IncLanding(int uid)
         {
             try
             {
                 Db.IncLanding(uid);
-                // _landed = Db.GetLandingOrder();
-                _landed = await GetLandingOrder();
+                _landed = Db.GetLandingOrder();
                 _logger.Info($"Добавлена заготовка в плавку [{uid}]");
             }
             catch (Exception ex)
@@ -94,13 +186,16 @@ namespace OvenLanding.Pages
             StateHasChanged();
         }
 
-        private async void DecLanding(int uid)
+        /// <summary>
+        /// Уменьшить количество заготовок в плавке
+        /// </summary>
+        /// <param name="uid">Идентификатор плавки</param>
+        private void DecLanding(int uid)
         {
             try
             {
                 Db.DecLanding(uid);
-                // _landed = Db.GetLandingOrder();
-                _landed = await GetLandingOrder();
+                _landed = Db.GetLandingOrder();
                 _logger.Info($"Удалена заготовка из плавки [{uid}]");
             }
             catch (Exception ex)
@@ -115,7 +210,7 @@ namespace OvenLanding.Pages
         /// Перемещение текущей плавки вверх (дальше от печи)
         /// </summary>
         /// <param name="uid">Идентификатор перемещаемой плавки</param>
-        private async void MoveUp(int uid)
+        private void MoveUp(int uid)
         {
             int cnt = 0;
             int currPosition = 0;
@@ -125,8 +220,7 @@ namespace OvenLanding.Pages
 
             try
             {
-                // oldOrder = Db.GetLandingOrder();
-                oldOrder = await GetLandingOrder();
+                oldOrder = Db.GetLandingOrder();
             }
             catch (Exception ex)
             {
@@ -175,8 +269,7 @@ namespace OvenLanding.Pages
                 {
                     ClearCurrentOrder();
                     SetNewOrder(order);
-                    // List<LandingData> tmpOrder = Db.GetLandingOrder();
-                    List<LandingData> tmpOrder = await GetLandingOrder();
+                    List<LandingData> tmpOrder = Db.GetLandingOrder();
                     newCnt = tmpOrder.Count;
                 } while (oldCnt != newCnt);
 
@@ -190,37 +283,12 @@ namespace OvenLanding.Pages
                 _logger.Error($"Плавка [{uid}] находится последней в очереди, некуда поднимать");
             }
         }
-
-        /// <summary>
-        /// Получить список плавок в очереди
-        /// </summary>
-        /// <returns></returns>
-        private async Task<List<LandingData>> GetLandingOrder()
-        {
-            List<LandingData> result = Db.GetLandingOrder();
-            
-            // Проверка на наличие возвожности удаления плавки
-            foreach (LandingData item in result)
-            {
-                WeightedIngotsCount weighted = Db.GetWeightedIngotsCount(item.LandingId);
-                item.WeightedIngots = weighted.WeightedCount;
-
-                if (item.Weighted == 0 && item.WeightedIngots == 0)
-                {
-                    item.CanBeDeleted = true;
-                }
-                
-                await Task.Delay(200);
-            }
-
-            return result;
-        }
         
         /// <summary>
         /// Перемещение текущей плавки вниз (ближе к печи)
         /// </summary>
         /// <param name="uid">Идентификатор перемещаемой плавки</param>
-        private async void MoveDown(int uid)
+        private void MoveDown(int uid)
         {
             int cnt = 0;
             int currPosition = 0;
@@ -230,8 +298,7 @@ namespace OvenLanding.Pages
 
             try
             {
-                // oldOrder = Db.GetLandingOrder();
-                oldOrder = await GetLandingOrder();
+                oldOrder = Db.GetLandingOrder();
             }
             catch (Exception ex)
             {
@@ -279,8 +346,7 @@ namespace OvenLanding.Pages
                 {
                     ClearCurrentOrder();
                     SetNewOrder(order);
-                    // List<LandingData> tmpOrder = Db.GetLandingOrder();
-                    List<LandingData> tmpOrder = await GetLandingOrder();
+                    List<LandingData> tmpOrder = Db.GetLandingOrder();
                     newCnt = tmpOrder.Count;
                 } while (oldCnt != newCnt);
 
@@ -309,20 +375,9 @@ namespace OvenLanding.Pages
         /// <summary>
         /// Очистить текущую очередь на посаде печи
         /// </summary>
-        private async void ClearCurrentOrder()
+        private void ClearCurrentOrder()
         {
-            // List<LandingData> order = Db.GetLandingOrder();
-            List<LandingData> order;
-            try
-            {
-                order = await GetLandingOrder();
-            }
-            catch (Exception ex)
-            {
-                order = new List<LandingData>();
-                _logger.Error($"Не удалось получить текущую очередь [{ex.Message}]");
-            }
-            
+            List<LandingData> order = Db.GetLandingOrder();
             int i = 1;
             foreach (LandingData melt in order)
             {
@@ -332,7 +387,7 @@ namespace OvenLanding.Pages
                     {
                         int id = Db.Remove(melt.LandingId);
                         _logger.Warn($"Удалена плавка [{id}] при очистке очереди");
-                        await Task.Delay(TimeSpan.FromMilliseconds(500));
+                        Task.Delay(TimeSpan.FromMilliseconds(500));
                     }
                     catch (Exception ex)
                     {
@@ -345,8 +400,7 @@ namespace OvenLanding.Pages
 
             try
             {
-                // _landed = Db.GetLandingOrder();
-                _landed = await GetLandingOrder();
+                _landed = Db.GetLandingOrder();
             }
             catch (Exception ex)
             {
@@ -360,7 +414,7 @@ namespace OvenLanding.Pages
         /// Установить новую очередь на посаде печи
         /// </summary>
         /// <param name="order">Плавка для постановки в очередь</param>
-        private async void SetNewOrder(List<LandingData> order)
+        private void SetNewOrder(List<LandingData> order)
         {
             for (int i = order.Count-1; i >= 0; i--)
             {
@@ -370,7 +424,7 @@ namespace OvenLanding.Pages
                     {
                         int id = Db.CreateOvenLanding(order[i]);
                         _logger.Warn($"Добавлена плавка [{id}] при заполнении очереди");
-                        await Task.Delay(TimeSpan.FromMilliseconds(500));
+                        Task.Delay(TimeSpan.FromMilliseconds(500));
                     }
                     catch (Exception ex)
                     {
@@ -432,15 +486,14 @@ namespace OvenLanding.Pages
             await JSRuntime.InvokeAsync<string>("openEditor", null);
         }
 
-        private async void Remove(int uid)
+        private void Remove(int uid)
         {
             try
             {
                 int id = Db.Remove(uid);
                 try
                 {
-                    // _landed = Db.GetLandingOrder();
-                    _landed = await GetLandingOrder();
+                    _landed = Db.GetLandingOrder();
                 }
                 catch (Exception e)
                 {
@@ -465,12 +518,11 @@ namespace OvenLanding.Pages
             _timer.Enabled = true;
         }
 
-        private async void UpdateData(Object source, ElapsedEventArgs e)
+        private void UpdateData(Object source, ElapsedEventArgs e)
         {
             try
             {
-                // _landed = Db.GetLandingOrder();
-                _landed = await GetLandingOrder();
+                _landed = Db.GetLandingOrder();
             }
             catch (Exception ex)
             {

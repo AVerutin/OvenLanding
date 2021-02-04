@@ -295,7 +295,14 @@ caption {
     width: 1614px;
 }
 
+#queue {
+    border: 2px solid #818182; 
+    border-radius: 15px;
+}
+
 #oven {
+    border: 2px solid #818182; 
+    border-radius: 15px;
     display: none;
     position: absolute;
     top: 450px;
@@ -305,6 +312,8 @@ caption {
 }
 
 #mill {
+    border: 2px solid #818182; 
+    border-radius: 15px;
     display: none;
     position: absolute;
     top: 450px;
@@ -338,4 +347,36 @@ caption {
     border-radius: 15px;
     width: 730px;
     height: 900px;
+}
+
+#beforeFurnace {
+    border: 2px solid #818182;
+    border-radius: 15px;
+}
+
+#inFurnace {
+    border: 2px solid #818182;
+    border-radius: 15px;
+    display: none;
+    position: absolute;
+    top: 450px;
+    left: 270px;
+    width: 650px;
+    caption-side: top;
+}
+
+#returned {
+    
+}
+
+#inMill {
+
+}
+
+#inPallets {
+    
+}
+
+#inHooks {
+    
 }

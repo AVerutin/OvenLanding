@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace OvenLanding.Data
 {
@@ -7,6 +8,7 @@ namespace OvenLanding.Data
         [Required]
         [StringLength(10, ErrorMessage = "Слишком длинный номер плавки (ограничение в 10 символов).")]
         public int LandingId { get; set; }
+        public DateTime LandingDate { get; set; }
         public string MeltNumber { get; set; }
         public string SteelMark { get; set; }
         public string IngotProfile { get; set; }
@@ -22,12 +24,16 @@ namespace OvenLanding.Data
         public string Shift { get; set; }
         public string IngotClass { get; set; }
         public int Weighted { get; set; }
+        public int WeightedIngots { get; set; }
+        public bool CanBeDeleted { get; set; }
         public string Specification { get; set; }
         public int Lot { get; set; }
 
         public LandingData()
         {
             MeltNumber = "";
+            LandingId = default;
+            LandingDate = DateTime.MaxValue;
             SteelMark = "";
             IngotProfile = "";
             Standart = default;
@@ -42,6 +48,8 @@ namespace OvenLanding.Data
             Shift = default;
             IngotClass = default;
             Weighted = default;
+            WeightedIngots = default;
+            CanBeDeleted = false;
             Specification = default;
             Lot = default;
         }

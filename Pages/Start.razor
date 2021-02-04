@@ -1,4 +1,4 @@
-﻿@page "/"
+﻿@page "/start"
 @inject LandingService _landingService
 @inject IJSRuntime JSRuntime;
 
@@ -7,22 +7,22 @@
     <div style="FONT-WEIGHT: 500; border: 1px solid @_semaphoreColor; border-radius: 50px; background-color: @_semaphoreColor; height: 50%; width: 10px; padding-left: 25px; margin-left: 15px; margin-top: 15px;">&nbsp;</div>
 </div>
 
-<div id="queue">
+@* Первая таблица - Очередь перед печью *@
+<div id="beforeFurnace">
     <table style="width: 1620px;">
-        @* <div class="h3">Очередь заготовок на посаде печи</div> *@
+        <div class="h3">Очередь заготовок на посаде печи</div>
         <tr>
             <td>
                 <table style="width: 1614px;">
                     <tr>
-                        @* <th scope="col">№<br />посада</th> *@
+                        @* <th scope="col">№<br />п/п</th> *@
                         <th scope="col" style="vertical-align: middle; width: 88px;">№<br/>плавки</th>
                         <th scope="col" style="vertical-align: middle; width: 88px;">Профиль</th>
                         <th scope="col" style="vertical-align: middle; width: 100px;">Диаметр<br />профиля</th>
                         <th scope="col" style="vertical-align: middle; width: 105px;">Марка<br />стали</th>
-                        <th scope="col" style="vertical-align: middle; width: 100px;">Код<br />продукции</th>
+                        <th scope="col" style="vertical-align: middle; width: 155px;">Код продукции</th>
                         <th scope="col" style="vertical-align: middle; width: 112px;">Сечение<br />заготовки</th>
                         <th scope="col" style="vertical-align: middle; width: 129px;">Количество<br />заготовок</th>
-                        <th scope="col" style="vertical-align: middle; width: 129px;">Взвешено<br />заготовок</th>
                         <th scope="col" style="vertical-align: middle; width: 114px;">Взвешено<br />бунтов</th>
                         <th scope="col" style="vertical-align: middle; width: 123px;">Общий вес<br />заготовок</th>
                         <th scope="col" style="vertical-align: middle; width: 118px;">Вес одной<br />заготовки</th>
@@ -38,10 +38,10 @@
         </tr>
         <tr>
             <td>
-                <div style="width:1615px; height:800px; overflow:auto;">
+                <div style="width:1615px; height:250px; overflow:auto;">
                     <table class="table table-hover">
                         <tbody>
-                        @foreach (var item in _landed)
+                        @foreach (var item in _beforeFurnace)
                         {
                             if (item.Weighted > 0)
                                 _selectRow = "#b1dfbb";
@@ -49,31 +49,22 @@
                                 _selectRow = "none";
                             
                             <tr style="background-color: @_selectRow;">
-                                @* <th scope="row">@item.LandingId</th> *@
                                 <th scope="row" style="width: 88px;">@item.MeltNumber</th>
                                 <td style="width: 88px;">@item.ProductProfile</td>
                                 <td style="width: 100px;">@item.Diameter</td>
                                 <td style="width: 105px;">@item.SteelMark</td>
-                                <td style="width: 100px;">@item.ProductCode</td>
+                                <td style="width: 155px;">@item.ProductCode</td>
                                 <td style="width: 112px;">@item.IngotProfile</td>
                                 <td style="width: 129px;">@item.IngotsCount</td>
-                                <td style="width: 129px;">@item.WeightedIngots</td>
                                 <td style="width: 114px;">@item.Weighted</td>
                                 <td style="width: 123px;">@item.WeightAll</td>
                                 <td style="width: 118px;">@item.WeightOne</td>
                                 <td style="width: 124px;">@item.IngotLength</td>
                                 <td style="width: 132px; text-align: center">
                                     <button class="btn btn-primary" @onclick="@(() => IncLanding(item.LandingId))">+</button>
-                                    @* @if (item.IngotsCount > item.WeightedIngots) *@
-                                    @* { *@
-                                        <button class="btn btn-primary" @onclick="@(() => DecLanding(item.LandingId))">&minus;</button>
-                                    @* } *@
-                                    @* else *@
-                                    @* { *@
-                                    @*     <button class="btn btn-primary" disabled @onclick="@(() => DecLanding(item.LandingId))">&minus;</button> *@
-                                    @* } *@
+                                    <button class="btn btn-primary" @onclick="@(() => DecLanding(item.LandingId))">&minus;</button>
                                 </td>
-                                @if (!item.CanBeDeleted)
+                                @if (item.Weighted > 0)
                                 {
                                     <td style="width: 132px;">&nbsp;</td>
                                 }
@@ -88,7 +79,7 @@
                                 <td style="width: 90px; text-align: center">
                                     <button class="btn btn-primary" @onclick="@(() => EditLanding(item.LandingId))">&#128736;</button>
                                 </td>
-                                @if (!item.CanBeDeleted)
+                                @if (item.Weighted > 0)
                                 {
                                     <td style="width: 100px;">&nbsp;</td>
                                 }
@@ -108,7 +99,8 @@
     </table>
 </div>
 
-<div id="oven">
+@* Вторая таблица - Заготовки в печи *@
+<div id="inFurnace">
     <div class="h3">Заготовки в печи</div>
     <table>
         <tr>
@@ -116,13 +108,13 @@
                 <table>
                     <tr>
                         <th style="vertical-align: middle; width: 80px;">№<br/>плавки</th>
-                        <th style="vertical-align: middle; width: 80px;">Марка<br/>стали</th>
-                        <th style="vertical-align: middle; width: 80px;">Диаметр</th>
+                        <th style="vertical-align: middle; width: 90px;">Марка<br/>стали</th>
+                        <th style="vertical-align: middle; width: 80px;">Диаметр<br />профиля</th>
                         <th style="vertical-align: middle; width: 90px;">Код<br/>продукции</th>
                         <th style="vertical-align: middle; width: 90px;">Сечение<br/>заготовки</th>
                         <th style="vertical-align: middle; width: 80px;">Кол-во<br/>заготовок</th>
-                        <th style="vertical-align: middle; width: 100px;">Количество</th>
-                        <th style="vertical-align: middle; width: 15px;">&nbsp;</th>
+                        <th style="vertical-align: middle; width: 120px;">Количество</th>
+                        @* <th style="vertical-align: middle; width: 15px;">&nbsp;</th> *@
                     </tr>
                 </table>
             </td>
@@ -132,66 +124,21 @@
                 <div style="height:300px; overflow:auto;">
                     <table class="table table-hover">
                         <tbody>
-                        <tr>
-                            <th style="width: 80px;">100500</th>
-                            <td style="width: 80px;">A5200W</td>
-                            <td style="width: 80px;">12</td>
-                            <td style="width: 90px;">15973</td>
-                            <td style="width: 90px;">150x150</td>
-                            <td style="width: 80px;">12</td>
-                            <td style="width: 120px; text-align: center;">
-                                <button class="btn btn-primary">+</button>
-                                <button class="btn btn-primary">&minus;</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>100501</th>
-                            <td>A5300W</td>
-                            <td>10</td>
-                            <td>15975</td>
-                            <td>150x150</td>
-                            <td>8</td>
-                            <td style="width: 120px; text-align: center;">
-                                <button class="btn btn-primary">+</button>
-                                <button class="btn btn-primary">&minus;</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>100502</th>
-                            <td>A5300W</td>
-                            <td>16</td>
-                            <td>15982</td>
-                            <td>150x150</td>
-                            <td>6</td>
-                            <td style="width: 120px; text-align: center;">
-                                <button class="btn btn-primary">+</button>
-                                <button class="btn btn-primary">&minus;</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>100503</th>
-                            <td>A5300W</td>
-                            <td>8</td>
-                            <td>15991</td>
-                            <td>150x150</td>
-                            <td>21</td>
-                            <td style="width: 120px; text-align: center;">
-                                <button class="btn btn-primary">+</button>
-                                <button class="btn btn-primary">&minus;</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>100504</th>
-                            <td>A5300W</td>
-                            <td>12</td>
-                            <td>16001</td>
-                            <td>150x150</td>
-                            <td>36</td>
-                            <td style="width: 120px; text-align: center;">
-                                <button class="btn btn-primary">+</button>
-                                <button class="btn btn-primary">&minus;</button>
-                            </td>
-                        </tr>
+                        @foreach (var item in _inFurnace)
+                        {
+                            <tr style="background-color: @_selectRow;">
+                                <th scope="row" style="width: 80px;">@item.MeltNumber</th>
+                                <td style="width: 90px;">@item.SteelMark</td>
+                                <td style="width: 80px;">@item.Diameter</td>
+                                <td style="width: 90px;">@item.ProductCode</td>
+                                <td style="width: 90px;">@item.IngotProfile</td>
+                                <td style="width: 80px;">@item.IngotsCount</td>
+                                <td style="width: 120px; text-align: center">
+                                    <button class="btn btn-primary" @onclick="@(() => IncLanding(item.LandingId))">+</button>
+                                    <button class="btn btn-primary" @onclick="@(() => DecLanding(item.LandingId))">&minus;</button>
+                                </td>
+                            </tr>
+                        }
                         </tbody>
                     </table>
                 </div>
@@ -215,7 +162,7 @@
                         <th style="vertical-align: middle; width: 90px;">Всего<br/>заготовок</th>
                         <th style="vertical-align: middle; width: 90px;">Кол-во<br/>взвешенных</th>
                         <th style="vertical-align: middle; width: 90px;">Всего<br/>взвешено</th>
-                        <th style="vertical-align: middle; width: 80px;">Возврат</th>
+                        @* <th style="vertical-align: middle; width: 80px;">Возврат</th> *@
                         <th style="vertical-align: middle; width: 80px;">Брак</th>
                         <th style="vertical-align: middle; width: 100px;">Количество</th>
                         @* <th style="width: 15px;">&nbsp;</th> *@
@@ -228,38 +175,24 @@
                 <div style="height:300px; overflow:auto;">
                     <table class="table table-hover">
                         <tbody>
-                        <tr>
-                            <th style="width: 80px;">100505</th>
-                            <td style="width: 80px;">A500W</td>
-                            <td style="width: 80px;">18</td>
-                            <td style="width: 90px;">15937</td>
-                            <td style="width: 90px;">150x150</td>
-                            <td style="width: 90px;">15</td>
-                            <td style="width: 90px;">5</td>
-                            <td style="width: 90px;">10500</td>
-                            <td style="width: 80px;">2</td>
-                            <td style="width: 80px;">3</td>
-                            <td style="width: 100px;">
-                                <button class="btn btn-primary">+</button>
-                                <button class="btn btn-primary">&minus;</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th style="width: 80px;">100507</th>
-                            <td style="width: 80px;">S5200W</td>
-                            <td style="width: 80px;">14</td>
-                            <td style="width: 90px;">36175</td>
-                            <td style="width: 90px;">150x150</td>
-                            <td style="width: 90px;">8</td>
-                            <td style="width: 90px;">2</td>
-                            <td style="width: 90px;">8400</td>
-                            <td style="width: 80px;">0</td>
-                            <td style="width: 80px;">1</td>
-                            <td style="width: 100px;">
-                                <button class="btn btn-primary">+</button>
-                                <button class="btn btn-primary">&minus;</button>
-                            </td>
-                        </tr>
+                        @foreach (var item in _inMill)
+                        {
+                            <tr style="background-color: @_selectRow;">
+                                <th scope="row" style="width: 80px;">@item.MeltNumber</th>
+                                <td style="width: 90px;">@item.SteelMark</td>
+                                <td style="width: 80px;">@item.Diameter</td>
+                                <td style="width: 90px;">@item.ProductCode</td>
+                                <td style="width: 90px;">@item.IngotProfile</td>
+                                <td style="width: 90px;">@item.IngotsCount</td>
+                                <td style="width: 90px;">@item.Weighted</td>
+                                <td style="width: 90px;">0</td>
+                                <td style="width: 80px;">0</td>
+                                <td style="width: 100px; text-align: center">
+                                    <button class="btn btn-primary" @onclick="@(() => IncLanding(item.LandingId))">+</button>
+                                    <button class="btn btn-primary" @onclick="@(() => DecLanding(item.LandingId))">&minus;</button>
+                                </td>
+                            </tr>
+                        }
                         </tbody>
                     </table>
                 </div>
@@ -267,13 +200,6 @@
         </tr>
     </table>
 </div>
-
-
-<div id="state" class="@_messageClass" role="alert" style="display: @_messageVisible;">
-    @_message
-</div>
-
-<!-- Button trigger modal -->
 
 
 <!-- Modal -->
