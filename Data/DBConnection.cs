@@ -15,6 +15,7 @@ namespace OvenLanding.Data
         private readonly string _connectionStringTest;
         private readonly Logger _logger;
         private int _exceptionCode;
+        private DBQueries _dbQueries;
 
         /// <summary>
         /// Конструктор создания подключения к базе данных
@@ -55,31 +56,43 @@ namespace OvenLanding.Data
             //  "Trust Server Certificate": "true",
             //  "Reconnect": "5000"
             // }
-
             
             // Читаем параметры подключения к СУБД PostgreSQL
             _logger = LogManager.GetCurrentClassLogger();
+            _dbQueries = new DBQueries();
             IConfigurationRoot config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
                 .Build();
             
+            // Настройки для подключения к базе данных на проде
             string host = config.GetSection("DBConnection:Host").Value;
-            string hostT = config.GetSection("DBTest:Host").Value;
             int port = int.Parse(config.GetSection("DBConnection:Port").Value);
-            int portT = int.Parse(config.GetSection("DBTest:Port").Value);
             string database = config.GetSection("DBConnection:Database").Value;
-            string databaseT = config.GetSection("DBTest:Database").Value;
             string user = config.GetSection("DBConnection:UserName").Value;
-            string userT = config.GetSection("DBTest:UserName").Value;
             string password = config.GetSection("DBConnection:Password").Value;
+            int timeout = int.Parse(config.GetSection("DBConnection:Timeout").Value);
+            string sslMode = config.GetSection("DBConnection:SslMode").Value;
+            string trustServerCert = config.GetSection("DBConnection:TrustServerCertificate").Value;
+            
+            // Настройки для подклоючения к базе данных на тесте
+            string hostT = config.GetSection("DBTest:Host").Value;
+            int portT = int.Parse(config.GetSection("DBTest:Port").Value);
+            string databaseT = config.GetSection("DBTest:Database").Value;
+            string userT = config.GetSection("DBTest:UserName").Value;
             string passwordT = config.GetSection("DBTest:Password").Value;
-            // string sslMode = config.GetSection("DBConnection:SslMode").Value;
-            // string sslModeT = config.GetSection("DBTest:SslMode").Value;
+            int timeoutT = int.Parse(config.GetSection("DBTest:Timeout").Value);
+            string sslModeT = config.GetSection("DBTest:SslMode").Value;
+            string trustServerCertT = config.GetSection("DBTest:TrustServerCertificate").Value;
 
+            // Строка подключения для базы данных на проде
             _connectionString =
-                $"Server={host};Username={user};Database={database};Port={port};Password={password}"; //";SslMode=Prefer";
+                $"Server={host};Username={user};Database={database};Port={port};Password={password};" +
+                $"SSL Mode={sslMode};Trust Server Certificate={trustServerCert};CommandTimeout={timeout}";
+            
+            // Строка подключения для базы данных на тесте
             _connectionStringTest =
-                $"Server={hostT};Username={userT};Database={databaseT};Port={portT};Password={passwordT}"; //";SslMode=Prefer";
+                $"Server={hostT};Username={userT};Database={databaseT};Port={portT};Password={passwordT};" +
+                $"SSL Mode={sslModeT};Trust Server Certificate={trustServerCertT};CommandTimeout={timeoutT}";
         }
 
         public bool DbInit()
@@ -1391,6 +1404,235 @@ namespace OvenLanding.Data
             catch (Exception ex)
             {
                 _logger.Error($"Не удалось получить список заготовок на участке {area.ToString()} [{ex.Message}]");
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Получить список возвратов по номеру плавки
+        /// </summary>
+        /// <param name="melt">Номер плавки</param>
+        /// <returns>Список возвратов</returns>
+        public List<ReturningData> GetReturns(string melt)
+        {
+            string query = _dbQueries.GetReturnsByMelt(melt);
+            List<ReturningData> result = _getReturns(query);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Получить список возвратов за период
+        /// </summary>
+        /// <param name="begin">Начало периода</param>
+        /// <param name="end">Конец периода</param>
+        /// <returns>Список возвратов</returns>
+        public List<ReturningData> GetReturns(DateTime begin, DateTime end)
+        {
+            string query = _dbQueries.GetReturnsByPeriod(begin, end);
+            List<ReturningData> result = _getReturns(query);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Получить список возвратов по готовому запросу
+        /// </summary>
+        /// <param name="query">Запрос</param>
+        /// <returns>Список возвратов</returns>
+        private List<ReturningData> _getReturns(string query)
+        {
+            List<ReturningData> result = new List<ReturningData>();
+            DataTable dataTable = new DataTable();
+            try
+            {
+                using (NpgsqlConnection connection = new NpgsqlConnection(_connectionStringTest))
+                {
+                    connection.Open();
+                    new NpgsqlDataAdapter(new NpgsqlCommand(query, connection)).Fill(dataTable);
+                    connection.Close();
+                    if (dataTable.Rows.Count > 0)
+                    {
+                        for (int i = 0; i < dataTable.Rows.Count; i++)
+                        {
+                            ReturningData item = new ReturningData();
+                            try
+                            {
+                                string val = dataTable.Rows[i][0].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = "0";
+                                item.Melt = val;
+
+                                val = dataTable.Rows[i][1].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = DateTime.MinValue.ToString("G");
+                                item.TimeBegin = DateTime.Parse(val);
+
+                                val = dataTable.Rows[i][2].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = DateTime.MinValue.ToString("G");
+                                item.TimeEnd = DateTime.Parse(val);
+
+                                val = dataTable.Rows[i][3].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = "0";
+                                item.IngotNumber = int.Parse(val);
+
+                                val = dataTable.Rows[i][4].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = "0";
+                                item.IngotsCount = int.Parse(val);
+
+                                val = dataTable.Rows[i][5].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = DateTime.MinValue.ToString("G");
+                                item.TimeCreateLanding = DateTime.Parse(val);
+
+                                val = dataTable.Rows[i][6].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = "0";
+                                item.IngotWeight = int.Parse(val);
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.Error(
+                                    $"Не удалось прочитать список возвратов по готовому запросу [{ex.Message}]");
+                            }
+
+                            result.Add(item);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"Не удалось получить список возвратов по готовому запросу [{ex.Message}]");
+            }
+
+            return result;
+        }
+
+
+        /// <summary>
+        /// Получить список ЕУ и последний ТУ, до которого он дошел по номеру плавки
+        /// </summary>
+        /// <param name="melt">Номер плавки</param>
+        /// <returns>Список ЕУ</returns>
+        public List<IngotsOnTU> GetIngotsByTu(string melt)
+        {
+            List<IngotsOnTU> result = new List<IngotsOnTU>();
+            string query = _dbQueries.GetIngotsMyMeltQuery(melt);
+            DataTable dataTable = new DataTable();
+            try
+            {
+                using (NpgsqlConnection connection = new NpgsqlConnection(_connectionStringTest))
+                {
+                    connection.Open();
+                    new NpgsqlDataAdapter(new NpgsqlCommand(query, connection)).Fill(dataTable);
+                    connection.Close();
+                    if (dataTable.Rows.Count > 0)
+                    {
+                        for (int i = 0; i < dataTable.Rows.Count; i++)
+                        {
+                            IngotsOnTU item = new IngotsOnTU();
+                            try
+                            {
+                                string val = dataTable.Rows[i][0].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = "0";
+                                item.NodeId = int.Parse(val);
+                                
+                                val = dataTable.Rows[i][1].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = "";
+                                item.NodeName = val;
+                                
+                                val = dataTable.Rows[i][2].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = "0";
+                                item.IngotId = int.Parse(val);
+                                
+                                val = dataTable.Rows[i][3].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = DateTime.MinValue.ToString("G");
+                                item.TimeBegin = DateTime.Parse(val);
+                                
+                                val = dataTable.Rows[i][4].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = DateTime.MinValue.ToString("G");
+                                item.TimeEnd = DateTime.Parse(val);
+                                
+                                val = dataTable.Rows[i][5].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = "0";
+                                item.BilletWeight = int.Parse(val);
+                                
+                                val = dataTable.Rows[i][6].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = "0";
+                                item.Position = int.Parse(val);
+                                
+                                val = dataTable.Rows[i][7].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = "0";
+                                item.MeltNumber = val;
+                                
+                                val = dataTable.Rows[i][8].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = "0";
+                                item.CoilNumber = int.Parse(val);
+                                
+                                val = dataTable.Rows[i][9].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = "0";
+                                item.CoilWeight = int.Parse(val);
+                                
+                                val = dataTable.Rows[i][10].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = "0x0";
+                                item.Section = val;
+                                
+                                val = dataTable.Rows[i][11].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = "";
+                                item.SteelMark = val;
+                                
+                                val = dataTable.Rows[i][12].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = "";
+                                item.Profile = val;
+                                
+                                val = dataTable.Rows[i][13].ToString()?.Trim().Replace(".", ",");
+                                if (string.IsNullOrEmpty(val))
+                                    val = "0";
+                                item.Diameter = double.Parse(val);
+                                
+                                val = dataTable.Rows[i][14].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = "0";
+                                item.IngotsCount = int.Parse(val);
+                                
+                                val = dataTable.Rows[i][15].ToString()?.Trim();
+                                if (string.IsNullOrEmpty(val))
+                                    val = "0";
+                                item.IngotsWeight = int.Parse(val);
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.Error(
+                                    $"Не удалось прочитать список заготовок для плавки №{melt} [{ex.Message}]");
+                            }
+                            
+                            result.Add(item);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(
+                    $"Не удалось получить список заготовок для плавки №{melt} [{ex.Message}]");
             }
 
             return result;

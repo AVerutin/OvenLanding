@@ -365,18 +365,7 @@ caption {
     caption-side: top;
 }
 
-#returned {
-    
-}
-
-#inMill {
-
-}
-
-#inPallets {
-    
-}
-
-#inHooks {
-    
+.window {
+    border: 2px solid #818182;
+    border-radius: 15px;
 }

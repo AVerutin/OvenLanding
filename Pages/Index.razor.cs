@@ -20,8 +20,9 @@ namespace OvenLanding.Pages
         private string _message = "";
         private string _messageClass = "";
         private string _messageVisible = "none";
-        private string _semaphoreColor = "darkcyan";
+        private string _semaphoreColor = "#1861ac";
         private string _selectRow = "none";
+        private string _loading = "hidden;";
         
         protected override void OnInitialized()
         {
@@ -33,6 +34,11 @@ namespace OvenLanding.Pages
         public void Dispose()
         {
             _landingService.PropertyChanged -= UpdateMessage;
+        }
+        
+        private void _setLoading(bool visible)
+        {
+            _loading = visible ? "visible;" : "hidden;";
         }
 
         private void ShowMessage(MessageType type, string message)
@@ -64,6 +70,10 @@ namespace OvenLanding.Pages
         private async void Initialize()
         {
             // Получение очереди плавок
+            _setLoading(true);
+            _landed = new List<LandingData>();
+            await Task.Delay(100);
+            
             try
             {
                 // _landed = Db.GetLandingOrder();
@@ -74,6 +84,7 @@ namespace OvenLanding.Pages
                 _logger.Error($"Не удалось получить очередь на посаде [{ex.Message}]");
             }
             
+            _setLoading(false);
             StateHasChanged();
             SetTimer(5);
         }
@@ -198,7 +209,7 @@ namespace OvenLanding.Pages
         private async Task<List<LandingData>> GetLandingOrder()
         {
             List<LandingData> result = Db.GetLandingOrder();
-            
+
             // Проверка на наличие возвожности удаления плавки
             foreach (LandingData item in result)
             {
@@ -210,9 +221,9 @@ namespace OvenLanding.Pages
                     item.CanBeDeleted = true;
                 }
                 
-                await Task.Delay(200);
+                await Task.Delay(500);
             }
-
+            
             return result;
         }
         
@@ -478,14 +489,7 @@ namespace OvenLanding.Pages
             }
 
             _landingService.IngotsCount = DateTime.Now.Millisecond;
-            if (_semaphoreColor == "darkcyan")
-            {
-                _semaphoreColor = "darkgrey";
-            }
-            else
-            {
-                _semaphoreColor = "darkcyan";
-            }
+            _semaphoreColor = _semaphoreColor == "lightsteelblue" ? "#1861ac" : "lightsteelblue";
         }
 
         private async void UpdateMessage(object sender, PropertyChangedEventArgs args)

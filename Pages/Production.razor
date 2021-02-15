@@ -1,0 +1,192 @@
+﻿@page "/production"
+@inject LandingService _landingService
+@inject IJSRuntime JSRuntime;
+
+<div class="row">
+    <h1>Производство</h1>
+    <div style="FONT-WEIGHT: 500; border: 1px solid @_semaphoreColor; border-radius: 50px; background-color: @_semaphoreColor; height: 50%; width: 10px; padding-left: 25px; margin-left: 15px; margin-top: 15px;">&nbsp;</div>
+</div>
+
+@* ОКНО №1 - СПИСОК ПЛАВОК ПЕРЕД ПЕЧЬЮ *@
+<div class="window" id="window1">
+    <table style="width: 1620px;">
+        <tr>
+            <td>
+                <table style="width: 1614px;">
+                    <tr>
+                        @* <th scope="col">№<br />посада</th> *@
+                        <th scope="col" style="vertical-align: middle; width: 88px;">№<br/>плавки</th>
+                        <th scope="col" style="vertical-align: middle; width: 88px;">Профиль</th>
+                        <th scope="col" style="vertical-align: middle; width: 100px;">Диаметр<br />профиля</th>
+                        <th scope="col" style="vertical-align: middle; width: 129px;">Количество<br />заготовок</th>
+                        <th scope="col" style="vertical-align: middle; width: 129px;">Взвешено<br />заготовок</th>
+                        <th scope="col" style="vertical-align: middle; width: 129px;">Заготовок<br />в печи</th>
+                        <th scope="col" style="vertical-align: middle; width: 129px;">Выдано<br />из печи</th>
+                        <th scope="col" style="vertical-align: middle; width: 123px;">Возвратов</th>
+                        <th scope="col" style="vertical-align: middle; width: 129px;">Заготовок<br />прокатано</th>
+                        <th scope="col" style="vertical-align: middle; width: 118px;">Брак</th>
+                        <th scope="col" style="vertical-align: middle; width: 114px;">Взвешено<br />бунтов</th>
+                        @* <th scope="col" style="vertical-align: middle; width: 15px;">&nbsp;</th> *@
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div style="width:1615px; height:200px; overflow:auto;">
+                    <table class="table table-hover">
+                        <tbody>
+                        @foreach (var item in _window1)
+                        {
+                            if (item.Weighted > 0)
+                                _selectRow = "#b1dfbb";
+                            else
+                                _selectRow = "none";
+                            
+                            <tr style="background-color: @_selectRow;">
+                                @* <th scope="row">@item.LandingId</th> *@
+                                <th scope="row" style="width: 88px;">@item.MeltNumber</th>
+                                <td style="width: 88px;">@item.ProductProfile</td>
+                                <td style="width: 100px;">@item.Diameter</td>
+                                <td style="width: 129px;">@item.IngotsCount</td>
+                                <td style="width: 129px;">@item.WeightedIngots</td>
+                                <td style="width: 129px;">@item.IngotsInOwen</td>
+                                <td style="width: 129px;">@item.IngotsInMill</td>
+                                <td style="width: 123px;">@item.IngotsReturned</td>
+                                <td style="width: 129px;">@item.IngotsMilled</td>
+                                <td style="width: 118px;">@item.IngotsBroken</td>
+                                <td style="width: 114px;">@item.Weighted</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+
+@* ОКНО №2 - СПИСОК ПЛАВОК, САДЯЩИХСЯ В ПЕЧЬ *@
+<div class="window" id="window2">
+    <table style="width: 1620px;">
+        <tr>
+            <td>
+                <table style="width: 1614px;">
+                    <tr>
+                        @* <th scope="col">№<br />посада</th> *@
+                        <th scope="col" style="vertical-align: middle; width: 88px;">№<br/>плавки</th>
+                        <th scope="col" style="vertical-align: middle; width: 88px;">Профиль</th>
+                        <th scope="col" style="vertical-align: middle; width: 100px;">Диаметр<br />профиля</th>
+                        <th scope="col" style="vertical-align: middle; width: 129px;">Количество<br />заготовок</th>
+                        <th scope="col" style="vertical-align: middle; width: 129px;">Взвешено<br />заготовок</th>
+                        <th scope="col" style="vertical-align: middle; width: 129px;">Заготовок<br />в печи</th>
+                        <th scope="col" style="vertical-align: middle; width: 129px;">Выдано<br />из печи</th>
+                        <th scope="col" style="vertical-align: middle; width: 123px;">Возвратов</th>
+                        <th scope="col" style="vertical-align: middle; width: 129px;">Заготовок<br />прокатано</th>
+                        <th scope="col" style="vertical-align: middle; width: 118px;">Брак</th>
+                        <th scope="col" style="vertical-align: middle; width: 114px;">Взвешено<br />бунтов</th>
+                        @* <th scope="col" style="vertical-align: middle; width: 15px;">&nbsp;</th> *@
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div style="width:1615px; height:250px; overflow:auto;">
+                    <table class="table table-hover">
+                        <tbody>
+                        @foreach (var item in _window2)
+                        {
+                            if (item.Weighted > 0)
+                                _selectRow = "#b1dfbb";
+                            else
+                                _selectRow = "none";
+                            
+                            <tr style="background-color: @_selectRow;">
+                                @* <th scope="row">@item.LandingId</th> *@
+                                <th scope="row" style="width: 88px;">@item.MeltNumber</th>
+                                <td style="width: 88px;">@item.ProductProfile</td>
+                                <td style="width: 100px;">@item.Diameter</td>
+                                <td style="width: 129px;">@item.IngotsCount</td>
+                                <td style="width: 129px;">@item.WeightedIngots</td>
+                                <td style="width: 129px;">@item.IngotsInOwen</td>
+                                <td style="width: 129px;">@item.IngotsInMill</td>
+                                <td style="width: 123px;">@item.IngotsReturned</td>
+                                <td style="width: 129px;">@item.IngotsMilled</td>
+                                <td style="width: 118px;">@item.IngotsBroken</td>
+                                <td style="width: 114px;">@item.Weighted</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+
+
+@* ОКНО №3 - СПИСОК ВЗВЕШИВАЮЩИХСЯ ПЛАВОК *@
+<div class="window" id="window3">
+    <table style="width: 1620px;">
+        <tr>
+            <td>
+                <table style="width: 1614px;">
+                    <tr>
+                        @* <th scope="col">№<br />посада</th> *@
+                        <th scope="col" style="vertical-align: middle; width: 88px;">№<br/>плавки</th>
+                        <th scope="col" style="vertical-align: middle; width: 88px;">Профиль</th>
+                        <th scope="col" style="vertical-align: middle; width: 100px;">Диаметр<br />профиля</th>
+                        <th scope="col" style="vertical-align: middle; width: 129px;">Количество<br />заготовок</th>
+                        <th scope="col" style="vertical-align: middle; width: 129px;">Взвешено<br />заготовок</th>
+                        <th scope="col" style="vertical-align: middle; width: 129px;">Заготовок<br />в печи</th>
+                        <th scope="col" style="vertical-align: middle; width: 129px;">Выдано<br />из печи</th>
+                        <th scope="col" style="vertical-align: middle; width: 123px;">Возвратов</th>
+                        <th scope="col" style="vertical-align: middle; width: 129px;">Заготовок<br />прокатано</th>
+                        <th scope="col" style="vertical-align: middle; width: 118px;">Брак</th>
+                        <th scope="col" style="vertical-align: middle; width: 114px;">Взвешено<br />бунтов</th>
+                        @* <th scope="col" style="vertical-align: middle; width: 15px;">&nbsp;</th> *@
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div style="width:1615px; height:150px; overflow:auto;">
+                    <table class="table table-hover">
+                        <tbody>
+                        @foreach (var item in _window3)
+                        {
+                            if (item.Weighted > 0)
+                                _selectRow = "#b1dfbb";
+                            else
+                                _selectRow = "none";
+                            
+                            <tr style="background-color: @_selectRow;">
+                                @* <th scope="row">@item.LandingId</th> *@
+                                <th scope="row" style="width: 88px;">@item.MeltNumber</th>
+                                <td style="width: 88px;">@item.ProductProfile</td>
+                                <td style="width: 100px;">@item.Diameter</td>
+                                <td style="width: 129px;">@item.IngotsCount</td>
+                                <td style="width: 129px;">@item.WeightedIngots</td>
+                                <td style="width: 129px;">@item.IngotsInOwen</td>
+                                <td style="width: 129px;">@item.IngotsInMill</td>
+                                <td style="width: 123px;">@item.IngotsReturned</td>
+                                <td style="width: 129px;">@item.IngotsMilled</td>
+                                <td style="width: 118px;">@item.IngotsBroken</td>
+                                <td style="width: 114px;">@item.Weighted</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+
+
+<div id="state" class="@_messageClass" role="alert" style="display: @_messageVisible;">
+    @_message
+</div>
+

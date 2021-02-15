@@ -5,6 +5,9 @@
 <div class="row">
     <h1>Посад печи</h1>
     <div style="FONT-WEIGHT: 500; border: 1px solid @_semaphoreColor; border-radius: 50px; background-color: @_semaphoreColor; height: 50%; width: 10px; padding-left: 25px; margin-left: 15px; margin-top: 15px;">&nbsp;</div>
+    <div class="spinner-border text-primary" role="status" style="padding-left: 25px; margin-left: 15px; margin-top: 10px; visibility: @_loading;">
+        <span class="sr-only">Loading...</span>
+    </div>
 </div>
 
 <div id="queue">
@@ -18,7 +21,7 @@
                         <th scope="col" style="vertical-align: middle; width: 88px;">№<br/>плавки</th>
                         <th scope="col" style="vertical-align: middle; width: 88px;">Профиль</th>
                         <th scope="col" style="vertical-align: middle; width: 100px;">Диаметр<br />профиля</th>
-                        <th scope="col" style="vertical-align: middle; width: 105px;">Марка<br />стали</th>
+                        <th scope="col" style="vertical-align: middle; width: 130px;">Марка<br />стали</th>
                         <th scope="col" style="vertical-align: middle; width: 100px;">Код<br />продукции</th>
                         <th scope="col" style="vertical-align: middle; width: 112px;">Сечение<br />заготовки</th>
                         <th scope="col" style="vertical-align: middle; width: 129px;">Количество<br />заготовок</th>
@@ -27,10 +30,10 @@
                         <th scope="col" style="vertical-align: middle; width: 123px;">Общий вес<br />заготовок</th>
                         <th scope="col" style="vertical-align: middle; width: 118px;">Вес одной<br />заготовки</th>
                         <th scope="col" style="vertical-align: middle; width: 124px;">Длина (мм)<br />заготовки</th>
-                        <th scope="col" style="vertical-align: middle; width: 132px;">Количество</th>
-                        <th scope="col" style="vertical-align: middle; width: 128px;">Порядок</th>
+                        <th scope="col" style="vertical-align: middle; width: 100px;">Количество</th>
+                        <th scope="col" style="vertical-align: middle; width: 100px;">Порядок</th>
                         <th scope="col" style="vertical-align: middle; width: 90px;">Правка</th>
-                        <th scope="col" style="vertical-align: middle; width: 100px;">Удалить</th>
+                        <th scope="col" style="vertical-align: middle; width: 90px;">Удалить</th>
                         <th scope="col" style="vertical-align: middle; width: 15px;">&nbsp;</th>
                     </tr>
                 </table>
@@ -44,16 +47,16 @@
                         @foreach (var item in _landed)
                         {
                             if (item.Weighted > 0)
-                                _selectRow = "#b1dfbb";
+                                _selectRow = "lightblue;";
                             else
-                                _selectRow = "none";
+                                _selectRow = "none;";
                             
                             <tr style="background-color: @_selectRow;">
                                 @* <th scope="row">@item.LandingId</th> *@
                                 <th scope="row" style="width: 88px;">@item.MeltNumber</th>
                                 <td style="width: 88px;">@item.ProductProfile</td>
                                 <td style="width: 100px;">@item.Diameter</td>
-                                <td style="width: 105px;">@item.SteelMark</td>
+                                <td style="width: 130px;">@item.SteelMark</td>
                                 <td style="width: 100px;">@item.ProductCode</td>
                                 <td style="width: 112px;">@item.IngotProfile</td>
                                 <td style="width: 129px;">@item.IngotsCount</td>
@@ -62,7 +65,7 @@
                                 <td style="width: 123px;">@item.WeightAll</td>
                                 <td style="width: 118px;">@item.WeightOne</td>
                                 <td style="width: 124px;">@item.IngotLength</td>
-                                <td style="width: 132px; text-align: center">
+                                <td style="width: 120px; text-align: center">
                                     <button class="btn btn-primary" @onclick="@(() => IncLanding(item.LandingId))">+</button>
                                     @* @if (item.IngotsCount > item.WeightedIngots) *@
                                     @* { *@
@@ -75,13 +78,13 @@
                                 </td>
                                 @if (!item.CanBeDeleted)
                                 {
-                                    <td style="width: 132px;">&nbsp;</td>
+                                    <td style="width: 120px;">&nbsp;</td>
                                 }
                                 else
                                 {
-                                    <td style="width: 132px; text-align: center">
-                                        <button class="btn btn-primary" @onclick="@(() => MoveUp(item.LandingId))">&uarr;</button>
-                                        <button class="btn btn-primary" @onclick="@(() => MoveDown(item.LandingId))">&darr;</button>
+                                    <td style="width: 120px; text-align: center">
+                                        <button class="btn btn-primary" disabled @onclick="@(() => MoveUp(item.LandingId))">&uarr;</button>
+                                        <button class="btn btn-primary" disabled @onclick="@(() => MoveDown(item.LandingId))">&darr;</button>
                                     </td>
                                 }
 
@@ -90,11 +93,11 @@
                                 </td>
                                 @if (!item.CanBeDeleted)
                                 {
-                                    <td style="width: 100px;">&nbsp;</td>
+                                    <td style="width: 90px;">&nbsp;</td>
                                 }
                                 else
                                 {
-                                    <td style="width: 100px; text-align: center">
+                                    <td style="width: 90px; text-align: center">
                                         <button class="btn btn-primary" @onclick="@(() => Remove(item.LandingId))">&times;</button>
                                     </td>
                                 }

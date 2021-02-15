@@ -18,20 +18,12 @@
     </select>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="97baf1e9-2485-46d7-b3c2-3bfb354916b0" name="Default Changelist" comment="Detached reports into external services">
-      <change afterPath="$PROJECT_DIR$/Data/Areas.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Data/AreasData.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Pages/Start.razor" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Pages/Start.razor.cs" afterDir="false" />
+    <list default="true" id="97baf1e9-2485-46d7-b3c2-3bfb354916b0" name="Default Changelist" comment="Add weighted ingots from test server.">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.OvenLanding/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.OvenLanding/.idea/contentModel.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.OvenLanding/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.OvenLanding/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.OvenLanding/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.OvenLanding/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Data/DBConnection.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Data/DBConnection.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/LandingData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Data/LandingData.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Pages/Index.razor" beforeDir="false" afterPath="$PROJECT_DIR$/Pages/Index.razor" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Pages/Index.razor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Pages/Index.razor.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/OvenLanding.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/OvenLanding.csproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/appsettings.json" beforeDir="false" afterPath="$PROJECT_DIR$/appsettings.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wwwroot/css/site.css" beforeDir="false" afterPath="$PROJECT_DIR$/wwwroot/css/site.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,20 +41,20 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Data/AreasData.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/4065B38D-0F9F-44D9-8F53-F4C9102AF396/25F/AsyncMethodBuilder.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/9F0C406F-1F07-468A-8089-7D32F8D98C6A/39/RemoteRenderer.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Pages/Start.razor" root0="SKIP_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" root2="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/4065B38D-0F9F-44D9-8F53-F4C9102AF396/1E0/ExceptionDispatchInfo.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/2BC5ED24-0D5C-402C-8B6A-BD14FFCEE267/1E0/ExceptionDispatchInfo.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Data/DBConnection.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/4065B38D-0F9F-44D9-8F53-F4C9102AF396/38/String.Manipulation.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Pages/Start.razor.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/4065B38D-0F9F-44D9-8F53-F4C9102AF396/14E/ExecutionContext.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Pages/Index.razor" root0="SKIP_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" root2="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Pages/Index.razor.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/88AF82DF-D459-4726-BC5E-EBB98920992D/8/ComponentBase.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/88AF82DF-D459-4726-BC5E-EBB98920992D/11/EventCallbackWorkItem.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="IdeDocumentHistory">
     <changedPaths>
@@ -72,9 +64,9 @@
       <option value="$PROJECT_DIR$/Data/LandingData.cs" />
       <option value="$PROJECT_DIR$/wwwroot/css/site.css" />
       <option value="$PROJECT_DIR$/Data/AreasData.cs" />
-      <option value="$PROJECT_DIR$/Data/DBConnection.cs" />
       <option value="$PROJECT_DIR$/Pages/Start.razor.cs" />
       <option value="$PROJECT_DIR$/Pages/Start.razor" />
+      <option value="$PROJECT_DIR$/Data/DBConnection.cs" />
     </changedPaths>
   </component>
   <component name="ProjectId" id="1j5vkH0RPjHxTBbXH5WnvUOvgC2" />
@@ -91,6 +83,7 @@
     <property name="DebuggerViewTab_PTCS_FirstProportionKey" value="0.34994584" />
     <property name="DebuggerViewTab_PTCS_LastProportionKey" value="0.0" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="vue.rearranger.settings.migration" value="true" />
@@ -167,6 +160,9 @@
       <workItem from="1608628171665" duration="1333000" />
       <workItem from="1609131814373" duration="15760000" />
       <workItem from="1609220899574" duration="16466000" />
+      <workItem from="1612444980832" duration="175000" />
+      <workItem from="1612864284089" duration="311000" />
+      <workItem from="1612865023804" duration="293000" />
     </task>
     <task id="LOCAL-00001" summary="Complete">
       <created>1603176593286</created>
@@ -259,7 +255,14 @@
       <option name="project" value="LOCAL" />
       <updated>1607595109937</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Add weighted ingots from test server.">
+      <created>1612445122915</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1612445122915</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -295,7 +298,8 @@
     <MESSAGE value="Add calculator to shift number by current date and time" />
     <MESSAGE value="Final result with redirection on external reports page" />
     <MESSAGE value="Detached reports into external services" />
-    <option name="LAST_COMMIT_MESSAGE" value="Detached reports into external services" />
+    <MESSAGE value="Add weighted ingots from test server." />
+    <option name="LAST_COMMIT_MESSAGE" value="Add weighted ingots from test server." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -303,40 +307,19 @@
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/Pages/ViewCoils.razor.cs</url>
           <line>44</line>
-          <properties documentPath="E:\Projects\NET\OvenLanding\Pages\ViewCoils.razor.cs" initialLine="44">
-            <startOffsets>
-              <option value="1167" />
-            </startOffsets>
-            <endOffsets>
-              <option value="1215" />
-            </endOffsets>
-          </properties>
+          <properties documentPath="E:\Projects\NET\OvenLanding\Pages\ViewCoils.razor.cs" initialLine="44" />
           <option name="timeStamp" value="18" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/Pages/Start.razor.cs</url>
           <line>113</line>
-          <properties documentPath="E:\Projects\NET\OvenLanding\Pages\Start.razor.cs" initialLine="113" containingFunctionPresentation="method 'GetMeltsInArea'">
-            <startOffsets>
-              <option value="4339" />
-            </startOffsets>
-            <endOffsets>
-              <option value="4376" />
-            </endOffsets>
-          </properties>
+          <properties documentPath="E:\Projects\NET\OvenLanding\Pages\Start.razor.cs" initialLine="113" containingFunctionPresentation="method 'GetMeltsInArea'" />
           <option name="timeStamp" value="39" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/Pages/Start.razor.cs</url>
           <line>60</line>
-          <properties documentPath="E:\Projects\NET\OvenLanding\Pages\Start.razor.cs" initialLine="60" containingFunctionPresentation="method 'Initialize'">
-            <startOffsets>
-              <option value="2284" />
-            </startOffsets>
-            <endOffsets>
-              <option value="2315" />
-            </endOffsets>
-          </properties>
+          <properties documentPath="E:\Projects\NET\OvenLanding\Pages\Start.razor.cs" initialLine="60" containingFunctionPresentation="method 'Initialize'" />
           <option name="timeStamp" value="40" />
         </line-breakpoint>
       </breakpoints>
