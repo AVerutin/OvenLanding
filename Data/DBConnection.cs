@@ -16,12 +16,17 @@ namespace OvenLanding.Data
         private readonly Logger _logger;
         private int _exceptionCode;
         private DBQueries _dbQueries;
+        private int _timeOutP;
+        private int _timeOutT;
 
         /// <summary>
         /// Конструктор создания подключения к базе данных
         /// </summary>
         public DBConnection()
         {
+            // Открытие транзакции и ограничение ее выполнения по времени
+            // begin; set session statement_timeout  to '2s'; commit; SELECT pg_sleep(5);
+
             // Параметры подключения к БД для удаленного компьютера
             // "DBConnection": {
             //     "Host": "10.23.196.52",
@@ -70,7 +75,7 @@ namespace OvenLanding.Data
             string database = config.GetSection("DBConnection:Database").Value;
             string user = config.GetSection("DBConnection:UserName").Value;
             string password = config.GetSection("DBConnection:Password").Value;
-            int timeout = int.Parse(config.GetSection("DBConnection:Timeout").Value);
+            _timeOutP = int.Parse(config.GetSection("DBConnection:Timeout").Value);
             string sslMode = config.GetSection("DBConnection:SslMode").Value;
             string trustServerCert = config.GetSection("DBConnection:TrustServerCertificate").Value;
             
@@ -80,25 +85,26 @@ namespace OvenLanding.Data
             string databaseT = config.GetSection("DBTest:Database").Value;
             string userT = config.GetSection("DBTest:UserName").Value;
             string passwordT = config.GetSection("DBTest:Password").Value;
-            int timeoutT = int.Parse(config.GetSection("DBTest:Timeout").Value);
+            _timeOutT = int.Parse(config.GetSection("DBTest:Timeout").Value);
             string sslModeT = config.GetSection("DBTest:SslMode").Value;
             string trustServerCertT = config.GetSection("DBTest:TrustServerCertificate").Value;
 
             // Строка подключения для базы данных на проде
             _connectionString =
                 $"Server={host};Username={user};Database={database};Port={port};Password={password};" +
-                $"SSL Mode={sslMode};Trust Server Certificate={trustServerCert};CommandTimeout={timeout}";
+                $"SSL Mode={sslMode};Trust Server Certificate={trustServerCert}";
             
             // Строка подключения для базы данных на тесте
             _connectionStringTest =
                 $"Server={hostT};Username={userT};Database={databaseT};Port={portT};Password={passwordT};" +
-                $"SSL Mode={sslModeT};Trust Server Certificate={trustServerCertT};CommandTimeout={timeoutT}";
+                $"SSL Mode={sslModeT};Trust Server Certificate={trustServerCertT}";
         }
 
         public bool DbInit()
         {
             // Создание справочника профилей арматуры
-            string query = "create table if not exists public.profiles (" +
+            string query = $"set session statement_timeout  to '{_timeOutP}ms'; ";
+            query += "create table if not exists public.profiles (" +
                            "id serial not null constraint profiles_pk primary key, " +
                            "profile varchar not null); " +
                            "comment on table public.profiles is 'Справочник видов профилей заготовки'; " +
@@ -110,7 +116,8 @@ namespace OvenLanding.Data
             }
             
             // Создание справочника марок стали
-            query = "create table if not exists public.steels (" +
+            query = $"set session statement_timeout  to '{_timeOutP}ms'; ";
+            query += "create table if not exists public.steels (" +
                     "id serial not null constraint steels_pk primary key, " +
                     "steel varchar not null); " +
                     "comment on table public.steels is 'Справочник марок стали'; " +
@@ -123,7 +130,8 @@ namespace OvenLanding.Data
             }
             
             // Создание справочника ГОСТов
-            query = "create table if not exists public.gosts (" +
+            query = $"set session statement_timeout  to '{_timeOutP}ms'; ";
+            query += "create table if not exists public.gosts (" +
                     "id serial not null constraint gosts_pk primary key, " +
                     "gost varchar not null); " +
                     "comment on table public.gosts is 'Справочник ГОСТов'; " +
@@ -136,7 +144,8 @@ namespace OvenLanding.Data
             }
             
             // Создание справочника заказчиков
-            query = "create table if not exists public.customers (" +
+            query = $"set session statement_timeout  to '{_timeOutP}ms'; ";
+            query += "create table if not exists public.customers (" +
                     "id serial not null constraint customers_pk primary key, " +
                     "customer varchar not null); " +
                     "comment on table public.customers is 'Справочник заказчиков'; " +
@@ -149,7 +158,8 @@ namespace OvenLanding.Data
             }
             
             // Создание справочника классов
-            query = "create table if not exists public.classes (" +
+            query = $"set session statement_timeout  to '{_timeOutP}ms'; ";
+            query += "create table if not exists public.classes (" +
                     "id serial not null constraint classes_pk primary key, " +
                     "class varchar not null); " +
                     "comment on table public.classes is 'Справочник классов'; " +
@@ -162,7 +172,8 @@ namespace OvenLanding.Data
             }
             
             // Создание таблицы заготовок на посаде печи
-            query = "create table if not exists public.oven_landing (" +
+            query = $"set session statement_timeout  to '{_timeOutP}ms'; ";
+            query += "create table if not exists public.oven_landing (" +
                     "id serial not null, " +
                     "melt_number varchar(15), " +
                     "ingots_count numeric, " +
@@ -192,7 +203,8 @@ namespace OvenLanding.Data
             //TODO: Если нет записей в таблице, вылетает исключение 
             if (GetLastId("oven_landing") == 0)
             {
-                query = "insert into public.oven_landing (melt_number, ingots_count, ingot_length, steel_mark, " +
+                query = $"set session statement_timeout  to '{_timeOutP}ms'; ";
+                query += "insert into public.oven_landing (melt_number, ingots_count, ingot_length, steel_mark, " +
                         "ingot_profile, ingot_weight, production_code, customer, standart, diameter, shift, class) VALUES (" +
                         "'', 0, 0, '', '', 0, 0, '', '', 0, '', '');";
                 res = WriteData(query);
@@ -412,7 +424,9 @@ namespace OvenLanding.Data
 
         private bool ChangeParam(int melt, LandingParam param, string value)
         {
-            string query = $"call public.p_set_param({melt}, {(int) param}, '{value}');";
+            string query = $"set session statement_timeout  to '{_timeOutP}ms'; ";
+            query += $"call public.p_set_param({melt}, {(int) param}, '{value}'); ";
+
             return WriteData(query);
         }
 
@@ -425,7 +439,8 @@ namespace OvenLanding.Data
         {
             DataTable dataTable = new DataTable();
             int lastId = 0;
-            string query = $"select max(id) from public.{tableName};";
+            string query = $"set session statement_timeout  to '{_timeOutP}ms'; ";
+            query += $"select max(id) from public.{tableName};";
 
             try
             {
@@ -453,21 +468,21 @@ namespace OvenLanding.Data
         /// </summary>
         public void SaveState(LandingData state)
         {
-            string query;
+            string query = $"set session statement_timeout  to '{_timeOutP}ms'; ";
             int lastId = GetLastId("oven_landing");
             if (lastId == 0)
             {
-                query = "insert into public.oven_landing (melt_number, ingots_count, ingot_length, steel_mark, " +
+                query += "insert into public.oven_landing (melt_number, ingots_count, ingot_length, steel_mark, " +
                         "ingot_profile, ingot_weight, production_code, customer, standart, diameter, shift, class, product_profile, specification, lot) VALUES (" +
                         "'{0}', {1}, {2}, '{3}', '{4}', {5}, {6}, '{7}', '{8}', {9}, '{10}', '{11}', '{12}', '{13}', {14});";
             }
             else
             {
-                query = "update public.oven_landing set melt_number='{0}', ingots_count={1}, ingot_length={2}, steel_mark='{3}', " +
+                query += "update public.oven_landing set melt_number='{0}', ingots_count={1}, ingot_length={2}, steel_mark='{3}', " +
                         "ingot_profile='{4}', ingot_weight={5}, production_code={6}, customer='{7}', standart='{8}', diameter={9}, " +
                         "shift='{10}', class='{11}', product_profile='{12}', specification='{13}', lot={14} where id={15};";
             }
-
+            
             string diam = state.Diameter.ToString("F1").Replace(",", ".");
             query = string.Format(query, state.MeltNumber, state.IngotsCount, state.IngotLength, state.SteelMark,
                 state.IngotProfile, state.WeightOne, state.ProductCode, state.Customer, state.Standart, diam,
@@ -490,7 +505,8 @@ namespace OvenLanding.Data
             LandingData result = new LandingData();
             DataTable dataTable = new DataTable();
             
-            string query = $"select * from public.oven_landing where id = {lastId};";
+            string query = $"set session statement_timeout  to '{_timeOutP}ms'; ";
+            query += $"select * from public.oven_landing where id = {lastId}; ";
 
             try
             {
@@ -553,7 +569,8 @@ namespace OvenLanding.Data
         /// <param name="comment">Комментарий</param>
         public void SetDowntime(DateTime? startTime, [CanBeNull] string comment)
         {
-            string query = "call public.p_set_downtime(";
+            string query = $"set session statement_timeout  to '{_timeOutP}ms'; ";
+            query += "call public.p_set_downtime(";
             
             if (startTime != null)
             {
@@ -575,6 +592,7 @@ namespace OvenLanding.Data
             }
             
             query += ");";
+
             bool res = WriteData(query);
             if (!res)
             {
@@ -623,7 +641,8 @@ namespace OvenLanding.Data
             List<string> result = new List<string>();
             DataTable dataTable = new DataTable();
 
-            string query = "select id, gost from public.gosts order by gost";
+            string query = $"set session statement_timeout to '{_timeOutP}ms'; ";
+            query += "select id, gost from public.gosts order by gost;";
 
             try
             {
@@ -669,7 +688,8 @@ namespace OvenLanding.Data
             DataTable dataTable = new DataTable();
             List<string> result = new List<string>();
             
-            string query = "select id, profile from public.profiles order by id";
+            string query = $"set session statement_timeout  to '{_timeOutP}ms'; ";
+            query += "select id, profile from public.profiles order by id;";
 
             try
             {
@@ -715,7 +735,8 @@ namespace OvenLanding.Data
             List<string> result = new List<string>();
             DataTable dataTable = new DataTable();
 
-            string query = "select id, customer from public.customers order by customer";
+            string query = $"set session statement_timeout  to '{_timeOutP}ms'; ";
+            query += "select id, customer from public.customers order by customer;";
 
             try
             {
@@ -761,7 +782,8 @@ namespace OvenLanding.Data
             List<string> result = new List<string>();
             DataTable dataTable = new DataTable();
 
-            string query = "select id, class from public.classes order by class";
+            string query = $"set session statement_timeout  to '{_timeOutP}ms'; ";
+            query += "select id, class from public.classes order by class;";
             
             try
             {
@@ -807,7 +829,9 @@ namespace OvenLanding.Data
         {
             WeightedIngotsCount result = new WeightedIngotsCount();
             DataTable dataTable = new DataTable();
-            string query =
+            
+            string query = $"set session statement_timeout  to '{_timeOutT}ms'; ";
+            query +=
                 "select rp.unit_id_parent id_posad_test, " +
                 "pr.value_s as id_posad_prod, " +
                 "pm.value_s melt, " +
@@ -822,6 +846,7 @@ namespace OvenLanding.Data
                 "join mts.passport p on p.unit_id = l.unit_id and p.param_id = 1000 " +
                 "where l.node_id = 20100 and l.tm_beg >= now() - interval '1 day' " +
                 $"and pr.value_s = '{meltId}' group by rp.unit_id_parent,pr.value_s,pm.value_s,pc.value_n;";
+            
             try
             {
                 using (NpgsqlConnection connection = new NpgsqlConnection(_connectionStringTest))
@@ -887,7 +912,8 @@ namespace OvenLanding.Data
             List<string> result = new List<string>();
             DataTable dataTable = new DataTable();
             
-            string query = "select id, steel from public.steels order by steel";
+            string query = $"set session statement_timeout  to '{_timeOutP}ms'; ";
+            query += "select id, steel from public.steels order by steel";
             
             try
             {
@@ -939,7 +965,8 @@ namespace OvenLanding.Data
         public int CreateOvenLanding(long meltNum, string profile, string steel, int count, double weightAll,
             double weightOne, double lenght)
         {
-            string query =
+            string query = $"set session statement_timeout  to '{_timeOutP}ms'; ";
+            query +=
                 $"SELECT public.f_create_posad ({meltNum}, '{profile}', '{steel}', {count}, {weightAll}, {weightOne}, {lenght});";
             
             int result = -1;
@@ -986,7 +1013,9 @@ namespace OvenLanding.Data
         {
             DataTable dataTable = new DataTable();
             int result = -1;
-            string query = $"select * from public.f_add_unit({uid})";
+            
+            string query = $"set session statement_timeout  to '{_timeOutP}ms'; ";
+            query += $"select * from public.f_add_unit({uid})";
             
             try
             {
@@ -1030,7 +1059,9 @@ namespace OvenLanding.Data
         {
             DataTable dataTable = new DataTable();
             int result = -1;
-            string query = $"select * from public.f_delete_unit({uid})";
+            
+            string query = $"set session statement_timeout  to '{_timeOutP}ms'; ";
+            query += $"select * from public.f_delete_unit({uid})";
             
             try
             {
@@ -1074,7 +1105,9 @@ namespace OvenLanding.Data
         {
             DataTable dataTable = new DataTable();
             int result = -1;
-            string query = $"select * from public.f_delete_from_queue({uid})";
+            
+            string query = $"set session statement_timeout  to '{_timeOutP}ms'; ";
+            query += $"select * from public.f_delete_from_queue({uid})";
             
             try
             {
@@ -1123,8 +1156,9 @@ namespace OvenLanding.Data
         {
             DataTable dataTable = new DataTable();
 
+            string query = $"set session statement_timeout  to '{_timeOutP}ms'; ";
             string diam = data.Diameter.ToString("f1").Replace(",", ".");
-            string query =
+            query +=
                 $"SELECT public.f_create_queue ('{data.MeltNumber}', '{data.IngotProfile}', '{data.SteelMark}', " +
                 $"{data.IngotsCount}, {data.WeightAll}, {data.WeightOne}, {data.IngotLength}, '{data.Standart}', " +
                 $"{diam}, '{data.Customer}', '{data.Shift}', '{data.IngotClass}', {data.ProductCode}, '{data.ProductProfile}');";
@@ -1196,12 +1230,14 @@ namespace OvenLanding.Data
                 case Areas.Drag : thread = "17"; break;
             }
             
-            string query = "select c_id_posad, c_melt, c_diam, max(c_date_reg) as c_date_reg\n";
+            string query = $"set session statement_timeout  to '{_timeOutT}ms'; ";
+            query += "select c_id_posad, c_melt, c_diam, max(c_date_reg) as c_date_reg\n";
             query += $"from public.f_get_queue_thread({thread}, {ret})\n";
             query += "group by c_melt, c_diam, c_id_posad;";
+            
             try
             {
-                using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString))
+                using (NpgsqlConnection connection = new NpgsqlConnection(_connectionStringTest))
                 {
                     connection.Open();
                     new NpgsqlDataAdapter(new NpgsqlCommand(query, connection)).Fill(dataTable);
@@ -1290,7 +1326,8 @@ namespace OvenLanding.Data
             List<AreasData> result = new List<AreasData>();
             DataTable dataTable = new DataTable();
 
-            string query = "select distinct\n";
+            string query = $"set session statement_timeout  to '{_timeOutT}ms'; ";
+            query += "select distinct\n";
             query += "\trp.unit_id_parent id_posad,\n";
             query +=
                 "\tfirst_value(to_char(l.tm_beg,'DD-MM-YYYY HH24:MI:SS')) over (partition by l.unit_id order by l.id desc) date_enter,\n";
@@ -1321,7 +1358,7 @@ namespace OvenLanding.Data
 
             try
             {
-                using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString))
+                using (NpgsqlConnection connection = new NpgsqlConnection(_connectionStringTest))
                 {
                     connection.Open();
                     new NpgsqlDataAdapter(new NpgsqlCommand(query, connection)).Fill(dataTable);
@@ -1416,7 +1453,7 @@ namespace OvenLanding.Data
         /// <returns>Список возвратов</returns>
         public List<ReturningData> GetReturns(string melt)
         {
-            string query = _dbQueries.GetReturnsByMelt(melt);
+            string query = _dbQueries.GetReturnsByMelt(melt, _timeOutT);
             List<ReturningData> result = _getReturns(query);
 
             return result;
@@ -1430,7 +1467,7 @@ namespace OvenLanding.Data
         /// <returns>Список возвратов</returns>
         public List<ReturningData> GetReturns(DateTime begin, DateTime end)
         {
-            string query = _dbQueries.GetReturnsByPeriod(begin, end);
+            string query = _dbQueries.GetReturnsByPeriod(begin, end, _timeOutT);
             List<ReturningData> result = _getReturns(query);
 
             return result;
@@ -1522,7 +1559,7 @@ namespace OvenLanding.Data
         public List<IngotsOnTU> GetIngotsByTu(string melt)
         {
             List<IngotsOnTU> result = new List<IngotsOnTU>();
-            string query = _dbQueries.GetIngotsMyMeltQuery(melt);
+            string query = _dbQueries.GetIngotsMyMeltQuery(melt, _timeOutT);
             DataTable dataTable = new DataTable();
             try
             {
@@ -1647,9 +1684,9 @@ namespace OvenLanding.Data
         {
             List<LandingData> result = new List<LandingData>();
             DataTable dataTable = new DataTable();
-            string query;
-
-            query = string.IsNullOrEmpty(melt)
+            
+            string query = $"set session statement_timeout  to '{_timeOutP}ms'; ";
+            query += string.IsNullOrEmpty(melt)
                 ? "select * from public.f_get_queue();"
                 : $"select * from public.f_get_queue() where c_melt='{melt}' and c_diameter={diameter.ToString("F1").Replace(",", ".")};";
 
@@ -1668,7 +1705,6 @@ namespace OvenLanding.Data
                             try
                             {
                                 item.LandingId = int.Parse(dataTable.Rows[i][0].ToString() ?? "0");
-                                // item.LandingDate = DateTime.Parse(dataTable.Rows[i][1].ToString() ?? DateTime.MinValue.ToString("G"));
                                 item.MeltNumber = dataTable.Rows[i][1].ToString();
                                 item.SteelMark = dataTable.Rows[i][2].ToString();
                                 item.IngotProfile = dataTable.Rows[i][3].ToString();
@@ -1727,7 +1763,6 @@ namespace OvenLanding.Data
         public List<CoilData> GetCoilData(bool current=true, bool last=true)
         {
             List<CoilData> result = new List<CoilData>();
-            
             if (current)
             {
                 // Получить список бунтов для текущей плавки
@@ -1762,7 +1797,9 @@ namespace OvenLanding.Data
             Dictionary<string, double> result = new Dictionary<string, double>();
             DataTable dataTable = new DataTable();
 
-            string query = "call public.p_get_previos_melt(null, null);";
+            string query = $"set session statement_timeout  to '{_timeOutP}ms'; ";
+            query += "call public.p_get_previos_melt(null, null);";
+            
             try
             {
                 using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString))
@@ -1815,17 +1852,18 @@ namespace OvenLanding.Data
             DataTable dataTable = new DataTable();
             
             string diam = diameter.ToString("F1").Replace(",",".");
-            string query;
+            string query = $"set session statement_timeout  to '{_timeOutP}ms'; ";
 
             if (!last)
             {
-                query = $"select * from public.f_get_queue_coils('{melt}', {diam});";
+                query += $"select * from public.f_get_queue_coils('{melt}', {diam});";
             }
             else
             {
-                query =
+                query +=
                     $"select * from public.f_get_queue_coils('{melt}', {diam}) order by c_date_weight desc limit 1;";
-            }            
+            }
+
             try
             {
                 using (NpgsqlConnection connection = new NpgsqlConnection(_connectionString))
@@ -1884,12 +1922,12 @@ namespace OvenLanding.Data
 
                                 val = dataTable.Rows[i][22].ToString();
                                 if (string.IsNullOrEmpty(val))
-                                    val = "01-01-2020 00:00:00";
+                                    val = DateTime.MinValue.ToString("G");
                                 item.DateReg = DateTime.Parse(val);
 
                                 val = dataTable.Rows[i][23].ToString();
                                 if (string.IsNullOrEmpty(val))
-                                    val = "01-01-2020 00:00:00";
+                                    val = DateTime.MinValue.ToString("G");
                                 item.DateWeight = DateTime.Parse(val);
 
                             }
@@ -1918,7 +1956,9 @@ namespace OvenLanding.Data
         /// <param name="coilUid">Идентификатор бунта</param>
         public void ResetCoil(int coilUid)
         {
-            string query = $"select * from public.f_return_to_queue({coilUid});";
+            string query = $"set session statement_timeout  to '{_timeOutP}ms'; ";
+            query += $"select * from public.f_return_to_queue({coilUid}); ";
+            
             DataTable dataTable = new DataTable();
 
             try
@@ -1968,7 +2008,9 @@ namespace OvenLanding.Data
             bool res = false;
             if (!string.IsNullOrEmpty(profileName))
             {
-                string query = string.Format("insert into public.profiles (profile) values ('{0}');", profileName);
+                string query = $"set session statement_timeout  to '{_timeOutP}ms'; ";
+                query += $"insert into public.profiles (profile) values ('{profileName}'); ";
+                
                 res = WriteData(query);
             }
 
@@ -1985,7 +2027,9 @@ namespace OvenLanding.Data
             bool res = false;
             if (!string.IsNullOrEmpty(steelName))
             {
-                string query = string.Format("insert into public.steels (steel) values ('{0}');", steelName);
+                string query = $"set session statement_timeout  to '{_timeOutP}ms'; ";
+                query += $"insert into public.steels (steel) values ('{steelName}'); ";
+                
                 res = WriteData(query);
             }
 
@@ -2002,7 +2046,9 @@ namespace OvenLanding.Data
             bool res = false;
             if (!string.IsNullOrEmpty(gostName))
             {
-                string query = string.Format("insert into public.gosts (gost) values ('{0}');", gostName);
+                string query = $"set session statement_timeout  to '{_timeOutP}ms'; ";
+                query += $"insert into public.gosts (gost) values ('{gostName}'); ";
+                
                 res = WriteData(query);
             }
 
@@ -2012,14 +2058,16 @@ namespace OvenLanding.Data
         /// <summary>
         /// Добавить заказчика
         /// </summary>
-        /// <param name="steelName">Заказчик</param>
+        /// <param name="customerName">Заказчик</param>
         /// <returns>Результат выполнения операции</returns>
         public bool AddCustomer(string customerName)
         {
             bool res = false;
             if (!string.IsNullOrEmpty(customerName))
             {
-                string query = string.Format("insert into public.customers (customer) values ('{0}');", customerName);
+                string query = $"set session statement_timeout  to '{_timeOutP}ms'; ";
+                query += $"insert into public.customers (customer) values ('{customerName}'); ";
+                
                 res = WriteData(query);
             }
 
@@ -2029,14 +2077,16 @@ namespace OvenLanding.Data
         /// <summary>
         /// Добавить класс
         /// </summary>
-        /// <param name="steelName">Класс</param>
+        /// <param name="className">Класс</param>
         /// <returns>Результат выполнения операции</returns>
         public bool AddClass(string className)
         {
             bool res = false;
             if (!string.IsNullOrEmpty(className))
             {
-                string query = string.Format("insert into public.classes (class) values ('{0}');", className);
+                string query = $"set session statement_timeout  to '{_timeOutP}ms'; ";
+                query += $"insert into public.classes (class) values ('{className}'); ";
+                
                 res = WriteData(query);
             }
 
@@ -2089,3 +2139,4 @@ namespace OvenLanding.Data
     // Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
     // Encoding.GetEncoding("windows-1254");
     // Encoding encoding = Encoding.GetEncoding("windows-1254");
+    

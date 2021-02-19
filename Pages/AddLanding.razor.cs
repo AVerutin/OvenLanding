@@ -129,7 +129,7 @@ namespace OvenLanding.Pages
         {
             if(!string.IsNullOrEmpty(_landingData.MeltNumber))
             {
-                _logger.Info($"Номер плавки: {_landingData.MeltNumber}");
+                _logger.Info($"===== Начало добавление плавки {_landingData.MeltNumber} в очередь на посаде");
 
                 // Проверка на корректность заполнения сечения заготовки
                 if (string.IsNullOrEmpty(_landingData.IngotProfile))
@@ -272,7 +272,7 @@ namespace OvenLanding.Pages
                 else
                 {
                     string message = $"Добавлена плавка №{_landingData.MeltNumber} - UID = {uid}";
-                    _logger.Info(message);
+                    _logger.Info("===== " + message + " =====");
                     ShowMessage(MessageType.Success, $"Добавлена плавка №{_landingData.MeltNumber}");
                 }
                 

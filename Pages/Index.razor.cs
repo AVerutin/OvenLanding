@@ -23,6 +23,7 @@ namespace OvenLanding.Pages
         private string _semaphoreColor = "#1861ac";
         private string _selectRow = "none";
         private string _loading = "hidden;";
+        private bool _movingButtonsState = true;
         
         protected override void OnInitialized()
         {
@@ -86,11 +87,12 @@ namespace OvenLanding.Pages
             
             _setLoading(false);
             StateHasChanged();
-            SetTimer(5);
+            SetTimer(15);
         }
 
         private async void IncLanding(int uid)
         {
+            _logger.Info($"===== Начато добавление ЕУ к плавке с идентификатором {uid} =====");
             try
             {
                 Db.IncLanding(uid);
@@ -102,11 +104,14 @@ namespace OvenLanding.Pages
             {
                 _logger.Error($"Не удалось добавить заготовку в плавку [{uid}] => {ex.Message}");
             }
+            
             StateHasChanged();
+            _logger.Info($"===== Завершено добавление ЕУ к плавке с идентификатором {uid} =====");
         }
 
         private async void DecLanding(int uid)
         {
+            _logger.Info($"===== Начато удаление ЕУ из плавки с идентификатором {uid} =====");
             try
             {
                 Db.DecLanding(uid);
@@ -120,6 +125,7 @@ namespace OvenLanding.Pages
             }
 
             StateHasChanged();
+            _logger.Info($"===== Завершено удаление ЕУ из плавки с идентификатором {uid} =====");
         }
 
         /// <summary>
@@ -128,12 +134,15 @@ namespace OvenLanding.Pages
         /// <param name="uid">Идентификатор перемещаемой плавки</param>
         private async void MoveUp(int uid)
         {
+            _logger.Info($"===== Начало перемещения вверх по очереди для плавки с идентификатором {uid} =====");
+            _movingButtonsState = false;
             int cnt = 0;
             int currPosition = 0;
 
             List<LandingData> oldOrder;
             List<LandingData> order = new List<LandingData>();
 
+            // Получение текущего состояния очереди
             try
             {
                 // oldOrder = Db.GetLandingOrder();
@@ -156,7 +165,7 @@ namespace OvenLanding.Pages
                 cnt++;
             }
 
-            if (currPosition != 0 && oldOrder[currPosition - 1].Weighted == 0)
+            if (currPosition != 0 && oldOrder[currPosition - 1].WeightedIngots == 0)
             {
                 for (int i = 0; i < oldOrder.Count; i++)
                 {
@@ -184,8 +193,12 @@ namespace OvenLanding.Pages
                 int newCnt;
                 do
                 {
+                    _logger.Info($"Плавка [{uid}] => Начата очистка текущей очереди");
                     ClearCurrentOrder();
+                    _logger.Info($"Плавка [{uid}] => Завершена очистка текущей очереди");
+                    _logger.Info($"Плавка [{uid}] => Начато заполнение нового порядка очереди");
                     SetNewOrder(order);
+                    _logger.Info($"Плавка [{uid}] => Завершено заполнение нового порядка очереди");
                     // List<LandingData> tmpOrder = Db.GetLandingOrder();
                     List<LandingData> tmpOrder = await GetLandingOrder();
                     newCnt = tmpOrder.Count;
@@ -200,6 +213,10 @@ namespace OvenLanding.Pages
             {
                 _logger.Error($"Плавка [{uid}] находится последней в очереди, некуда поднимать");
             }
+
+            _movingButtonsState = true;
+            _logger.Info($"===== Завершение перемещения вверх по очереди для плавки с идентификатором {uid} =====");
+            StateHasChanged();
         }
 
         /// <summary>
@@ -233,6 +250,8 @@ namespace OvenLanding.Pages
         /// <param name="uid">Идентификатор перемещаемой плавки</param>
         private async void MoveDown(int uid)
         {
+            _logger.Info($"===== Начало перемещения вниз по очереди для плавки с идентификатором {uid} =====");
+            _movingButtonsState = false;
             int cnt = 0;
             int currPosition = 0;
             
@@ -260,7 +279,7 @@ namespace OvenLanding.Pages
                 cnt++;
             }
 
-            if (currPosition != oldOrder.Count - 1 && oldOrder[currPosition + 1].Weighted == 0)
+            if (currPosition != oldOrder.Count - 1 && oldOrder[currPosition + 1].WeightedIngots == 0)
             {
                 for (int i = 0; i < oldOrder.Count; i++)
                 {
@@ -288,8 +307,12 @@ namespace OvenLanding.Pages
                 int newCnt;
                 do
                 {
+                    _logger.Info($"Плавка [{uid}] => Начата очистка текущей очереди");
                     ClearCurrentOrder();
+                    _logger.Info($"Плавка [{uid}] => Завершена очистка текущей очереди");
+                    _logger.Info($"Плавка [{uid}] => Начато заполнение нового порядка очереди");
                     SetNewOrder(order);
+                    _logger.Info($"Плавка [{uid}] => Завершено заполнение нового порядка очереди");
                     // List<LandingData> tmpOrder = Db.GetLandingOrder();
                     List<LandingData> tmpOrder = await GetLandingOrder();
                     newCnt = tmpOrder.Count;
@@ -304,6 +327,10 @@ namespace OvenLanding.Pages
             {
                 _logger.Error($"Плавка [{uid}] находится первой в очереди, некуда опускать");
             }
+
+            _movingButtonsState = true;
+            _logger.Info($"===== Завершение перемещения вниз по очереди для плавки с идентификатором {uid} =====");
+            StateHasChanged();
         }
 
         private void NextLabelNumber(int uid)
@@ -445,6 +472,7 @@ namespace OvenLanding.Pages
 
         private async void Remove(int uid)
         {
+            _logger.Info($"===== Начато удаление плавки с идентификатором ${uid} из очереди =====");
             try
             {
                 int id = Db.Remove(uid);
@@ -466,6 +494,7 @@ namespace OvenLanding.Pages
             }
 
             StateHasChanged();
+            _logger.Info($"===== Завершено удаление плавки с идентификатором ${uid} из очереди =====");
         }
 
         private void SetTimer(int seconds)

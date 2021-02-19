@@ -199,12 +199,15 @@ namespace OvenLanding.Pages
                 _editData.ProductProfile = "№";
             }
 
+            _logger.Info($"===== Начато обновление данных плавки {_origData.MeltNumber} =====");
             _editData.WeightAll = _editData.WeightOne * _editData.IngotsCount;
             bool res =_db.EditMelt(_origData, _editData);
             if (!res)
             {
                 _logger.Error($"При изменении параметров плавки {_editData.LandingId} возникли ошибки");
             }
+            
+            _logger.Info($"===== Завершено обновление данных плавки {_origData.MeltNumber} =====");
             _landingService.ClearEditable();
             await JSRuntime.InvokeAsync<string>("openQuery", null);
             

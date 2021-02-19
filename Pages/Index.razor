@@ -83,8 +83,16 @@
                                 else
                                 {
                                     <td style="width: 120px; text-align: center">
-                                        <button class="btn btn-primary" disabled @onclick="@(() => MoveUp(item.LandingId))">&uarr;</button>
-                                        <button class="btn btn-primary" disabled @onclick="@(() => MoveDown(item.LandingId))">&darr;</button>
+                                        @if (_movingButtonsState)
+                                        {
+                                            <button class="btn btn-primary" @onclick="@(() => MoveUp(item.LandingId))">&uarr;</button>
+                                            <button class="btn btn-primary" @onclick="@(() => MoveDown(item.LandingId))">&darr;</button>
+                                        }
+                                        else
+                                        {
+                                            <button class="btn btn-primary" disabled @onclick="@(() => MoveUp(item.LandingId))">&uarr;</button>
+                                            <button class="btn btn-primary" disabled @onclick="@(() => MoveDown(item.LandingId))">&darr;</button>
+                                        }
                                     </td>
                                 }
 
