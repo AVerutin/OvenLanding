@@ -93,11 +93,13 @@ namespace OvenLanding.Pages
         private void IncLanding(int uid)
         {
             string meltNo = "";
+            int oldCnt = 0;
             foreach (LandingData melt in _landed)
             {
                 if (melt.LandingId == uid)
                 {
                     meltNo = melt.MeltNumber;
+                    oldCnt = melt.IngotsCount;
                     break;
                 }
             }
@@ -106,9 +108,18 @@ namespace OvenLanding.Pages
             try
             {
                 Db.IncLanding(uid);
-                // _landed = Db.GetLandingOrder();
                 _landed = GetLandingOrder();
-                _logger.Info($"Добавлена заготовка в плавку [{uid}] №{meltNo}");
+                int newCnt = 0;
+                foreach (LandingData melt in _landed)
+                {
+                    if (melt.LandingId == uid)
+                    {
+                        newCnt = melt.IngotsCount;
+                        break;
+                    }
+                }
+
+                _logger.Info($"Добавлена заготовка в плавку [{uid}] №{meltNo}. Количество заготвок: [{oldCnt}] => [{newCnt}]");
             }
             catch (Exception ex)
             {
@@ -122,11 +133,13 @@ namespace OvenLanding.Pages
         private void DecLanding(int uid)
         {
             string meltNo = "";
+            int oldCnt = 0;
             foreach (LandingData melt in _landed)
             {
                 if (melt.LandingId == uid)
                 {
                     meltNo = melt.MeltNumber;
+                    oldCnt = melt.IngotsCount;
                     break;
                 }
             }
@@ -135,9 +148,18 @@ namespace OvenLanding.Pages
             try
             {
                 Db.DecLanding(uid);
-                // _landed = Db.GetLandingOrder();
                 _landed = GetLandingOrder();
-                _logger.Info($"Удалена заготовка из плавки [{uid}] №{meltNo}");
+                int newCnt = 0;
+                foreach (LandingData melt in _landed)
+                {
+                    if (melt.LandingId == uid)
+                    {
+                        newCnt = melt.IngotsCount;
+                        break;
+                    }
+                }
+                
+                _logger.Info($"Удалена заготовка из плавки [{uid}] №{meltNo}. Количество заготовок: [{oldCnt}] => [{newCnt}]");
             }
             catch (Exception ex)
             {
