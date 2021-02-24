@@ -67,13 +67,15 @@
                                 <td style="width: 124px;">@item.IngotLength</td>
                                 <td style="width: 120px; text-align: center">
                                     <button class="btn btn-primary" @onclick="@(() => IncLanding(item.LandingId))">+</button>
+                                    <button class="btn btn-primary" @onclick="@(() => DecLanding(item.LandingId))">&minus;</button>
+                                    
                                     @* @if (item.IngotsCount > item.WeightedIngots) *@
                                     @* { *@
-                                        <button class="btn btn-primary" @onclick="@(() => DecLanding(item.LandingId))">&minus;</button>
+                                    @*     <button class="btn btn-primary" @onclick="@(() => DecLanding(item.LandingId))">&minus;</button> *@
                                     @* } *@
                                     @* else *@
                                     @* { *@
-                                    @*     <button class="btn btn-primary" disabled @onclick="@(() => DecLanding(item.LandingId))">&minus;</button> *@
+                                        @* <button class="btn btn-primary" disabled @onclick="@(() => DecLanding(item.LandingId))">&minus;</button> *@
                                     @* } *@
                                 </td>
                                 @if (!item.CanBeDeleted)

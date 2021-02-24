@@ -78,7 +78,7 @@ namespace OvenLanding.Pages
             try
             {
                 // _landed = Db.GetLandingOrder();
-                _landed = await GetLandingOrder();
+                _landed = GetLandingOrder();
             }
             catch (Exception ex)
             {
@@ -90,132 +90,159 @@ namespace OvenLanding.Pages
             SetTimer(15);
         }
 
-        private async void IncLanding(int uid)
+        private void IncLanding(int uid)
         {
-            _logger.Info($"===== Начато добавление ЕУ к плавке с идентификатором {uid} =====");
+            string meltNo = "";
+            foreach (LandingData melt in _landed)
+            {
+                if (melt.LandingId == uid)
+                {
+                    meltNo = melt.MeltNumber;
+                    break;
+                }
+            }
+            
+            _logger.Info($"===== Начато добавление ЕУ к плавке [{uid}] №{meltNo} =====");
             try
             {
                 Db.IncLanding(uid);
                 // _landed = Db.GetLandingOrder();
-                _landed = await GetLandingOrder();
-                _logger.Info($"Добавлена заготовка в плавку [{uid}]");
+                _landed = GetLandingOrder();
+                _logger.Info($"Добавлена заготовка в плавку [{uid}] №{meltNo}");
             }
             catch (Exception ex)
             {
-                _logger.Error($"Не удалось добавить заготовку в плавку [{uid}] => {ex.Message}");
+                _logger.Error($"Не удалось добавить заготовку в плавку [{uid}] №{meltNo} => {ex.Message}");
             }
             
             StateHasChanged();
-            _logger.Info($"===== Завершено добавление ЕУ к плавке с идентификатором {uid} =====");
+            _logger.Info($"===== Завершено добавление ЕУ к плавке [{uid}] №{meltNo} =====");
         }
 
-        private async void DecLanding(int uid)
+        private void DecLanding(int uid)
         {
-            _logger.Info($"===== Начато удаление ЕУ из плавки с идентификатором {uid} =====");
+            string meltNo = "";
+            foreach (LandingData melt in _landed)
+            {
+                if (melt.LandingId == uid)
+                {
+                    meltNo = melt.MeltNumber;
+                    break;
+                }
+            }
+            
+            _logger.Info($"===== Начато удаление ЕУ из плавки [{uid}] №{meltNo} =====");
             try
             {
                 Db.DecLanding(uid);
                 // _landed = Db.GetLandingOrder();
-                _landed = await GetLandingOrder();
-                _logger.Info($"Удалена заготовка из плавки [{uid}]");
+                _landed = GetLandingOrder();
+                _logger.Info($"Удалена заготовка из плавки [{uid}] №{meltNo}");
             }
             catch (Exception ex)
             {
-                _logger.Error($"Не удалось добавить заготовку в плавку [{uid}] => {ex.Message}");
+                _logger.Error($"Не удалось удалить заготовку из плавки [{uid}] №{meltNo} => {ex.Message}");
             }
 
             StateHasChanged();
-            _logger.Info($"===== Завершено удаление ЕУ из плавки с идентификатором {uid} =====");
+            _logger.Info($"===== Завершено удаление ЕУ из плавки [{uid}] №{meltNo} =====");
         }
 
         /// <summary>
         /// Перемещение текущей плавки вверх (дальше от печи)
         /// </summary>
         /// <param name="uid">Идентификатор перемещаемой плавки</param>
-        private async void MoveUp(int uid)
+        private void MoveUp(int uid)
         {
-            _logger.Info($"===== Начало перемещения вверх по очереди для плавки с идентификатором {uid} =====");
+            // Проходим по списку и ищем плавку с требуемым номером
+            // Если количество взвешенных заготовок равно нулю
+            // Если найденная плавка не первая в списке, и количество взвешенных заготовок у предыдущей плавки равно 0
+            // Меняем местами выбранную плавку и предыдущую в списке
+            
             _movingButtonsState = false;
-            int cnt = 0;
-            int currPosition = 0;
-
-            List<LandingData> oldOrder;
+            string meltNo = "";
+            _setLoading(true);
+            bool found = false;
+            bool ordered = false;
             List<LandingData> order = new List<LandingData>();
+            StateHasChanged();
 
-            // Получение текущего состояния очереди
-            try
+            // 1. Получаем текущий список плавок
+            foreach (LandingData melt in _landed)
             {
-                // oldOrder = Db.GetLandingOrder();
-                oldOrder = await GetLandingOrder();
-            }
-            catch (Exception ex)
-            {
-                _logger.Error($"[MeltMoveUp] => Не удалось получить текущий порядок плавок [{ex.Message}]");
-                return;
+                order.Add(melt);
             }
 
-            foreach (LandingData item in oldOrder)
+            // 2. Ищем выбранную плавку в очереди
+            for (int i = 0; i < order.Count; i++)
             {
-                order.Add(item);
-                if (item.LandingId == uid)
+                if (order[i].LandingId == uid)
                 {
-                    currPosition = cnt;
+                    // Нашли плавку
+                    meltNo = order[i].MeltNumber;
+                    _logger.Info($"===== Начало перемещения вверх по очереди для плавки [{uid}] №{meltNo} =====");
+                    found = true;
+                    if (i > 0)
+                    {
+                        // Это не самая верхняя плавка
+                        if (order[i].WeightedIngots == 0)
+                        {
+                            // Нет взвешенных заготовок
+                            if (order[i - 1].WeightedIngots == 0)
+                            {
+                                // Предыдущая плавка не имеет взвешенных заготовок
+                                LandingData tmp = order[i];
+                                order[i] = order[i - 1];
+                                order[i - 1] = tmp;
+                                ordered = true;
+                                break;
+                            }
+                            else
+                            {
+                                _logger.Error(
+                                    $"Предыдущая плавка [{order[i - 1].LandingId}] №{order[i - 1].MeltNumber} имеет взвешенные заготовки! Нельзя поднять вверх!");
+                            }
+                        }
+                        else
+                        {
+                            _logger.Error(
+                                $"Плавка [{uid}] №{order[i].MeltNumber} имеет взвешенные заготовки, нельзя поднять вверх!");
+                        }
+                    }
+                    else
+                    {
+                        _logger.Error($"Плавка [{uid}] №{order[i].MeltNumber} самая верхняя, нельзя поднять вверх!");
+                    }
                 }
-
-                cnt++;
             }
 
-            if (currPosition != 0 && oldOrder[currPosition - 1].WeightedIngots == 0)
+            if (!found)
+                _logger.Error($"Плавка с идентификатором {uid} не найдена в очереди!");
+            
+            if(ordered)
             {
-                for (int i = 0; i < oldOrder.Count; i++)
-                {
-                    if (oldOrder[i].Weighted > 0)
-                    {
-                        continue;
-                    }
-                    
-                    if (i == currPosition - 1)
-                    {
-                        order[i] = oldOrder[currPosition];
-                        continue;
-                    }
-
-                    if (i == currPosition)
-                    {
-                        order[i] = oldOrder[currPosition - 1];
-                        continue;
-                    }
-
-                    order[i] = oldOrder[i];
-                }
-
-                int oldCnt = _landed.Count;
                 int newCnt;
+                int oldCnt = order.Count;
+
+                // Пока количество удаленных плавок не будет равно количеству добавленных
                 do
                 {
+                    // Очистить текущую очередь
                     _logger.Info($"Плавка [{uid}] => Начата очистка текущей очереди");
                     ClearCurrentOrder();
                     _logger.Info($"Плавка [{uid}] => Завершена очистка текущей очереди");
+
+                    // Заполнить новую очередь
                     _logger.Info($"Плавка [{uid}] => Начато заполнение нового порядка очереди");
                     SetNewOrder(order);
                     _logger.Info($"Плавка [{uid}] => Завершено заполнение нового порядка очереди");
-                    // List<LandingData> tmpOrder = Db.GetLandingOrder();
-                    List<LandingData> tmpOrder = await GetLandingOrder();
-                    newCnt = tmpOrder.Count;
+                    newCnt = _landed.Count;
                 } while (oldCnt != newCnt);
-
-                // Получить новую очередь плавок
-                // Если количество плавок в новой очереди не равно количеству плавок в заданной очереди
-                // Очистить текущую очередь
-                // Заполнить новую очередь
-            }
-            else
-            {
-                _logger.Error($"Плавка [{uid}] находится последней в очереди, некуда поднимать");
             }
 
             _movingButtonsState = true;
-            _logger.Info($"===== Завершение перемещения вверх по очереди для плавки с идентификатором {uid} =====");
+            _setLoading(false);
+            _logger.Info($"===== Завершение перемещения вверх по очереди для плавки [{uid}] №{meltNo} =====");
             StateHasChanged();
         }
 
@@ -223,7 +250,7 @@ namespace OvenLanding.Pages
         /// Получить список плавок в очереди
         /// </summary>
         /// <returns></returns>
-        private async Task<List<LandingData>> GetLandingOrder()
+        private List<LandingData> GetLandingOrder()
         {
             List<LandingData> result = Db.GetLandingOrder();
 
@@ -238,98 +265,107 @@ namespace OvenLanding.Pages
                     item.CanBeDeleted = true;
                 }
                 
-                await Task.Delay(500);
+                Task.Delay(500);
             }
             
             return result;
         }
-        
+
         /// <summary>
         /// Перемещение текущей плавки вниз (ближе к печи)
         /// </summary>
         /// <param name="uid">Идентификатор перемещаемой плавки</param>
-        private async void MoveDown(int uid)
+        private void MoveDown(int uid)
         {
-            _logger.Info($"===== Начало перемещения вниз по очереди для плавки с идентификатором {uid} =====");
-            _movingButtonsState = false;
-            int cnt = 0;
-            int currPosition = 0;
+            // Проходим по списку и ищем плавку с требуемым номером
+            // Если количество взвешенных заготовок равно нулю
+            // Если найденная плавка не последняя в списке, и количество взвешенных заготовок у следующей плавки равно 0
+            // Меняем местами выбранную плавку и следующую в списке
             
-            List<LandingData> oldOrder;
+            _movingButtonsState = false;
+            _setLoading(true);
+            bool found = false;
+            bool ordered = false;
+            string meltNo = "";
             List<LandingData> order = new List<LandingData>();
+            StateHasChanged();
 
-            try
+            // 1. Получаем текущий список плавок
+            foreach (LandingData melt in _landed)
             {
-                // oldOrder = Db.GetLandingOrder();
-                oldOrder = await GetLandingOrder();
-            }
-            catch (Exception ex)
-            {
-                _logger.Error($"[MeltMoveUp] => Не удалось получить текущий порядок плавок [{ex.Message}]");
-                return;
+                order.Add(melt);
             }
 
-            foreach (LandingData item in oldOrder)
+            // 2. Ищем выбранную плавку в очереди
+            for (int i = 0; i < order.Count; i++)
             {
-                order.Add(item);
-                if (item.LandingId == uid)
+                if (order[i].LandingId == uid)
                 {
-                    currPosition = cnt;
+                    // Нашли плавку
+                    meltNo = order[i].MeltNumber;
+                    _logger.Info($"===== Начало перемещения вниз по очереди для плавки [{uid}] №{meltNo} =====");
+                    found = true;
+                    if (i < order.Count - 1)
+                    {
+                        // Это не самая нижняя плавка
+                        if (order[i].WeightedIngots == 0)
+                        {
+                            // Нет взвешенных заготовок
+                            if (order[i + 1].WeightedIngots == 0)
+                            {
+                                // Следующая плавка не имеет взвешенных заготовок
+                                LandingData tmp = order[i];
+                                order[i] = order[i + 1];
+                                order[i + 1] = tmp;
+                                ordered = true;
+                                break;
+                            }
+                            else
+                            {
+                                _logger.Error(
+                                    $"Следующая плавка [{order[i + 1].LandingId}] №{order[i + 1].MeltNumber} имеет взвешенные заготовки! Нельзя опустить вниз!");
+                            }
+                        }
+                        else
+                        {
+                            _logger.Error(
+                                $"Плавка [{uid}] №{order[i].MeltNumber} имеет взвешенные заготовки, нельзя опустить вниз!");
+                        }
+                    }
+                    else
+                    {
+                        _logger.Error($"Плавка [{uid}] №{order[i].MeltNumber} самая нижняя, нельзя опустить вниз!");
+                    }
                 }
-                cnt++;
             }
 
-            if (currPosition != oldOrder.Count - 1 && oldOrder[currPosition + 1].WeightedIngots == 0)
+            if (!found)
+                _logger.Error($"Плавка с идентификатором {uid} не найдена в очереди!");
+            
+            if(ordered)
             {
-                for (int i = 0; i < oldOrder.Count; i++)
-                {
-                    if (oldOrder[i].Weighted > 0)
-                    {
-                        continue;
-                    }
-
-                    if (i == currPosition)
-                    {
-                        order[i] = oldOrder[currPosition + 1];
-                        continue;
-                    }
-
-                    if (i == currPosition + 1)
-                    {
-                        order[i] = oldOrder[currPosition];
-                        continue;
-                    }
-
-                    order[i] = oldOrder[i];
-                }
-
-                int oldCnt = _landed.Count;
                 int newCnt;
+                int oldCnt = order.Count;
+
+                // Пока количество удаленных плавок не будет равно количеству добавленных
                 do
                 {
+                    // Очистить текущую очередь
                     _logger.Info($"Плавка [{uid}] => Начата очистка текущей очереди");
                     ClearCurrentOrder();
                     _logger.Info($"Плавка [{uid}] => Завершена очистка текущей очереди");
+
+                    // Заполнить новую очередь
                     _logger.Info($"Плавка [{uid}] => Начато заполнение нового порядка очереди");
                     SetNewOrder(order);
                     _logger.Info($"Плавка [{uid}] => Завершено заполнение нового порядка очереди");
-                    // List<LandingData> tmpOrder = Db.GetLandingOrder();
-                    List<LandingData> tmpOrder = await GetLandingOrder();
-                    newCnt = tmpOrder.Count;
+                    newCnt = _landed.Count;
                 } while (oldCnt != newCnt);
-
-                // Получить новую очередь плавок
-                // Если количество плавок в новой очереди не равно количеству плавок в заданной очереди
-                // Очистить текущую очередь
-                // Заполнить новую очередь
-            }
-            else
-            {
-                _logger.Error($"Плавка [{uid}] находится первой в очереди, некуда опускать");
             }
 
             _movingButtonsState = true;
-            _logger.Info($"===== Завершение перемещения вниз по очереди для плавки с идентификатором {uid} =====");
+            _setLoading(false);
+            _logger.Info($"===== Завершение перемещения вниз по очереди для плавки [{uid}] №{meltNo} =====");
             StateHasChanged();
         }
 
@@ -347,30 +383,32 @@ namespace OvenLanding.Pages
         /// <summary>
         /// Очистить текущую очередь на посаде печи
         /// </summary>
-        private async void ClearCurrentOrder()
+        private void ClearCurrentOrder()
         {
             // List<LandingData> order = Db.GetLandingOrder();
-            List<LandingData> order;
-            try
-            {
-                order = await GetLandingOrder();
-            }
-            catch (Exception ex)
-            {
-                order = new List<LandingData>();
-                _logger.Error($"Не удалось получить текущую очередь [{ex.Message}]");
-            }
+            List<LandingData> order = _landed;
+            // try
+            // {
+            //     order = GetLandingOrder();
+            // }
+            // catch (Exception ex)
+            // {
+            //     order = new List<LandingData>();
+            //     _logger.Error($"Не удалось получить текущую очередь [{ex.Message}]");
+            // }
             
             int i = 1;
+            
             foreach (LandingData melt in order)
             {
-                if (melt.Weighted == 0)
+                if (melt.WeightedIngots == 0)
                 {
                     try
                     {
+                        _logger.Info($"Начато удаление плавки [{melt.LandingId}] №{melt.MeltNumber} при очистке очереди");
                         int id = Db.Remove(melt.LandingId);
-                        _logger.Warn($"Удалена плавка [{id}] при очистке очереди");
-                        await Task.Delay(TimeSpan.FromMilliseconds(500));
+                        _logger.Warn($"Удалена плавка [{id}] №{melt.MeltNumber} при очистке очереди");
+                        Task.Delay(TimeSpan.FromMilliseconds(500));
                     }
                     catch (Exception ex)
                     {
@@ -380,17 +418,18 @@ namespace OvenLanding.Pages
 
                 i++;
             }
-
+            
+            // Обновление списка плавок после очистки
             try
             {
-                // _landed = Db.GetLandingOrder();
-                _landed = await GetLandingOrder();
+                _landed = GetLandingOrder();
             }
             catch (Exception ex)
             {
-                _logger.Error($"Не удалось обновить список плавок после очистки очереди [{ex.Message}]");
+                _landed = new List<LandingData>();
+                _logger.Error($"Не удалось получить текущую очередь [{ex.Message}]");
             }
-
+            
             StateHasChanged();
         }
 
@@ -398,23 +437,36 @@ namespace OvenLanding.Pages
         /// Установить новую очередь на посаде печи
         /// </summary>
         /// <param name="order">Плавка для постановки в очередь</param>
-        private async void SetNewOrder(List<LandingData> order)
+        private void SetNewOrder(List<LandingData> order)
         {
             for (int i = order.Count-1; i >= 0; i--)
             {
-                if (order[i].Weighted == 0)
+                if (order[i].WeightedIngots == 0)
                 {
                     try
                     {
+                        _logger.Info(
+                            $"Начало добавления плавки [{order[i].LandingId}] №{order[i].MeltNumber} при заполнении очереди");
                         int id = Db.CreateOvenLanding(order[i]);
-                        _logger.Warn($"Добавлена плавка [{id}] при заполнении очереди");
-                        await Task.Delay(TimeSpan.FromMilliseconds(500));
+                        _logger.Warn($"Добавлена плавка [{id}] №{order[i].MeltNumber} при заполнении очереди");
+                        Task.Delay(TimeSpan.FromMilliseconds(500));
                     }
                     catch (Exception ex)
                     {
                         _logger.Error($"Не удалось добавить плавку {order[i].LandingId} в очередь [{ex.Message}]");
                     }
                 }
+            }
+            
+            // Обновление списка плавок после очистки
+            try
+            {
+                _landed = GetLandingOrder();
+            }
+            catch (Exception ex)
+            {
+                _landed = new List<LandingData>();
+                _logger.Error($"Не удалось получить текущую очередь [{ex.Message}]");
             }
 
             StateHasChanged();
@@ -470,7 +522,7 @@ namespace OvenLanding.Pages
             await JSRuntime.InvokeAsync<string>("openEditor", null);
         }
 
-        private async void Remove(int uid)
+        private void Remove(int uid)
         {
             _logger.Info($"===== Начато удаление плавки с идентификатором ${uid} из очереди =====");
             try
@@ -479,14 +531,14 @@ namespace OvenLanding.Pages
                 try
                 {
                     // _landed = Db.GetLandingOrder();
-                    _landed = await GetLandingOrder();
+                    _landed = GetLandingOrder();
                 }
                 catch (Exception e)
                 {
                     _logger.Error($"Не удалось удалить плавку {uid} [{e.Message}]");
                 }
 
-                _logger.Info($"Удалена плавка [{uid}={id}]");
+                _logger.Info($"Удалена плавка [{id}]");
             }
             catch (Exception ex)
             {
@@ -505,12 +557,12 @@ namespace OvenLanding.Pages
             _timer.Enabled = true;
         }
 
-        private async void UpdateData(Object source, ElapsedEventArgs e)
+        private void UpdateData(Object source, ElapsedEventArgs e)
         {
             try
             {
                 // _landed = Db.GetLandingOrder();
-                _landed = await GetLandingOrder();
+                _landed = GetLandingOrder();
             }
             catch (Exception ex)
             {

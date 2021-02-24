@@ -830,8 +830,8 @@ namespace OvenLanding.Data
             WeightedIngotsCount result = new WeightedIngotsCount();
             DataTable dataTable = new DataTable();
             
-            string query = $"set session statement_timeout  to '{_timeOutT}ms'; ";
-            query +=
+            /* string query = $"set session statement_timeout  to '{_timeOutT}ms'; " */ ;
+            string query =
                 "select rp.unit_id_parent id_posad_test, " +
                 "pr.value_s as id_posad_prod, " +
                 "pm.value_s melt, " +
