@@ -174,7 +174,7 @@ namespace OvenLanding.Pages
         /// Перемещение текущей плавки вверх (дальше от печи)
         /// </summary>
         /// <param name="uid">Идентификатор перемещаемой плавки</param>
-        private void MoveUp(int uid)
+        private async void MoveUp(int uid)
         {
             // Проходим по списку и ищем плавку с требуемым номером
             // Если количество взвешенных заготовок равно нулю
@@ -187,6 +187,7 @@ namespace OvenLanding.Pages
             bool found = false;
             bool ordered = false;
             List<LandingData> order = new List<LandingData>();
+            await Task.Delay(100);
             StateHasChanged();
 
             // 1. Получаем текущий список плавок
@@ -297,7 +298,7 @@ namespace OvenLanding.Pages
         /// Перемещение текущей плавки вниз (ближе к печи)
         /// </summary>
         /// <param name="uid">Идентификатор перемещаемой плавки</param>
-        private void MoveDown(int uid)
+        private async void MoveDown(int uid)
         {
             // Проходим по списку и ищем плавку с требуемым номером
             // Если количество взвешенных заготовок равно нулю
@@ -310,6 +311,7 @@ namespace OvenLanding.Pages
             bool ordered = false;
             string meltNo = "";
             List<LandingData> order = new List<LandingData>();
+            await Task.Delay(100);
             StateHasChanged();
 
             // 1. Получаем текущий список плавок
@@ -407,18 +409,7 @@ namespace OvenLanding.Pages
         /// </summary>
         private void ClearCurrentOrder()
         {
-            // List<LandingData> order = Db.GetLandingOrder();
             List<LandingData> order = _landed;
-            // try
-            // {
-            //     order = GetLandingOrder();
-            // }
-            // catch (Exception ex)
-            // {
-            //     order = new List<LandingData>();
-            //     _logger.Error($"Не удалось получить текущую очередь [{ex.Message}]");
-            // }
-            
             int i = 1;
             
             foreach (LandingData melt in order)
@@ -546,29 +537,40 @@ namespace OvenLanding.Pages
 
         private void Remove(int uid)
         {
-            _logger.Info($"===== Начато удаление плавки с идентификатором ${uid} из очереди =====");
+            string meltNo = "";
+            int oldCnt = 0;
+            foreach (LandingData melt in _landed)
+            {
+                if (melt.LandingId == uid)
+                {
+                    meltNo = melt.MeltNumber;
+                    oldCnt = melt.IngotsCount;
+                    break;
+                }
+            }
+            
+            _logger.Info($"===== Начато удаление плавки [{uid}] №{meltNo}, содержащей {oldCnt} заготовок из очереди =====");
             try
             {
                 int id = Db.Remove(uid);
                 try
                 {
-                    // _landed = Db.GetLandingOrder();
                     _landed = GetLandingOrder();
                 }
                 catch (Exception e)
                 {
-                    _logger.Error($"Не удалось удалить плавку {uid} [{e.Message}]");
+                    _logger.Error($"Не удалось удалить плавку [{uid}] №{meltNo}, содержащую {oldCnt} заготовок из очереди [{e.Message}]");
                 }
 
-                _logger.Info($"Удалена плавка [{id}]");
+                _logger.Info($"Удалена из очереди плавка [{uid}] №{meltNo}, содержащая {oldCnt} заготовок");
             }
             catch (Exception ex)
             {
-                _logger.Error($"Не удалось удалить плавку [{uid}] => {ex.Message}");
+                _logger.Error($"Не удалось удалить плавку [{uid}] №{meltNo}, содержащую {oldCnt} заготовок => {ex.Message}");
             }
 
             StateHasChanged();
-            _logger.Info($"===== Завершено удаление плавки с идентификатором ${uid} из очереди =====");
+            _logger.Info($"===== Завершено удаление плавки [{uid}] №{meltNo}, содержащей {oldCnt} заготовок из очереди =====");
         }
 
         private void SetTimer(int seconds)

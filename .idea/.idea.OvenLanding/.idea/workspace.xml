@@ -18,9 +18,8 @@
     </select>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="97baf1e9-2485-46d7-b3c2-3bfb354916b0" name="Default Changelist" comment="Update algorithm for moving to up and to down melt in order">
+    <list default="true" id="97baf1e9-2485-46d7-b3c2-3bfb354916b0" name="Default Changelist" comment="Add ingots count in logger when its added or removed">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.OvenLanding/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.OvenLanding/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Pages/AddLanding.razor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Pages/AddLanding.razor.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Pages/Index.razor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Pages/Index.razor.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -44,6 +43,7 @@
     <setting file="file://$PROJECT_DIR$/Data/AreasData.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Pages/Start.razor" root0="SKIP_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" root2="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Data/DBConnection.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock://E:/Projects/NET/OvenLanding/OvenLanding/Pages/AddLanding.razor.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Pages/Index.razor.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="IdeDocumentHistory">
@@ -165,7 +165,7 @@
       <workItem from="1612865023804" duration="293000" />
       <workItem from="1613803653776" duration="9210000" />
       <workItem from="1614142876577" duration="11032000" />
-      <workItem from="1614162225141" duration="5326000" />
+      <workItem from="1614162225141" duration="9095000" />
     </task>
     <task id="LOCAL-00001" summary="Complete">
       <created>1603176593286</created>
@@ -272,7 +272,14 @@
       <option name="project" value="LOCAL" />
       <updated>1614169033377</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="Add ingots count in logger when its added or removed">
+      <created>1614170284607</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1614170284607</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -310,7 +317,8 @@
     <MESSAGE value="Detached reports into external services" />
     <MESSAGE value="Add weighted ingots from test server." />
     <MESSAGE value="Update algorithm for moving to up and to down melt in order" />
-    <option name="LAST_COMMIT_MESSAGE" value="Update algorithm for moving to up and to down melt in order" />
+    <MESSAGE value="Add ingots count in logger when its added or removed" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add ingots count in logger when its added or removed" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
