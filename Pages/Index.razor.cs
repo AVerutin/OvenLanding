@@ -24,6 +24,7 @@ namespace OvenLanding.Pages
         private string _selectRow = "none";
         private string _loading = "hidden;";
         private bool _movingButtonsState = true;
+        private bool _countingButtonsState = true;
         
         protected override void OnInitialized()
         {
@@ -90,8 +91,13 @@ namespace OvenLanding.Pages
             SetTimer(15);
         }
 
-        private void IncLanding(int uid)
+        private async void IncLanding(int uid)
         {
+            _countingButtonsState = false;
+            _setLoading(true);
+            await Task.Delay(100);
+            StateHasChanged();
+            
             string meltNo = "";
             int oldCnt = 0;
             foreach (LandingData melt in _landed)
@@ -125,13 +131,20 @@ namespace OvenLanding.Pages
             {
                 _logger.Error($"Не удалось добавить заготовку в плавку [{uid}] №{meltNo} => {ex.Message}");
             }
-            
+
+            _countingButtonsState = true;
+            _setLoading(false);
             StateHasChanged();
             _logger.Info($"===== Завершено добавление ЕУ к плавке [{uid}] №{meltNo} =====");
         }
 
-        private void DecLanding(int uid)
+        private async void DecLanding(int uid)
         {
+            _countingButtonsState = false;
+            _setLoading(true);
+            await Task.Delay(100);
+            StateHasChanged();
+            
             string meltNo = "";
             int oldCnt = 0;
             foreach (LandingData melt in _landed)
@@ -166,6 +179,8 @@ namespace OvenLanding.Pages
                 _logger.Error($"Не удалось удалить заготовку из плавки [{uid}] №{meltNo} => {ex.Message}");
             }
 
+            _countingButtonsState = true;
+            _setLoading(false);
             StateHasChanged();
             _logger.Info($"===== Завершено удаление ЕУ из плавки [{uid}] №{meltNo} =====");
         }

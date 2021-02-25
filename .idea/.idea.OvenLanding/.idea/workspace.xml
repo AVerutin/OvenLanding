@@ -18,8 +18,9 @@
     </select>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="97baf1e9-2485-46d7-b3c2-3bfb354916b0" name="Default Changelist" comment="Add ingots count in logger when its added or removed">
+    <list default="true" id="97baf1e9-2485-46d7-b3c2-3bfb354916b0" name="Default Changelist" comment="Add async to moving methods who has display busy status and can blocking buttons with arrays">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.OvenLanding/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.OvenLanding/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pages/Index.razor" beforeDir="false" afterPath="$PROJECT_DIR$/Pages/Index.razor" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Pages/Index.razor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Pages/Index.razor.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -43,7 +44,6 @@
     <setting file="file://$PROJECT_DIR$/Data/AreasData.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Pages/Start.razor" root0="SKIP_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" root2="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Data/DBConnection.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock://E:/Projects/NET/OvenLanding/OvenLanding/Pages/AddLanding.razor.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Pages/Index.razor.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="IdeDocumentHistory">
@@ -57,8 +57,8 @@
       <option value="$PROJECT_DIR$/Pages/Start.razor" />
       <option value="$PROJECT_DIR$/NLog.config" />
       <option value="$PROJECT_DIR$/Data/DBConnection.cs" />
-      <option value="$PROJECT_DIR$/Pages/Index.razor" />
       <option value="$PROJECT_DIR$/Pages/AddLanding.razor.cs" />
+      <option value="$PROJECT_DIR$/Pages/Index.razor" />
       <option value="$PROJECT_DIR$/Pages/Index.razor.cs" />
     </changedPaths>
   </component>
@@ -165,7 +165,8 @@
       <workItem from="1612865023804" duration="293000" />
       <workItem from="1613803653776" duration="9210000" />
       <workItem from="1614142876577" duration="11032000" />
-      <workItem from="1614162225141" duration="9095000" />
+      <workItem from="1614162225141" duration="9369000" />
+      <workItem from="1614230243439" duration="279000" />
     </task>
     <task id="LOCAL-00001" summary="Complete">
       <created>1603176593286</created>
@@ -279,7 +280,14 @@
       <option name="project" value="LOCAL" />
       <updated>1614170284607</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="Add async to moving methods who has display busy status and can blocking buttons with arrays">
+      <created>1614229367357</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1614229367357</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -318,7 +326,8 @@
     <MESSAGE value="Add weighted ingots from test server." />
     <MESSAGE value="Update algorithm for moving to up and to down melt in order" />
     <MESSAGE value="Add ingots count in logger when its added or removed" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add ingots count in logger when its added or removed" />
+    <MESSAGE value="Add async to moving methods who has display busy status and can blocking buttons with arrays" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add async to moving methods who has display busy status and can blocking buttons with arrays" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
